@@ -1,7 +1,7 @@
 import { Role } from '@entity/role';
 import { User } from '@entity/user';
 
-export const getAllUser = async () => {
+export const getAllUserService = async () => {
   try {
     return await User.find({ relations: ['roles'] });
   } catch (e) {
@@ -9,7 +9,7 @@ export const getAllUser = async () => {
   }
 }
 
-export const createUser = async ({ email, roles }: { email: string, roles: string[] }) => {
+export const createUserService = async ({ email, roles }: { email: string, roles: string[] }) => {
   try {
     const _newUser = new User();
     _newUser['email'] = email;
@@ -37,7 +37,7 @@ export const createUser = async ({ email, roles }: { email: string, roles: strin
   }
 }
 
-export const updateUser = async ({ id, email, roles }: { id: number, email: string, roles: string[] }) => {
+export const updateUserService = async ({ id, email, roles }: { id: number, email: string, roles: string[] }) => {
   try {
     const _updatedUser = await User.findOne({ where: { id }, relations: ['roles'] });
     if (!_updatedUser) return { message: "User is not found!" };
@@ -72,7 +72,7 @@ export const updateUser = async ({ id, email, roles }: { id: number, email: stri
   }
 }
 
-export const deleteUser = async ({ id }: { id: number }) => {
+export const deleteUserService = async ({ id }: { id: number }) => {
   try {
     const foundUser = await User.findOne({ id: id });
     return await foundUser?.remove();
