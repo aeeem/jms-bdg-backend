@@ -8,7 +8,7 @@ export const getAllProductsService = async () => {
     }
 }
 
-export const createProductService = async ({ name} : { name: string }) => {
+export const createProductService = async ({ name } : { name: string }) => {
     try {
         const _newProduct = new Product();
         _newProduct['name'] = name;
