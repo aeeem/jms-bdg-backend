@@ -1,5 +1,6 @@
 import { Connection, createConnection, SimpleConsoleLogger } from "typeorm";
 import dotenv from 'dotenv';
+import { Product } from "@entity/product";
 
 dotenv.config({});
 class Database {
@@ -10,8 +11,8 @@ class Database {
     this.connectToDB();
   }
 
-  private connectToDB(): void {
-    createConnection({
+  private async connectToDB(): Promise<void> {
+    await createConnection({
       type: envString("mysql", "mysql"),
       host: envString(process.env.DATABASE_HOST!, process.env.DEV_DATABASE_HOST!),
       port: envString(Number(process.env.DATABASE_PORT!), Number(process.env.DEV_DATABASE_PORT!)),
@@ -19,8 +20,9 @@ class Database {
       password: envString(process.env.DATABASE_PASSWORD!, process.env.DEV_DATABASE_PASSWORD!),
       database: envString(process.env.DATABASE_NAME!, process.env.DEV_DATABASE_NAME!),
       entities: [
-        __dirname + "/entity/*.ts",
-        __dirname + "/entity/*.js"
+        Product,
+        // __dirname + "/entity/*.ts",
+        // __dirname + "/entity/*.js"
       ],
       synchronize: true,
       logging: false

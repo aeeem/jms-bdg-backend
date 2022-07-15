@@ -1,5 +1,4 @@
 import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Stock } from "./stock";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {
