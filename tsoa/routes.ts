@@ -45,7 +45,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/api/products/create',
+        app.post('/api/products',
 
             function ProductsController_createProduct(request: any, response: any, next: any) {
             const args = {
@@ -68,7 +68,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/api/products/update/:id',
+        app.put('/api/products/:id',
 
             function ProductsController_updateProduct(request: any, response: any, next: any) {
             const args = {
@@ -92,7 +92,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.delete('/api/products/delete/:id',
+        app.delete('/api/products/:id',
 
             function ProductsController_deleteProduct(request: any, response: any, next: any) {
             const args = {

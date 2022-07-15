@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { BaseEntity, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { E_TransactionStatus } from "../enum/transaction";
 import { Customer } from "./customer";
 import { TransactionDetail } from "./transactionDetail";
@@ -6,7 +6,7 @@ import { TransactionDetail } from "./transactionDetail";
 @Entity({name:'transaction'})
 export class Transaction extends BaseEntity {
 
-  @Column()
+  @PrimaryGeneratedColumn()
   id: number;
   
   @Column()
@@ -19,11 +19,7 @@ export class Transaction extends BaseEntity {
   @Column()
   customer_id: number;
 
-  @Column({
-    type: 'enum',
-    enum: E_TransactionStatus,
-    default: E_TransactionStatus.PENDING
-  })
+  @Column()
   status: E_TransactionStatus;
 
   @Column()

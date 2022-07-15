@@ -31,9 +31,7 @@
 				],
 				"security": [],
 				"parameters": []
-			}
-		},
-		"/api/products/create": {
+			},
 			"post": {
 				"operationId": "CreateProduct",
 				"responses": {
@@ -71,7 +69,7 @@
 				}
 			}
 		},
-		"/api/products/update/{id}": {
+		"/api/products/{id}": {
 			"put": {
 				"operationId": "UpdateProduct",
 				"responses": {
@@ -116,9 +114,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/api/products/delete/{id}": {
+			},
 			"delete": {
 				"operationId": "DeleteProduct",
 				"responses": {

@@ -1,10 +1,13 @@
-import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { Stock } from "./stock";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {
 
-  @Column({unique: true})
+  @PrimaryGeneratedColumn()
+  id: number
+
+  @Column({unique: true, })
   sku: string;
 
   @Column({ unique: true })
