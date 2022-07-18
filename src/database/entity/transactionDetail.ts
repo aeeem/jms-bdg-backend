@@ -8,20 +8,20 @@ export class TransactionDetail extends BaseEntity {
   id: number;
 
   @Column()
-  transaction_id: number;
+  transaction_id!: number;
 
   @OneToOne(() => Product, {onDelete: 'CASCADE'})
   @Column()
-  product_sku: string;
+  product_sku!: string;
 
   @Column()
-  amount: number;
+  amount!: number;
 
   @Column()
-  sub_total: number;
+  sub_total!: number;
 
   @Column()
-  final_price: number;
+  final_price!: number;
 
   @CreateDateColumn()
   created_at: Date;

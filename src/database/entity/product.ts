@@ -6,11 +6,11 @@ export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({unique: true, })
-  sku: string;
+  @Column({ unique: true, })
+  sku!: string;
 
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @CreateDateColumn()
   created_at: Date;
