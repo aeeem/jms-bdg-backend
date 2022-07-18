@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
-import { CreateProductRequestParameter } from "./product.interfaces";
 import { createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService } from "./product.service";
 
 @Tags('Products')
@@ -12,7 +11,7 @@ export class ProductsController extends Controller{
   }
 
   @Post('/')
-  public async createProduct(@Body() body: CreateProductRequestParameter) {
+  public async createProduct(@Body() body: { name:string, sku :string }) {
     return createProductService({ name: body.name , sku : body.sku });
   }
 

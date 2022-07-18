@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "ts
 import { createCustomerService, deleteCustomerService, getAllCustomerService, searchCustomerService, updateCustomerService } from "./customer.interfaces";
 import { CustomerRequestParameter } from "./customer.service";
 
-
 @Tags('Customer')
 @Route('/api/customer')
 export class CustomerController extends Controller {
