@@ -6,7 +6,7 @@ export class Customer extends BaseEntity {
   id: number;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
   contact_number: string;

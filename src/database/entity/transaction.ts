@@ -13,14 +13,18 @@ export class Transaction extends BaseEntity {
   expected_total_price: number;
   
   @Column()
-  actual_total_price: number;
+  actual_total_price!: number;
 
   @OneToOne(()=>Customer)
   @Column()
-  customer_id: number;
+  customer_id!: number;
 
-  @Column()
-  status: E_TransactionStatus;
+  @Column({
+    type: 'enum',
+    enum: E_TransactionStatus,
+    default: E_TransactionStatus.PENDING
+  })
+  status!: E_TransactionStatus;
 
   @Column()
   created_at: Date;

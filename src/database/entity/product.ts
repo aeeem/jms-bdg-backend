@@ -1,5 +1,4 @@
 import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Stock } from "./stock";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {
@@ -7,11 +6,11 @@ export class Product extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column({unique: true, })
-  sku: string;
+  @Column({ unique: true, })
+  sku!: string;
 
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @CreateDateColumn()
   created_at: Date;

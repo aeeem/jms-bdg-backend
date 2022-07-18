@@ -1,0 +1,34 @@
+import { Body, Controller, Delete, Get, Patch, Post, Put, Query, Response, Route, Tags } from "tsoa";
+import { UpdateExistingStockRequestParameter, UpdateStockRequestParameter } from "./stock.interfaces";
+import { findStockService, getAllStocksService, updateStockService } from "./stock.service";
+
+@Tags('Stock')
+@Route('/api/stock')
+export class StockController extends Controller{
+  
+  @Get('/')
+  public async getAllStock() {
+    return getAllStocksService()
+  }
+
+  @Response(404, 'Stock is not found!')
+  @Put('/')
+  public async updateStock(@Body() body : UpdateStockRequestParameter) {
+    return updateStockService(body)
+  }
+
+  @Delete('/{id}/')
+  public async deleteStock(@Query('id') id: string) {
+  }
+
+  @Patch('/{id}/')
+  public async patchStock(@Query('id') id: string, @Body() body: UpdateExistingStockRequestParameter) {
+    return updateStockService(body)
+  }
+
+  @Get('/search/:query')
+  public async findStock(@Query('query') query: string) {
+    return findStockService(query)
+  }
+
+}
