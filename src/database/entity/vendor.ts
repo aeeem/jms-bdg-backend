@@ -7,13 +7,13 @@ export class Vendor extends BaseEntity {
   id: number
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column()
-  pic_name: string;
+  pic_name!: string;
 
   @Column()
-  pic_phone_number: string;
+  pic_phone_number!: string;
 
   @Column()
   address: string;

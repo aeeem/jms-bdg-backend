@@ -20,9 +20,8 @@ class Database {
       password: envString(process.env.DATABASE_PASSWORD!, process.env.DEV_DATABASE_PASSWORD!),
       database: envString(process.env.DATABASE_NAME!, process.env.DEV_DATABASE_NAME!),
       entities: [
-        Product,
-        // __dirname + "/entity/*.ts",
-        // __dirname + "/entity/*.js"
+        __dirname + "/entity/*.ts",
+        __dirname + "/entity/*.js"
       ],
       synchronize: true,
       logging: false
