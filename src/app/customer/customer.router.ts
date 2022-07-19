@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
-import { createCustomerService, deleteCustomerService, getAllCustomerService, searchCustomerService, updateCustomerService } from "./customer.interfaces";
-import { CustomerRequestParameter } from "./customer.service";
+import { createCustomerService, deleteCustomerService, getAllCustomerService, searchCustomerService, updateCustomerService } from "./customer.service";
+import { CustomerRequestParameter } from "./customer.interface";
 
 @Tags('Customer')
 @Route('/api/customer')

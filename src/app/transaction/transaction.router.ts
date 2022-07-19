@@ -1,6 +1,7 @@
+import { Transaction } from "@entity/transaction";
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
-import { TransactionRequestParameter } from "./transaction.interface";
-import { createTransactionService, deleteTransactionService, getAllTransactionService, searchTransactionService, updateTransactionService } from "./transaction.service";
+import { TransactionRequestParameter, Transactionss } from "./transaction.interface";
+import { createTransactionService, deleteTransactionService, getAllTransactionService, searchTransactionService } from "./transaction.service";
 
 
 @Tags('Transaction')
@@ -19,7 +20,6 @@ export class TransactionController extends Controller{
   
   @Put('/{id}/')
   public async updateTransaction(@Query('id') id: string, @Body() payload: TransactionRequestParameter) {
-    return updateTransactionService(id, payload);
   }
 
   @Delete('/{id}/')

@@ -1,9 +1,18 @@
 import { Transaction } from "@entity/transaction";
-import { TransactionDetail } from "@entity/transactionDetail";
 
-type PartialTransaction = Pick<Transaction, "expected_total_price" |"actual_total_price" | "transaction_details" | "status" | "customer_id">;
-type PartialTransactionDetail = Pick<TransactionDetail, "amount" | "final_price" | "product_sku" | "sub_total">
-
-export type TransactionRequestParameter = PartialTransaction & {
-  detail: PartialTransactionDetail[]
+export type TransactionRequestParameter = {
+  expected_total_price: number;
+  actual_total_price: number;
+  transaction_details: string;
+  customer_id: number;
+  detail: {
+    amount: number;
+    final_price: number;
+    product_sku: string;
+    sub_total: number;
+  }[]
 };
+
+export type Transactionss = {
+  transaction : Transaction
+}

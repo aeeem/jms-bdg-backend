@@ -1,4 +1,5 @@
 import { Product } from "@entity/product";
+import { ProductRequestParameter } from "./product.interfaces";
 
 export const getAllProductsService = async () => {
   try {
@@ -8,14 +9,14 @@ export const getAllProductsService = async () => {
   }
 }
 
-export const createProductService = async ({ name, sku }: { name: string, sku: string }) => {
+export const createProductService = async (payload: ProductRequestParameter) => {
   try {
-    const _newProduct = new Product();
-    _newProduct['name'] = name;
-    _newProduct['sku'] = sku
+    const _newProduct         = new Product();
+    _newProduct['name']       = payload.name;
+    _newProduct['sku']        = payload.sku
     await _newProduct.save();
     return await Product.findOne({
-      where: { name: name }
+      where: { name: payload.name }
     });
   } catch (e) {
     console.error(e);
@@ -33,11 +34,11 @@ export const searchProductService = async ({ query }: { query: string }) => {
   }
 }
 
-export const updateProductService = async ({ id, name }: { id: number, name: string }) => {
+export const updateProductService = async (id: number, payload: ProductRequestParameter) => {
   try {
     const _updatedProduct = await Product.findOne({ where: { id } });
     if (!_updatedProduct) return { message: "Product is not found!" };
-    _updatedProduct['name'] = name;
+    _updatedProduct['name'] = payload.name;
     await _updatedProduct.save();
     return await Product.findOne({
       where: { id: id }

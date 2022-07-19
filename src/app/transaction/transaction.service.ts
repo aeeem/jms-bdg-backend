@@ -16,7 +16,6 @@ export const createTransactionService = async (payload: TransactionRequestParame
     const _newTransaction = new Transaction();
     _newTransaction.expected_total_price = payload.expected_total_price;
     _newTransaction.actual_total_price = payload.actual_total_price;
-    _newTransaction.status = payload.status;
     _newTransaction.customer_id = payload.customer_id;
     await _newTransaction.save();
     return await Transaction.findOne({
@@ -47,7 +46,6 @@ export const updateTransactionService = async (id:string , payload: TransactionR
     const transaction = await Transaction.findOneOrFail({ where: { id} });
     transaction['expected_total_price'] = payload.expected_total_price;
     transaction['actual_total_price'] = payload.actual_total_price;
-    transaction['status'] = payload.status;
     transaction['customer_id'] = payload.customer_id;
     await transaction.save();
     

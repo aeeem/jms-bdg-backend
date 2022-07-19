@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { ProductRequestParameter } from "./product.interfaces";
 import { createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService } from "./product.service";
 
 @Tags('Products')
@@ -11,13 +12,13 @@ export class ProductsController extends Controller{
   }
 
   @Post('/')
-  public async createProduct(@Body() body: { name:string, sku :string }) {
-    return createProductService({ name: body.name , sku : body.sku });
+  public async createProduct(@Body() payload: ProductRequestParameter) {
+    return createProductService(payload);
   }
 
   @Put('/{id}/')
-  public async updateProduct(@Query('id') id: string, @Body() body: { name: string }) {
-    return updateProductService({ id: Number(id), name: body.name });
+  public async updateProduct(@Query('id') id: string, @Body() payload: ProductRequestParameter) {
+    return updateProductService(Number(id), payload);
   }
 
   @Delete('/{id}/')
