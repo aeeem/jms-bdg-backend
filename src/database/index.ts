@@ -1,6 +1,5 @@
 import { Connection, createConnection, SimpleConsoleLogger } from "typeorm";
 import dotenv from 'dotenv';
-import { Product } from "@entity/product";
 
 dotenv.config({});
 class Database {

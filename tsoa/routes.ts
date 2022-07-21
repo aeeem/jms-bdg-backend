@@ -38,7 +38,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"detail":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"product_sku":{"dataType":"string","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},"customer_id":{"dataType":"double","required":true},"transaction_details":{"dataType":"string","required":true},"actual_total_price":{"dataType":"double","required":true},"expected_total_price":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"detail":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"string","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},"customer_id":{"dataType":"double","required":true},"actual_total_price":{"dataType":"double","required":true},"expected_total_price":{"dataType":"double","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {

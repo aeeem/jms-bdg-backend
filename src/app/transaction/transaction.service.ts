@@ -1,3 +1,4 @@
+import { Customer } from "@entity/customer";
 import { Transaction } from "@entity/transaction";
 import _ from "lodash";
 import { TransactionRequestParameter } from "./transaction.interface";
@@ -13,14 +14,16 @@ export const getAllTransactionService = async () => {
 
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
   try {
-    const _newTransaction = new Transaction();
-    _newTransaction.expected_total_price = payload.expected_total_price;
-    _newTransaction.actual_total_price = payload.actual_total_price;
-    _newTransaction.customer_id = payload.customer_id;
-    await _newTransaction.save();
-    return await Transaction.findOne({
-      where: { id: _newTransaction.id }
-    });
+    const customer                        = await Customer.findOneOrFail({ where : { id : payload.customer_id }})
+    const _newTransaction = await Transaction.insert({
+      expected_total_price: payload.expected_total_price,
+      actual_total_price: payload.actual_total_price,
+      transaction_details: payload.detail,
+      customer
+    })
+    
+    return _newTransaction.generatedMaps
+    
   } catch (error) {
     console.error(error)
   }
@@ -43,10 +46,11 @@ export const searchTransactionService = async (query: string) => {
 
 export const updateTransactionService = async (id:string , payload: TransactionRequestParameter) => {
   try {
-    const transaction = await Transaction.findOneOrFail({ where: { id} });
+    const transaction                   = await Transaction.findOneOrFail({ where: { id} });
+    const customer                      = await Customer.findOneOrFail({ where: { id: payload.customer_id } });
     transaction['expected_total_price'] = payload.expected_total_price;
-    transaction['actual_total_price'] = payload.actual_total_price;
-    transaction['customer_id'] = payload.customer_id;
+    transaction['actual_total_price']   = payload.actual_total_price;
+    transaction['customer']             = customer;
     await transaction.save();
     
     return await Transaction.findOne({

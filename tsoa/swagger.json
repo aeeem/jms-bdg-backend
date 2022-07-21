@@ -72,7 +72,7 @@
 									"type": "number",
 									"format": "double"
 								},
-								"product_sku": {
+								"productId": {
 									"type": "string"
 								},
 								"final_price": {
@@ -86,7 +86,7 @@
 							},
 							"required": [
 								"sub_total",
-								"product_sku",
+								"productId",
 								"final_price",
 								"amount"
 							],
@@ -97,9 +97,6 @@
 					"customer_id": {
 						"type": "number",
 						"format": "double"
-					},
-					"transaction_details": {
-						"type": "string"
 					},
 					"actual_total_price": {
 						"type": "number",
@@ -113,7 +110,6 @@
 				"required": [
 					"detail",
 					"customer_id",
-					"transaction_details",
 					"actual_total_price",
 					"expected_total_price"
 				],

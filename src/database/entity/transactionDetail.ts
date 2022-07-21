@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Product } from "./product";
+import { Transaction } from "./transaction";
 
 @Entity({name:'transaction_detail'})
 export class TransactionDetail extends BaseEntity {
@@ -7,12 +8,9 @@ export class TransactionDetail extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  transaction_id!: number;
-
-  @OneToOne(() => Product, {onDelete: 'CASCADE'})
-  @Column()
-  product_sku!: string;
+  @OneToOne(() => Product,(product: Product) => product.id, {onDelete: 'CASCADE'})
+  @JoinColumn()
+  product: Product;
 
   @Column()
   amount!: number;
@@ -22,6 +20,10 @@ export class TransactionDetail extends BaseEntity {
 
   @Column()
   final_price!: number;
+
+  @OneToOne(()=> Transaction, (transaction: Transaction) => transaction.id, {onDelete: 'CASCADE'})
+  @JoinColumn()
+  transaction: Transaction;
 
   @CreateDateColumn()
   created_at: Date;
