@@ -22,7 +22,7 @@ export class Stock extends BaseEntity {
     @OneToOne(() => Vendor, (vendor: Vendor) => vendor.id, { onDelete: 'CASCADE' })
     @JoinColumn()
     vendor: Vendor;
-    
+
     @CreateDateColumn()
     created_at: Date;
     

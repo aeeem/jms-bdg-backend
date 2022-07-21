@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { E_TransactionStatus } from "../enum/transaction";
 import { Customer } from "./customer";
 import { TransactionDetail } from "./transactionDetail";
@@ -13,22 +13,22 @@ export class Transaction extends BaseEntity {
   expected_total_price: number;
   
   @Column()
-  actual_total_price!: number;
+  actual_total_price: number;
 
-  @OneToOne(()=>Customer, (customer: Customer) => customer.id, { onDelete: 'CASCADE' })
+  @ManyToOne(()=>Customer, (customer: Customer) => customer.id, { onDelete: 'CASCADE' })
   @JoinColumn()
   customer: Customer;
 
-  @OneToMany(() => TransactionDetail, (transactionDetail: TransactionDetail) => transactionDetail.id, { onDelete: 'CASCADE' })
+  @OneToMany(() => TransactionDetail, (transactionDetail: TransactionDetail) => transactionDetail.transaction, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   transactionDetails: TransactionDetail[];
-
+  
   @Column({
     type: 'enum',
     enum: E_TransactionStatus,
     default: E_TransactionStatus.PENDING
   })
-  status!: E_TransactionStatus;
+  status: E_TransactionStatus;
 
   @CreateDateColumn()
   created_at: Date;
@@ -36,6 +36,4 @@ export class Transaction extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => TransactionDetail, transactionDetail => transactionDetail.transaction.id, {onDelete: 'CASCADE'})
-  transaction_details: TransactionDetail[];
 }

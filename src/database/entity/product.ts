@@ -1,5 +1,6 @@
 import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { Stock } from "./stock";
+import { TransactionDetail } from "./transactionDetail";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {

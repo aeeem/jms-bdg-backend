@@ -1,29 +1,52 @@
 import { Customer } from "@entity/customer";
+import { Product } from "@entity/product";
+import { Stock } from "@entity/stock";
 import { Transaction } from "@entity/transaction";
+import { TransactionDetail } from "@entity/transactionDetail";
 import _ from "lodash";
 import { TransactionRequestParameter } from "./transaction.interface";
 
 
 export const getAllTransactionService = async () => {
   try {
-    return await Transaction.find();
+    return await Transaction.find({
+      relations: [
+        'customer',
+        'transactionDetails',
+        'transactionDetails.stock',
+        'transactionDetails.stock.product',
+        'transactionDetails.stock.vendor'
+      ]
+    });
   } catch (error) {
     console.error(error)
   }
 }
 
+
+
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
   try {
-    const customer                        = await Customer.findOneOrFail({ where : { id : payload.customer_id }})
-    const _newTransaction = await Transaction.insert({
-      expected_total_price: payload.expected_total_price,
-      actual_total_price: payload.actual_total_price,
-      transaction_details: payload.detail,
-      customer
-    })
-    
-    return _newTransaction.generatedMaps
-    
+    const customer            = await Customer.findOneOrFail({ where : { id : payload.customer_id }})
+    const transactionDetails  = await Promise.all(payload.detail.map(async (detail)=>{
+      const stock                       = await Stock.findOneOrFail({ where : { id : detail.productId }})
+      const _newTransactionDetail       = new TransactionDetail()
+      _newTransactionDetail.amount      = detail.amount
+      _newTransactionDetail.final_price = detail.final_price
+      _newTransactionDetail.sub_total   = detail.sub_total
+      _newTransactionDetail.stock       = stock
+      return _newTransactionDetail
+    }))
+    const transaction = new Transaction()
+    transaction.customer              = customer
+    transaction.transactionDetails    = transactionDetails
+    transaction.expected_total_price  = payload.expected_total_price
+    transaction.actual_total_price    = payload.actual_total_price
+
+    return await transaction.save()
+
+
+
   } catch (error) {
     console.error(error)
   }
