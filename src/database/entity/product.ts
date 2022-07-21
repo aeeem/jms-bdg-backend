@@ -1,4 +1,5 @@
-import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Stock } from "./stock";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {
@@ -11,6 +12,9 @@ export class Product extends BaseEntity {
 
   @Column({ unique: true })
   name!: string;
+  
+  @OneToMany(() => Stock, stock => stock.product, { cascade: true })
+  stocks: Stock[]
 
   @CreateDateColumn()
   created_at: Date;

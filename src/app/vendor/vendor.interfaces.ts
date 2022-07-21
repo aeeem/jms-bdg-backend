@@ -1,4 +1,9 @@
 import { Vendor } from "@entity/vendor";
 
-export type AddVendorRequestParameter = Pick<Vendor, "address" | "name" | "pic_name" | 'pic_phone_number'>
-export type UpdateVendorRequestParameter = Pick<Vendor, "address" | "name" | "pic_name" | 'pic_phone_number'>
+export type VendorRequestParameter = {
+  name: string;
+  address: string;
+  pic_name: string;
+  pic_phone_number: string;
+  kode: string;
+}

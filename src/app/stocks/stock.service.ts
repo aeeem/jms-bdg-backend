@@ -1,10 +1,15 @@
 import { Stock } from "@entity/stock";
-import { UpdateExistingStockRequestParameter, UpdateStockRequestParameter } from "./stock.interfaces";
+import { StockRequestParameter } from "./stock.interfaces";
 import _ from 'lodash'
+import { Product } from "@entity/product";
+import { Vendor } from "@entity/vendor";
+import { E_ErrorType } from "src/errorHandler";
 
 export const getAllStocksService = async () => {
   try {
-    return await Stock.find();
+    return await Stock.find({
+      relations: ["vendor","product"]
+    });
   } catch (error) {
     console.error(error)
   }
@@ -37,47 +42,51 @@ export const findStockService = async (query: string) => {
   }
 }
 
-export const updateExistingStockService = async ({id, body} : {id: string , body: UpdateExistingStockRequestParameter}) => {
+export const updateExistingStockService = async ({id, body} : {id: string , body: StockRequestParameter}) => {
   try {
     const stock           = await Stock.findOneOrFail({ where: { id: id } });
     stock['buy_price']    = body.buy_price;
-    stock['product_sku']  = body.product_sku;
     stock['total_stock']  = body.total_stock;
-    stock['vendor_id']    = body.vendor_id;
     await stock.save();
     
     return await Stock.findOne({
-      where: { id: body.id }
+      where: { id }
     });
   } catch (error) {
     console.error(error)
   }
 }
 
-export const updateStockService = async (body: UpdateStockRequestParameter) => {
+export const updateStockService = async (body: StockRequestParameter) => {
   try {
-    const existingStock = await Stock.createQueryBuilder()
-    .where(
-      'stock.product_sku =: product_sku AND stock.vendor_id =: vendor_id', 
-      { product_sku: body.product_sku , vendor_id: body.vendor_id })
-    .getOne();
+    const product   = await Product.findOne({ where: { id: body.productId } });
+    const vendor    = await Vendor.findOne({ where: { id: body.vendorId } });
+
+    if(!product || !vendor) throw E_ErrorType.E_PRODUCT_OR_VENDOR_NOT_FOUND;
+
+    const existingStock = await Stock.findOne({
+      where: {
+        product,
+        vendor
+      }
+    });
 
     if(existingStock){
       existingStock['buy_price']    = body.buy_price;
       existingStock['total_stock']  = body.total_stock;
       await existingStock.save();
       return await Stock.findOne({
-        where: { product_sku: body.product_sku, vendor_id: body.vendor_id }
+        where: { id: existingStock.id }
       });
     } else {
       const _newStock = new Stock();
-      _newStock['buy_price']    = body.buy_price;
-      _newStock['total_stock']  = body.total_stock;
-      _newStock['product_sku']  = body.product_sku;
-      _newStock['vendor_id']    = body.vendor_id;
+      _newStock['buy_price']      = body.buy_price;
+      _newStock['total_stock']    = body.total_stock;
+      _newStock.product = product;
+      _newStock.vendor = vendor;
       await _newStock.save();
       return await Stock.findOne({
-        where: { product_sku: body.product_sku, vendor_id: body.vendor_id }
+        where: { id: _newStock.id }
       });
     }
   } catch (error) {

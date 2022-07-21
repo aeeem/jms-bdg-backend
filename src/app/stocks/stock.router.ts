@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Patch, Post, Put, Query, Response, Route, Tags } from "tsoa";
-import { UpdateExistingStockRequestParameter, UpdateStockRequestParameter } from "./stock.interfaces";
+import { StockRequestParameter } from "./stock.interfaces";
 import { findStockService, getAllStocksService, updateStockService } from "./stock.service";
 
 @Tags('Stock')
@@ -13,7 +13,7 @@ export class StockController extends Controller{
 
   @Response(404, 'Stock is not found!')
   @Put('/')
-  public async updateStock(@Body() body : UpdateStockRequestParameter) {
+  public async updateStock(@Body() body : StockRequestParameter) {
     return updateStockService(body)
   }
 
@@ -22,7 +22,7 @@ export class StockController extends Controller{
   }
 
   @Patch('/{id}/')
-  public async patchStock(@Query('id') id: string, @Body() body: UpdateExistingStockRequestParameter) {
+  public async patchStock(@Query('id') id: string, @Body() body: StockRequestParameter) {
     return updateStockService(body)
   }
 

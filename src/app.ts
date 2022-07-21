@@ -6,6 +6,7 @@ import swaggerUi from 'swagger-ui-express';
 import { ValidateError } from 'tsoa';
 import { RegisterRoutes } from '../tsoa/routes';
 import '@database';
+import { ErrorHandler } from './errorHandler';
 
 const app: Express = express();
 
@@ -49,6 +50,12 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
       message: "Validation Failed",
       details: err?.fields,
     });
+  }
+  if(err instanceof ErrorHandler){
+    return res.status(err.status || 500).json({
+      type: err.type,
+      message: err.message
+    })
   }
   if (err instanceof Error) {
     return res.status(500).json({

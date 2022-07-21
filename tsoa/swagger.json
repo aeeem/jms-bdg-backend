@@ -36,6 +36,33 @@
 				],
 				"type": "object"
 			},
+			"StockRequestParameter": {
+				"properties": {
+					"vendorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"productId": {
+						"type": "number",
+						"format": "double"
+					},
+					"buy_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"total_stock": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"vendorId",
+					"productId",
+					"buy_price",
+					"total_stock"
+				],
+				"type": "object"
+			},
 			"TransactionRequestParameter": {
 				"properties": {
 					"detail": {
@@ -89,6 +116,33 @@
 					"transaction_details",
 					"actual_total_price",
 					"expected_total_price"
+				],
+				"type": "object"
+			},
+			"VendorRequestParameter": {
+				"properties": {
+					"kode": {
+						"type": "string"
+					},
+					"pic_phone_number": {
+						"type": "string"
+					},
+					"pic_name": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"kode",
+					"pic_phone_number",
+					"pic_name",
+					"address",
+					"name"
 				],
 				"type": "object"
 			}
@@ -406,6 +460,147 @@
 				]
 			}
 		},
+		"/api/stock": {
+			"get": {
+				"operationId": "GetAllStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Stock is not found!"
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StockRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/stock/{id}": {
+			"delete": {
+				"operationId": "DeleteStock",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "PatchStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StockRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/stock/search/{query}": {
+			"get": {
+				"operationId": "FindStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/transaction": {
 			"get": {
 				"operationId": "GetAllTransaction",
@@ -688,6 +883,159 @@
 				},
 				"tags": [
 					"User Permission"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor": {
+			"get": {
+				"operationId": "GetAllVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "AddVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VendorRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/vendor/search/{query}": {
+			"get": {
+				"operationId": "FindVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor/{id}": {
+			"put": {
+				"operationId": "UpdateVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VendorRequestParameter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
 				],
 				"security": [],
 				"parameters": [

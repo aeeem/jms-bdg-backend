@@ -1,4 +1,3 @@
-import { Product } from "@entity/product";
 
 export type ProductRequestParameter = {
   sku: string;

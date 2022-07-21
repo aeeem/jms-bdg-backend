@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
-import { AddVendorRequestParameter, UpdateVendorRequestParameter } from "./vendor.interfaces";
+import { VendorRequestParameter } from "./vendor.interfaces";
 import { addVendorService, deleteVendorService, findVendorService, getAllVendorService, updateVendorService } from "./vendor.service";
 
 @Tags('Vendor')
@@ -17,12 +17,12 @@ export class VendorController extends Controller{
   }
 
   @Post('/')
-  public async addVendor(@Body() body: AddVendorRequestParameter) {
+  public async addVendor(@Body() body: VendorRequestParameter) {
     return addVendorService(body)
   }
   
   @Put('/{id}/')
-  public async updateVendor(@Query('id') id: string, @Body() body : UpdateVendorRequestParameter) {
+  public async updateVendor(@Query('id') id: string, @Body() body : VendorRequestParameter) {
     return updateVendorService(id,body)
   }
 
