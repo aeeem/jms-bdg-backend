@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Stock } from "./stock";
 
 @Entity({ name: "vendor" })
 export class Vendor extends BaseEntity {
@@ -14,6 +15,9 @@ export class Vendor extends BaseEntity {
 
   @Column()
   pic_phone_number!: string;
+
+  @OneToMany(() => Stock, (stock: Stock) => stock.vendor, { onDelete: "CASCADE" })
+  stocks: Stock[];
 
   @Column()
   address: string;

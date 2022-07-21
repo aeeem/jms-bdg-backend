@@ -1,6 +1,6 @@
 import { Vendor } from "@entity/vendor";
 import _ from "lodash";
-import { AddVendorRequestParameter, UpdateVendorRequestParameter } from "./vendor.interfaces";
+import { VendorRequestParameter } from "./vendor.interfaces";
 
 export const getAllVendorService = async () => {
   try {
@@ -22,7 +22,7 @@ export const findVendorService = async (query: string) => {
   }
 }
 
-export const addVendorService = async (body: AddVendorRequestParameter) => {
+export const addVendorService = async (body: VendorRequestParameter) => {
   try {
     const _newVendor = new Vendor();
     _newVendor.name = body.name;
@@ -38,7 +38,7 @@ export const addVendorService = async (body: AddVendorRequestParameter) => {
   }
 }
 
-export const updateVendorService = async (id: string , body: UpdateVendorRequestParameter) => {
+export const updateVendorService = async (id: string , body: VendorRequestParameter) => {
   try {
     const vendor = await Vendor.findOneOrFail({ where: { id } });
     vendor['address'] = body.address;

@@ -5,7 +5,144 @@
 		"parameters": {},
 		"requestBodies": {},
 		"responses": {},
-		"schemas": {},
+		"schemas": {
+			"CustomerRequestParameter": {
+				"properties": {
+					"contact_number": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"contact_number",
+					"name"
+				],
+				"type": "object"
+			},
+			"ProductRequestParameter": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"sku": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"sku"
+				],
+				"type": "object"
+			},
+			"StockRequestParameter": {
+				"properties": {
+					"vendorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"productId": {
+						"type": "number",
+						"format": "double"
+					},
+					"buy_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"total_stock": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"vendorId",
+					"productId",
+					"buy_price",
+					"total_stock"
+				],
+				"type": "object"
+			},
+			"TransactionRequestParameter": {
+				"properties": {
+					"detail": {
+						"items": {
+							"properties": {
+								"sub_total": {
+									"type": "number",
+									"format": "double"
+								},
+								"productId": {
+									"type": "string"
+								},
+								"final_price": {
+									"type": "number",
+									"format": "double"
+								},
+								"amount": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"sub_total",
+								"productId",
+								"final_price",
+								"amount"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"customer_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"actual_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"expected_total_price": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"detail",
+					"customer_id",
+					"actual_total_price",
+					"expected_total_price"
+				],
+				"type": "object"
+			},
+			"VendorRequestParameter": {
+				"properties": {
+					"kode": {
+						"type": "string"
+					},
+					"pic_phone_number": {
+						"type": "string"
+					},
+					"pic_name": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"kode",
+					"pic_phone_number",
+					"pic_name",
+					"address",
+					"name"
+				],
+				"type": "object"
+			}
+		},
 		"securitySchemes": {}
 	},
 	"info": {
@@ -13,6 +150,159 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/api/customer": {
+			"get": {
+				"operationId": "GetAllCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CustomerRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/customer/search/{query}": {
+			"get": {
+				"operationId": "SearchCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/customer/{id}": {
+			"put": {
+				"operationId": "UpdateCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CustomerRequestParameter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/products": {
 			"get": {
 				"operationId": "GetAllProducts",
@@ -54,15 +344,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"name": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"name"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/ProductRequestParameter"
 							}
 						}
 					}
@@ -101,15 +383,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"name": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"name"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/ProductRequestParameter"
 							}
 						}
 					}
@@ -145,6 +419,324 @@
 					{
 						"in": "query",
 						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/products/search/{query}": {
+			"get": {
+				"operationId": "SearchProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/stock": {
+			"get": {
+				"operationId": "GetAllStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"put": {
+				"operationId": "UpdateStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					},
+					"404": {
+						"description": "Stock is not found!"
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StockRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/stock/{id}": {
+			"delete": {
+				"operationId": "DeleteStock",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"patch": {
+				"operationId": "PatchStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/StockRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/stock/search/{query}": {
+			"get": {
+				"operationId": "FindStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/transaction": {
+			"get": {
+				"operationId": "GetAllTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TransactionRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/transaction/{id}": {
+			"put": {
+				"operationId": "UpdateTransaction",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TransactionRequestParameter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/transaction/search/{query}": {
+			"get": {
+				"operationId": "SearchTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -287,6 +879,159 @@
 				},
 				"tags": [
 					"User Permission"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor": {
+			"get": {
+				"operationId": "GetAllVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "AddVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VendorRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/vendor/search/{query}": {
+			"get": {
+				"operationId": "FindVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor/{id}": {
+			"put": {
+				"operationId": "UpdateVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VendorRequestParameter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
 				],
 				"security": [],
 				"parameters": [

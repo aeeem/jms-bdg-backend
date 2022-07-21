@@ -1,59 +1,65 @@
 import { Product } from "@entity/product";
+import { ErrorHandler, E_ErrorType } from "src/errorHandler";
+import { ProductRequestParameter } from "./product.interfaces";
 
 export const getAllProductsService = async () => {
   try {
-    return await Product.find();
+    return await Product.find({
+      relations: ["stocks",'stocks.vendor']
+    });
   } catch (e) {
-    console.error(e);
+    console.log(e)
+    throw new ErrorHandler(e); 
   }
 }
 
-export const createProductService = async ({ name, sku }: { name: string, sku: string }) => {
+export const createProductService = async (payload: ProductRequestParameter) => {
   try {
-    const _newProduct = new Product();
-    _newProduct['name'] = name;
-    _newProduct['sku'] = sku
+    const _newProduct         = new Product();
+    _newProduct['name']       = payload.name;
+    _newProduct['sku']        = payload.sku
     await _newProduct.save();
     return await Product.findOne({
-      where: { name: name }
+      where: { name: payload.name }
     });
-  } catch (e) {
-    console.error(e);
+  } catch (e:any) {
+    throw new ErrorHandler(e); 
   }
 }
 
 export const searchProductService = async ({ query }: { query: string }) => {
   try {
     return await Product.createQueryBuilder('product')
-      .where('product.sku LIKE :query OR product.name LIKE :query', { query })
+      .where('product.sku LIKE :query OR product.name LIKE :query', { query: `%${query}%` })
       .orderBy('product.id', 'ASC')
       .getMany()
   } catch (e) {
-    console.error(e);
+    throw new ErrorHandler(e); 
   }
 }
 
-export const updateProductService = async ({ id, name }: { id: number, name: string }) => {
+export const updateProductService = async (id: number, payload: ProductRequestParameter) => {
   try {
-    const _updatedProduct = await Product.findOne({ where: { id } });
-    if (!_updatedProduct) return { message: "Product is not found!" };
-    _updatedProduct['name'] = name;
+    const _updatedProduct   = await Product.findOne({ where: { id } });
+    if (!_updatedProduct) 
+      throw E_ErrorType.E_PRODUCT_NOT_FOUND;
+    _updatedProduct['name'] = payload.name;
     await _updatedProduct.save();
     return await Product.findOne({
       where: { id: id }
     });
   } catch (e) {
-    console.error(e);
+    throw new ErrorHandler(e); 
   }
 }
 
 export const deleteProductService = async ({ id }: { id: number }) => {
   try {
     const _deletedProduct = await Product.findOne({ where: { id } });
-    if (!_deletedProduct) return { message: "Product is not found!" };
+    if (!_deletedProduct) throw E_ErrorType.E_PRODUCT_NOT_FOUND;
     await _deletedProduct.remove();
     return { message: "Product is deleted!" };
   } catch (e) {
-    console.error(e);
+    throw new ErrorHandler(e); 
   }
 }
