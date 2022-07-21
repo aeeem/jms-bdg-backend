@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Transaction } from "./transaction";
 
 @Entity('customer')
 export class Customer extends BaseEntity {
@@ -11,9 +12,13 @@ export class Customer extends BaseEntity {
   @Column()
   contact_number: string;
 
-  @Column()
+  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer, { onDelete: 'CASCADE' })
+  @JoinTable()
+  transactions: Transaction[];
+
+  @CreateDateColumn()
   created_at: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updated_at: Date;
 }
