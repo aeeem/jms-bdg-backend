@@ -11,16 +11,22 @@ export class Vendor extends BaseEntity {
   name!: string;
 
   @Column()
-  pic_name!: string;
+  code!: string;
 
   @Column()
-  pic_phone_number!: string;
+  shipping_cost!: number;
+
+  @Column({nullable: true})
+  pic_name?: string;
+
+  @Column({nullable: true})
+  pic_phone_number?: string;
 
   @OneToMany(() => Stock, (stock: Stock) => stock.vendor, { onDelete: "CASCADE" })
   stocks: Stock[];
 
-  @Column()
-  address: string;
+  @Column({nullable: true})
+  address?: string;
 
   @CreateDateColumn()
   created_at: Date;

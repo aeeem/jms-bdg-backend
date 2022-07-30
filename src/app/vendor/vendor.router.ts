@@ -11,7 +11,7 @@ export class VendorController extends Controller{
     return getAllVendorService()
   }
 
-  @Get('/search/:query')
+  @Get('/search/')
   public async findVendor(@Query('query') query: string) {
     return findVendorService(query)
   }
@@ -21,12 +21,12 @@ export class VendorController extends Controller{
     return addVendorService(body)
   }
   
-  @Put('/{id}/')
+  @Put('/')
   public async updateVendor(@Query('id') id: string, @Body() body : VendorRequestParameter) {
     return updateVendorService(id,body)
   }
 
-  @Delete('/{id}/')
+  @Delete('/')
   public async deleteVendor(@Query('id') id: string) {
     return deleteVendorService(id)
   }

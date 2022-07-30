@@ -117,7 +117,11 @@
 			},
 			"VendorRequestParameter": {
 				"properties": {
-					"kode": {
+					"shipping_cost": {
+						"type": "number",
+						"format": "double"
+					},
+					"code": {
 						"type": "string"
 					},
 					"pic_phone_number": {
@@ -134,10 +138,8 @@
 					}
 				},
 				"required": [
-					"kode",
-					"pic_phone_number",
-					"pic_name",
-					"address",
+					"shipping_cost",
+					"code",
 					"name"
 				],
 				"type": "object"
@@ -939,38 +941,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/api/vendor/search/{query}": {
-			"get": {
-				"operationId": "FindVendor",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Vendor"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/vendor/{id}": {
+			},
 			"put": {
 				"operationId": "UpdateVendor",
 				"responses": {
@@ -1038,6 +1009,35 @@
 					{
 						"in": "query",
 						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor/search": {
+			"get": {
+				"operationId": "FindVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
 						"required": true,
 						"schema": {
 							"type": "string"
