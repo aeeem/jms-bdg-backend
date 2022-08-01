@@ -5,15 +5,18 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { ValidateError } from 'tsoa';
 import { RegisterRoutes } from '../tsoa/routes';
-import '@database';
 import { ErrorHandler } from './errorHandler';
+import Database from '@database';
 
 const app: Express = express();
 
 /************************************************************************************
  *                              Basic Express Middlewares
  ***********************************************************************************/
-
+const db = new Database();
+app.on('ready', async () => {
+  await db.connectToDB()
+})
 app.set('json spaces', 2);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -67,6 +70,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   next();
 });
 
+app.emit('ready');
 app.use(function notFoundHandler(_req, res: express.Response) {
   return res.status(404).send({ message: "Not Found" });
 });
