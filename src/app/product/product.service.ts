@@ -1,5 +1,5 @@
 import { Product } from "@entity/product";
-import { ErrorHandler, E_ErrorType } from "src/errorHandler";
+import { ErrorHandler, E_ErrorType } from "../../errorHandler";
 import { ProductRequestParameter } from "./product.interfaces";
 
 export const getAllProductsService = async () => {
