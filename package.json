@@ -10,8 +10,8 @@
     "dev": "concurrently \"npm run tsoa:generate_\" \"npm run start:dev\"",
     "prebuild": "rimraf ./build && npm run tsoa:generate",
     "build": "tsc",
-    "tsoa:generate_": "nodemon -w src -w prisma -e ts _generate-tsoa.js",
-    "tsoa:generate": "node _generate-tsoa.js",
+    "tsoa:generate_": "nodemon -w src -w prisma -e ts _generate-tsoa.ts",
+    "tsoa:generate": "ts-node _generate-tsoa.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed"
   },
@@ -25,9 +25,11 @@
   ],
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jest": "^28.1.5",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/lodash": "^4.14.182",
     "@types/morgan": "^1.9.3",
     "@types/node": "^14.18.21",
@@ -48,11 +50,13 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "env-cmd": "^10.1.0",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
     "helmet": "^4.6.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",

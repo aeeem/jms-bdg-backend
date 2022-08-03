@@ -10,6 +10,15 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Column({ unique: true })
+  noInduk: string
+
+  @Column()
+  name: string;
+
+  @Column()
+  password: string;
+
   @OneToMany(() => Role, (role: Role) => role.user, { onDelete: 'CASCADE' })
   roles: Role[];
 

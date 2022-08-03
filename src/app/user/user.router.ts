@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from 'tsoa';
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from 'tsoa';
 import { getAllUserService, createUserService, updateUserService, deleteUserService } from './user.service';
 
 @Tags('User Permission')
 @Route('/api/user-permission')
+@Security('api_key')
 export class UserPermissionController extends Controller {
 
   @Get('/get-all/')

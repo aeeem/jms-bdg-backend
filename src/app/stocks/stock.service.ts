@@ -3,7 +3,8 @@ import { StockRequestParameter } from "./stock.interfaces";
 import _ from 'lodash'
 import { Product } from "@entity/product";
 import { Vendor } from "@entity/vendor";
-import { E_ErrorType } from "../../errorHandler";
+import {  } from "../../errorHandler";
+import { E_ErrorType } from "src/errorHandler/enums";
 
 export const getAllStocksService = async () => {
   try {

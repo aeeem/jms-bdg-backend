@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { VendorRequestParameter } from "./vendor.interfaces";
 import { addVendorService, deleteVendorService, findVendorService, getAllVendorService, updateVendorService } from "./vendor.service";
 
 @Tags('Vendor')
 @Route('/api/vendor')
+@Security('api_key')
 export class VendorController extends Controller{
 
   @Get('/')
