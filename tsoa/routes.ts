@@ -43,7 +43,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"shipping_cost":{"dataType":"double","required":true},"code":{"dataType":"string","required":true},"pic_phone_number":{"dataType":"string"},"pic_name":{"dataType":"string"},"address":{"dataType":"string"},"name":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"shipping_cost":{"dataType":"double","required":true},"code":{"dataType":"string","required":true},"pic_phone_number":{"dataType":"string"},"pic_name":{"dataType":"string"},"address":{"dataType":"string"},"name":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };

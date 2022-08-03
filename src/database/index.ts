@@ -19,7 +19,8 @@ export default class Database {
         __dirname + "/entity/*.ts",
         __dirname + "/entity/*.js"
       ],
-      logging: false
+      logging: false,
+      synchronize: true
     }).then(_con => {
       this.connection = _con;
       console.log("Connected to db!!");

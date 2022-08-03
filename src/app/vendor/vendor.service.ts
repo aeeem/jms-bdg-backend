@@ -15,10 +15,10 @@ export const getAllVendorService = async () => {
 export const findVendorService = async (query: string) => {
   try {
     const vendor = await Vendor.createQueryBuilder()
-      .where('vendor.name LIKE :query', { query })
+      .where('vendor.code LIKE :query', { query })
       .getMany();
     if (_.isEmpty(vendor)) return { message: "Vendor is not found!" };
-    return vendor
+    return response.success<Vendor[]>({data:vendor, stat_msg:"SUCCESS"});
   } catch (error) {
     console.error(error)
   }

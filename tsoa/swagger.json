@@ -139,8 +139,7 @@
 				},
 				"required": [
 					"shipping_cost",
-					"code",
-					"name"
+					"code"
 				],
 				"type": "object"
 			}
