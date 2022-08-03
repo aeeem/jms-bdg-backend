@@ -67,7 +67,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"kode":{"dataType":"string","required":true},"pic_phone_number":{"dataType":"string","required":true},"pic_name":{"dataType":"string","required":true},"address":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"shipping_cost":{"dataType":"double","required":true},"code":{"dataType":"string","required":true},"pic_phone_number":{"dataType":"string"},"pic_name":{"dataType":"string"},"address":{"dataType":"string"},"name":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -725,8 +725,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/vendor/search/:query',
-            authenticateMiddleware([{"api_key":[]}]),
+        app.get('/api/vendor/search',
 
             function VendorController_findVendor(request: any, response: any, next: any) {
             const args = {
@@ -773,8 +772,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/api/vendor/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+        app.put('/api/vendor',
 
             function VendorController_updateVendor(request: any, response: any, next: any) {
             const args = {
@@ -798,8 +796,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.delete('/api/vendor/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+        app.delete('/api/vendor',
 
             function VendorController_deleteVendor(request: any, response: any, next: any) {
             const args = {

@@ -1,22 +1,24 @@
 import { Vendor } from "@entity/vendor";
+import * as response from 'src/helper/response'
 import _ from "lodash";
 import { VendorRequestParameter } from "./vendor.interfaces";
 
 export const getAllVendorService = async () => {
   try {
-    return await Vendor.find();
+    const vendors = await Vendor.find()
+    return response.success<Vendor[]>({data:vendors, stat_msg:"SUCCESS"});
   } catch (error) {
-    console.error(error)
+    response.error({ stat_msg:"FAILED", stat_code: 404});
   }
 }
 
 export const findVendorService = async (query: string) => {
   try {
     const vendor = await Vendor.createQueryBuilder()
-      .where('vendor.name LIKE :query', { query })
+      .where('vendor.code LIKE :query', { query })
       .getMany();
     if (_.isEmpty(vendor)) return { message: "Vendor is not found!" };
-    return vendor
+    return response.success<Vendor[]>({data:vendor, stat_msg:"SUCCESS"});
   } catch (error) {
     console.error(error)
   }
@@ -26,6 +28,8 @@ export const addVendorService = async (body: VendorRequestParameter) => {
   try {
     const _newVendor = new Vendor();
     _newVendor.name = body.name;
+    _newVendor.code = body.code
+    _newVendor.shipping_cost = body.shipping_cost
     _newVendor.address = body.address;
     _newVendor.pic_name = body.pic_name;
     _newVendor.pic_phone_number = body.pic_phone_number;
@@ -43,6 +47,8 @@ export const updateVendorService = async (id: string , body: VendorRequestParame
     const vendor = await Vendor.findOneOrFail({ where: { id } });
     vendor['address'] = body.address;
     vendor['name'] = body.name;
+    vendor['code'] = body.code;
+    vendor['shipping_cost'] = body.shipping_cost;
     vendor['pic_name'] = body.pic_name;
     vendor['pic_phone_number'] = body.pic_phone_number;
     await vendor.save();
