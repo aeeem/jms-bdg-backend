@@ -1,11 +1,12 @@
 import { Transaction } from "@entity/transaction";
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { TransactionRequestParameter, Transactionss } from "./transaction.interface";
 import { createTransactionService, deleteTransactionService, getAllTransactionService, searchTransactionService } from "./transaction.service";
 
 
 @Tags('Transaction')
 @Route('/api/transaction')
+@Security('api_key')
 export class TransactionController extends Controller{
   
   @Get('/')

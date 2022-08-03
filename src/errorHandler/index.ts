@@ -1,36 +1,24 @@
-export enum E_ErrorType {
-  E_PRODUCT_NOT_FOUND           = "Product is Not Found",
-  E_DATABASE_ERROR              = 'E_DATABASE_ERROR',
-  E_UNKNOWN_ERROR               = 'E_UNKNOWN_ERROR',
-  E_NOT_FOUND                   = 'E_NOT_FOUND',
-  E_UNAUTHORIZED                = 'E_UNAUTHORIZED',
-  E_FORBIDDEN                   = 'E_FORBIDDEN',
-  E_INTERNAL_SERVER_ERROR       = 'E_INTERNAL_SERVER_ERROR',
-  E_BAD_REQUEST                 = 'E_BAD_REQUEST',
-  ER_DUP_ENTRY                  = 'ER_DUP_ENTRY',
-  E_PRODUCT_OR_VENDOR_NOT_FOUND = 'E_PRODUCT_OR_VENDOR_NOT_FOUND',
-}
+import { E_ErrorType, HTTP_CODE } from "./enums";
 
-export enum HTTP_CODE {
-  OK                    = 200,
-  CREATED               = 201,
-  ACCEPTED              = 202,
-  NO_CONTENT            = 204,
-  BAD_REQUEST           = 400,
-  UNAUTHORIZED          = 401,
-  FORBIDDEN             = 403,
-  NOT_FOUND             = 404,
-  INTERNAL_SERVER_ERROR = 500
-}
 
 export class ErrorHandler extends Error {
   private err: any;
-  public type: E_ErrorType;
+  public type: string;
   public status: number;
   constructor(err: any){
     super()
     this.err = err;
     this.errorTypeParser()
+  }
+
+  getEnumKeyByEnumValue<
+    TEnumKey extends string,
+    TEnumVal extends string | number
+  >(myEnum: { [key in TEnumKey]: TEnumVal }, enumValue: TEnumVal): string {
+    const keys = (Object.keys(myEnum) as TEnumKey[]).filter(
+      (x) => myEnum[x] === enumValue,
+    );
+    return keys.length > 0 ? keys[0] : '';
   }
 
   errorTypeParser() {
@@ -41,6 +29,23 @@ export class ErrorHandler extends Error {
         this.status   = HTTP_CODE.INTERNAL_SERVER_ERROR
         break;
 
+      case E_ErrorType.E_USER_EXISTS:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err);
+        this.message  = E_ErrorType.E_USER_EXISTS
+        this.status   = HTTP_CODE.INTERNAL_SERVER_ERROR
+        break;
+
+      case E_ErrorType.E_LOGIN_WRONG_PASSWORD:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err)
+        this.message  = E_ErrorType.E_LOGIN_WRONG_PASSWORD
+        this.status   = HTTP_CODE.UNAUTHORIZED
+        break;
+      
+      case E_ErrorType.E_LOGIN_WRONG_NIP:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err)
+        this.message  = E_ErrorType.E_LOGIN_WRONG_NIP
+        this.status   = HTTP_CODE.UNAUTHORIZED
+        break;
       default:
         switch(this.err.name){
           case 'QueryFailedError':

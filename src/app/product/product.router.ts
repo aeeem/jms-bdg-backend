@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { ProductRequestParameter } from "./product.interfaces";
 import { createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService } from "./product.service";
 
 @Tags('Products')
 @Route('/api/products')
+@Security('api_key')
 export class ProductsController extends Controller{
 
   @Get('/')
