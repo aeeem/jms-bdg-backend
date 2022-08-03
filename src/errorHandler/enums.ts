@@ -12,6 +12,7 @@ export enum E_ErrorType {
   E_USER_EXISTS                 = 'User already exists',
   E_LOGIN_WRONG_PASSWORD        = 'Password salah!',
   E_LOGIN_WRONG_NIP             = 'No Induk tidak ditemukan',
+  E_VALIDATION_ERROR            = 'E_VALIDATION_ERROR',
 }
 
 export enum HTTP_CODE {

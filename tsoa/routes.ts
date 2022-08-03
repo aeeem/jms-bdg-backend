@@ -38,7 +38,7 @@ const models: TsoaRoute.Models = {
     "RegisterRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "noInduk": {"dataType":"string","required":true},
             "password": {"dataType":"string","required":true},
             "name": {"dataType":"string","required":true},
         },
@@ -726,6 +726,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/vendor/search',
+            authenticateMiddleware([{"api_key":[]}]),
 
             function VendorController_findVendor(request: any, response: any, next: any) {
             const args = {
@@ -773,6 +774,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/vendor',
+            authenticateMiddleware([{"api_key":[]}]),
 
             function VendorController_updateVendor(request: any, response: any, next: any) {
             const args = {
@@ -797,6 +799,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/vendor',
+            authenticateMiddleware([{"api_key":[]}]),
 
             function VendorController_deleteVendor(request: any, response: any, next: any) {
             const args = {

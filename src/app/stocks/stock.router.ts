@@ -12,7 +12,6 @@ export class StockController extends Controller{
     return getAllStocksService()
   }
 
-  @Response(404, 'Stock is not found!')
   @Put('/')
   public async updateStock(@Body() body : StockRequestParameter) {
     return updateStockService(body)

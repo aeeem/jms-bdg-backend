@@ -24,7 +24,7 @@
 			},
 			"RegisterRequestParameter": {
 				"properties": {
-					"email": {
+					"noInduk": {
 						"type": "string"
 					},
 					"password": {
@@ -35,7 +35,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"noInduk",
 					"password",
 					"name"
 				],
@@ -181,10 +181,10 @@
 			}
 		},
 		"securitySchemes": {
-			"access_token": {
+			"api_key": {
 				"type": "apiKey",
 				"name": "access_token",
-				"in": "header",
+				"in": "query",
 				"flow": "implicit",
 				"scopes": {
 					"write:pets": "modify things",
@@ -653,9 +653,6 @@
 								"schema": {}
 							}
 						}
-					},
-					"404": {
-						"description": "Stock is not found!"
 					}
 				},
 				"tags": [
@@ -1267,7 +1264,11 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -1341,7 +1342,7 @@
 		}
 	],
 	"securitydefinitions": {
-		"access_token": {
+		"api_key": {
 			"type": "apiKey",
 			"name": "access_token",
 			"in": "query",

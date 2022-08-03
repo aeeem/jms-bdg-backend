@@ -7,6 +7,7 @@ import { ValidateError } from 'tsoa';
 import { RegisterRoutes } from '../tsoa/routes';
 import { ErrorHandler } from './errorHandler';
 import Database from '@database';
+import { E_ErrorType } from './errorHandler/enums';
 
 const app: Express = express();
 
@@ -50,6 +51,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
   if (err instanceof ValidateError) {
     console.error(`Caught Validation Error for ${req.path}:`, err.fields);
     return res.status(422).json({
+      type: E_ErrorType.E_VALIDATION_ERROR,
       message: "Validation Failed",
       details: err?.fields,
     });
