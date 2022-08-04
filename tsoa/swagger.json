@@ -465,7 +465,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": []
@@ -487,7 +489,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [],
@@ -521,7 +525,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [
@@ -572,7 +578,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [
@@ -605,7 +613,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [

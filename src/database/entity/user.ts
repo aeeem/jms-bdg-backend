@@ -3,7 +3,6 @@ import { Role } from './role';
 
 @Entity({ name: 'user' })
 export class User extends BaseEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -21,5 +20,4 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => Role, (role: Role) => role.user, { onDelete: 'CASCADE' })
   roles: Role[];
-
 }

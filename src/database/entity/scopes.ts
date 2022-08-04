@@ -1,0 +1,117 @@
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne, JoinColumn } from "typeorm";
+import { Role } from "./role";
+import { User } from './user';
+
+@Entity({ name: 'scope' })
+export class Scope extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  // CRUD PRODUCT
+  @Column({ default: false , type: 'bool'})
+  read_product: boolean = false;
+
+  @Column({ default: false , type: 'boolean'})
+  create_product: boolean;
+
+  @Column({ default: false })
+  update_product: boolean;
+
+  @Column({ default: false })
+  delete_product: boolean;
+
+
+  // CRUD STOCKS
+  @Column({ default: false })
+  read_stock: boolean;
+
+  @Column({ default: false })
+  create_stock: boolean;
+
+  @Column({ default: false })
+  update_stock: boolean;
+
+  @Column({ default: false })
+  delete_stock: boolean;
+
+  // CRUD CUSTOMER
+  @Column({ default: false })
+  create_customer: boolean;
+
+  @Column({ default: false })
+  read_customer: boolean;
+
+  @Column({ default: false })
+  update_customer: boolean;
+
+  @Column({ default: false })
+  delete_customer: boolean;
+
+  // CRUD TRANSACTION
+  @Column({ default: false })
+  create_transaction: boolean;
+
+  @Column({ default: false })
+  read_transaction: boolean;
+
+  @Column({ default: false })
+  update_transaction: boolean;
+
+  @Column({ default: false })
+  delete_transaction: boolean;
+
+  // CRUD USER
+  @Column({ default: false })
+  create_user: boolean;
+
+  @Column({ default: false })
+  read_user: boolean;
+
+  @Column({ default: false })
+  update_user: boolean;
+
+  @Column({ default: false })
+  delete_user: boolean;
+
+  // CRUD ROLE
+  @Column({ default: false })
+  create_role: boolean;
+
+  @Column({ default: false })
+  read_role: boolean;
+
+  @Column({ default: false })
+  update_role: boolean;
+
+  @Column({ default: false })
+  delete_role: boolean;
+
+  // CRUD SCOPE
+  @Column({ default: false })
+  create_scope: boolean;
+
+  @Column({ default: false })
+  read_scope: boolean;
+
+  @Column({ default: false })
+  update_scope: boolean;
+
+  @Column({ default: false })
+  delete_scope: boolean;
+
+  // CRUD VENDOR
+  @Column({ default: false })
+  create_vendor: boolean;
+
+  @Column({ default: false })
+  read_vendor: boolean;
+
+  @Column({ default: false })
+  update_vendor: boolean;
+
+  @Column({ default: false })
+  delete_vendor: boolean;
+
+  // @OneToMany(() => User, (user: User) => user.roles, { onDelete: 'CASCADE' })
+  // user: User;
+}

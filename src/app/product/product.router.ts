@@ -4,7 +4,7 @@ import { createProductService, deleteProductService, getAllProductsService, sear
 
 @Tags('Products')
 @Route('/api/products')
-@Security('api_key')
+@Security('api_key',['read:products'])
 export class ProductsController extends Controller{
 
   @Get('/')
