@@ -8,15 +8,24 @@ import { LoginRequestParameter, RegisterRequestParameter } from "./auth.interfac
 
 
 
+/**
+ * It will return a token and user data if the user is found and the password is correct
+ * @param {LoginRequestParameter} payload - LoginRequestParameter
+ * @returns - token
+ *   - id
+ *   - noInduk
+ *   - name
+ *   - role
+ */
 export const loginService = async (payload: LoginRequestParameter) => {
   try {
-    const user = await User.findOne({ where: { email: payload.email } });
+    const user = await User.findOne({ where: { noInduk: payload.noInduk } });
     if (!user) throw E_ErrorType.E_LOGIN_WRONG_NIP;
 
     const isPasswordMatch = await compareHash(payload.password, user.password);
     if (!isPasswordMatch) throw E_ErrorType.E_LOGIN_WRONG_PASSWORD
 
-    const api_token = createToken({ id: user.id, email: user.email, role: user.roles });
+    const api_token = createToken({ id: user.id, noInduk: user.noInduk, role: user.roles });
 
     return response.success({data:{ 
       token: api_token,
@@ -32,9 +41,15 @@ export const loginService = async (payload: LoginRequestParameter) => {
   }
 }
 
+/**
+ * It will register a new user to the database
+ * @param {RegisterRequestParameter} payload - RegisterRequestParameter
+ * @returns - User
+ *   - Error
+ */
 export const registerUserService = async (payload: RegisterRequestParameter) => {
   try {
-    const user = await User.findOne({ where: { email: payload.email } });
+    const user = await User.findOne({ where: { noInduk: payload.noInduk } });
     if (user) throw E_ErrorType.E_USER_EXISTS;
 
     const hashedPassword = await createHashPassword(payload.password)
@@ -42,7 +57,7 @@ export const registerUserService = async (payload: RegisterRequestParameter) => 
     if(hashedPassword instanceof Error) throw hashedPassword.message
 
     const newUser     = new User()
-    newUser.email     = payload.email;
+    newUser.noInduk   = payload.noInduk;
     newUser.name      = payload.name;
     newUser.noInduk   = "undefined"; // TODO
     newUser.password  = hashedPassword

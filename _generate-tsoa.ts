@@ -9,7 +9,13 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
     outputDirectory: "tsoa",
     specVersion: 3,
     securityDefinitions:{
-      access_token: {
+      // jwt: {
+      //   type: "apiKey",
+      //   name: "Authorization",
+      //   in: "header",
+        
+      // },
+      api_key: {
         type: "apiKey",
         name: "access_token",
         in: "header",
@@ -19,19 +25,42 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
             "read:pets": "read things"
         }
       }
+      // tsoa_auth: {
+      //   type: "oauth2",
+      //   authorizationUrl: "http://swagger.io/api/oauth/dialog",
+      //   flow: "implicit",
+      //   scopes: {
+      //       "write:pets": "modify things",
+      //       "read:pets": "read things"
+      //   }
+      // }
     },
     spec:{
       securitydefinitions: {
-        access_token: {
+        // jwt: {
+        //   type: "apiKey",
+        //   name: "Authorization",
+        //   in: "header"
+        // },
+        api_key: {
           type: "apiKey",
           name: "access_token",
-          in: "query",
+          in: "header",
           flow: "implicit",
           scopes: {
               "write:pets": "modify things",
               "read:pets": "read things"
           }
         }
+        // tsoa_auth: {
+        //   type: "oauth2",
+        //   authorizationUrl: "http://swagger.io/api/oauth/dialog",
+        //   flow: "implicit",
+        //   scopes: {
+        //       "write:pets": "modify things",
+        //       "read:pets": "read things"
+        //   }
+        // }
       }
     }
   };

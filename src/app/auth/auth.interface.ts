@@ -1,10 +1,10 @@
 export interface LoginRequestParameter{
-  email: string;
+  noInduk: string;
   password: string;
 }
 
 export interface RegisterRequestParameter{
-  email: string;
+  noInduk: string;
   password: string;
   name: string;
 }

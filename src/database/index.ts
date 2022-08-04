@@ -9,7 +9,7 @@ export default class Database {
 
   public async connectToDB(): Promise<void> {
     await createConnection({
-      type: envString("mysql", "mysql"),
+      type: envString("postgres", "postgres"),
       host: envString(process.env.DATABASE_HOST!, process.env.DEV_DATABASE_HOST!),
       port: envString(Number(process.env.DATABASE_PORT!), Number(process.env.DEV_DATABASE_PORT!)),
       username: envString(process.env.DATABASE_USERNAME!, process.env.DEV_DATABASE_USERNAME!),

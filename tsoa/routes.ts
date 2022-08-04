@@ -29,7 +29,7 @@ const models: TsoaRoute.Models = {
     "LoginRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "noInduk": {"dataType":"string","required":true},
             "password": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -38,7 +38,7 @@ const models: TsoaRoute.Models = {
     "RegisterRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "noInduk": {"dataType":"string","required":true},
             "password": {"dataType":"string","required":true},
             "name": {"dataType":"string","required":true},
         },
@@ -247,7 +247,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/products',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:products"]}]),
 
             function ProductsController_getAllProducts(request: any, response: any, next: any) {
             const args = {
@@ -270,7 +270,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/products',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:products"]}]),
 
             function ProductsController_createProduct(request: any, response: any, next: any) {
             const args = {
@@ -294,7 +294,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/products/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:products"]}]),
 
             function ProductsController_updateProduct(request: any, response: any, next: any) {
             const args = {
@@ -319,7 +319,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/products/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:products"]}]),
 
             function ProductsController_deleteProduct(request: any, response: any, next: any) {
             const args = {
@@ -343,7 +343,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/products/search/:query',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:products"]}]),
 
             function ProductsController_searchProduct(request: any, response: any, next: any) {
             const args = {

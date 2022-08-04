@@ -8,7 +8,7 @@
 		"schemas": {
 			"LoginRequestParameter": {
 				"properties": {
-					"email": {
+					"noInduk": {
 						"type": "string"
 					},
 					"password": {
@@ -16,7 +16,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"noInduk",
 					"password"
 				],
 				"type": "object",
@@ -24,7 +24,7 @@
 			},
 			"RegisterRequestParameter": {
 				"properties": {
-					"email": {
+					"noInduk": {
 						"type": "string"
 					},
 					"password": {
@@ -35,7 +35,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"noInduk",
 					"password",
 					"name"
 				],
@@ -181,7 +181,7 @@
 			}
 		},
 		"securitySchemes": {
-			"access_token": {
+			"api_key": {
 				"type": "apiKey",
 				"name": "access_token",
 				"in": "header",
@@ -449,7 +449,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": []
@@ -471,7 +473,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [],
@@ -505,7 +509,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [
@@ -556,7 +562,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [
@@ -589,7 +597,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:products"
+						]
 					}
 				],
 				"parameters": [
@@ -637,9 +647,6 @@
 								"schema": {}
 							}
 						}
-					},
-					"404": {
-						"description": "Stock is not found!"
 					}
 				},
 				"tags": [
@@ -1329,10 +1336,10 @@
 		}
 	],
 	"securitydefinitions": {
-		"access_token": {
+		"api_key": {
 			"type": "apiKey",
 			"name": "access_token",
-			"in": "query",
+			"in": "header",
 			"flow": "implicit",
 			"scopes": {
 				"write:pets": "modify things",
