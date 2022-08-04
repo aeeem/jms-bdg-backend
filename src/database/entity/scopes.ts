@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role";
 import { User } from './user';
 
@@ -112,6 +112,9 @@ export class Scope extends BaseEntity {
   @Column({ default: false })
   delete_vendor: boolean;
 
-  // @OneToMany(() => User, (user: User) => user.roles, { onDelete: 'CASCADE' })
-  // user: User;
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
