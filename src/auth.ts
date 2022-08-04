@@ -14,8 +14,6 @@ export function expressAuthentication(
         token = String(headerToken);
       }
       
-      console.log(request.headers)
-      
       return new Promise((resolve, reject) => {
 
         if (!token)  reject(new Error("No token provided"));
