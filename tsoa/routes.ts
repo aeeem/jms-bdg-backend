@@ -52,7 +52,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"name":{"dataType":"string","required":true},"sku":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"stok":{"dataType":"double","required":true},"hargaJual":{"dataType":"double","required":true},"hargaModal":{"dataType":"double","required":true},"tanggalMasuk":{"dataType":"datetime","required":true},"vendorId":{"dataType":"string","required":true},"name":{"dataType":"string","required":true},"sku":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StockRequestParameter": {

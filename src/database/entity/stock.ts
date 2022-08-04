@@ -14,12 +14,15 @@ export class Stock extends BaseEntity {
   
   @Column()
   buy_price: number;
+
+  @Column()
+  sell_price: number;
   
   @OneToOne(() => Product, (product: Product) => product.id, { onDelete: 'CASCADE' })
   @JoinColumn()
   product: Product;
 
-  @OneToOne(() => Vendor, (vendor: Vendor) => vendor.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => Vendor)
   @JoinColumn()
   vendor: Vendor;
 

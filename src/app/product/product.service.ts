@@ -1,4 +1,6 @@
 import { Product } from "@entity/product";
+import { Stock } from "@entity/stock";
+import { Vendor } from "@entity/vendor";
 import { E_ErrorType } from "src/errorHandler/enums";
 import { ErrorHandler } from "../../errorHandler";
 import { ProductRequestParameter } from "./product.interfaces";
@@ -16,14 +18,33 @@ export const getAllProductsService = async () => {
 
 export const createProductService = async (payload: ProductRequestParameter) => {
   try {
-    const _newProduct         = new Product();
-    _newProduct['name']       = payload.name;
-    _newProduct['sku']        = payload.sku
-    await _newProduct.save();
-    return await Product.findOne({
-      where: { name: payload.name }
-    });
+    const vendor                            = await Vendor.findOne({where: {id: payload.vendorId}});
+    console.log("payload  ", payload)
+    if(!vendor) throw E_ErrorType.E_VENDOR_NOT_FOUND; 
+
+    const query = await Product.createQueryBuilder()
+      .insert()
+      .into(Product)
+      .values({
+        sku: payload.sku,
+        name: payload.name,
+        arrival_date: payload.tanggalMasuk,
+        stocks: {
+          total_stock: payload.stok,
+          buy_price: payload.hargaModal,
+          sell_price: payload.hargaJual
+          
+        }
+      })
+      .execute()
+    
+    
+    console.log(query)
+    // return await Product.findOne({
+    //   where: { name: payload.name }
+    // });
   } catch (e:any) {
+    console.log(e)
     throw new ErrorHandler(e); 
   }
 }

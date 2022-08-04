@@ -9,10 +9,12 @@ export enum E_ErrorType {
   E_BAD_REQUEST                 = 'E_BAD_REQUEST',
   ER_DUP_ENTRY                  = 'ER_DUP_ENTRY',
   E_PRODUCT_OR_VENDOR_NOT_FOUND = 'E_PRODUCT_OR_VENDOR_NOT_FOUND',
+  E_VENDOR_NOT_FOUND            = 'Partai tidak ditemukan.',
   E_USER_EXISTS                 = 'User already exists',
   E_LOGIN_WRONG_PASSWORD        = 'Password salah!',
   E_LOGIN_WRONG_NIP             = 'No Induk tidak ditemukan',
   E_VALIDATION_ERROR            = 'E_VALIDATION_ERROR',
+
 }
 
 export enum HTTP_CODE {

@@ -59,6 +59,25 @@
 			},
 			"ProductRequestParameter": {
 				"properties": {
+					"stok": {
+						"type": "number",
+						"format": "double"
+					},
+					"hargaJual": {
+						"type": "number",
+						"format": "double"
+					},
+					"hargaModal": {
+						"type": "number",
+						"format": "double"
+					},
+					"tanggalMasuk": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"vendorId": {
+						"type": "string"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -67,6 +86,11 @@
 					}
 				},
 				"required": [
+					"stok",
+					"hargaJual",
+					"hargaModal",
+					"tanggalMasuk",
+					"vendorId",
 					"name",
 					"sku"
 				],
@@ -475,13 +499,8 @@
 			"post": {
 				"operationId": "CreateProduct",
 				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
+					"204": {
+						"description": "No content"
 					}
 				},
 				"tags": [
