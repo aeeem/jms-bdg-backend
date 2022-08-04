@@ -1,3 +1,4 @@
+import * as response from 'src/helper/response'
 import { User } from "@entity/user";
 import { ErrorHandler } from "src/errorHandler";
 import { E_ErrorType } from "src/errorHandler/enums";
@@ -17,15 +18,16 @@ export const loginService = async (payload: LoginRequestParameter) => {
 
     const api_token = createToken({ id: user.id, email: user.email, role: user.roles });
 
-    return { 
+    return response.success({data:{ 
       token: api_token,
       id: user.id,
       noInduk: user.noInduk,
       name: user.name,
       role: user.roles
-    };
+    }, stat_msg:"SUCCESS"});
     
   } catch (e) {
+    console.log(e)
     throw new ErrorHandler(e)
   }
 }
@@ -42,6 +44,7 @@ export const registerUserService = async (payload: RegisterRequestParameter) => 
     const newUser     = new User()
     newUser.email     = payload.email;
     newUser.name      = payload.name;
+    newUser.noInduk   = "undefined"; // TODO
     newUser.password  = hashedPassword
 
     await newUser.save();

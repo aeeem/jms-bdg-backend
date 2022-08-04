@@ -9,8 +9,8 @@ export function expressAuthentication(
 ): Promise<any> {
     if (securityName === "api_key") {
       let token:string;
-      if (request.query && request.query.access_token) {
-        token = String(request.query.access_token);
+      if (request.headers && request.headers.authorization) {
+        token = String(request.headers.authorization);
       }
   
       

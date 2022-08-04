@@ -206,23 +206,7 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"role": {},
-										"name": {},
-										"noInduk": {},
-										"id": {},
-										"token": {}
-									},
-									"required": [
-										"role",
-										"name",
-										"noInduk",
-										"id",
-										"token"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -1267,7 +1251,11 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
