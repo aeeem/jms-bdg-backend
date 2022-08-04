@@ -18,13 +18,13 @@ import { LoginRequestParameter, RegisterRequestParameter } from "./auth.interfac
  */
 export const loginService = async (payload: LoginRequestParameter) => {
   try {
-    const user = await User.findOne({ where: { email: payload.email } });
+    const user = await User.findOne({ where: { noInduk: payload.noInduk } });
     if (!user) throw E_ErrorType.E_LOGIN_WRONG_NIP;
 
     const isPasswordMatch = await compareHash(payload.password, user.password);
     if (!isPasswordMatch) throw E_ErrorType.E_LOGIN_WRONG_PASSWORD
 
-    const api_token = createToken({ id: user.id, email: user.email, role: user.roles });
+    const api_token = createToken({ id: user.id, noInduk: user.noInduk, role: user.roles });
 
     return { 
       token     : api_token,
@@ -47,7 +47,7 @@ export const loginService = async (payload: LoginRequestParameter) => {
  */
 export const registerUserService = async (payload: RegisterRequestParameter) => {
   try {
-    const user = await User.findOne({ where: { email: payload.noInduk } });
+    const user = await User.findOne({ where: { noInduk: payload.noInduk } });
     if (user) throw E_ErrorType.E_USER_EXISTS;
 
     const hashedPassword = await createHashPassword(payload.password)

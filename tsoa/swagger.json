@@ -8,7 +8,7 @@
 		"schemas": {
 			"LoginRequestParameter": {
 				"properties": {
-					"email": {
+					"noInduk": {
 						"type": "string"
 					},
 					"password": {
@@ -16,7 +16,7 @@
 					}
 				},
 				"required": [
-					"email",
+					"noInduk",
 					"password"
 				],
 				"type": "object",
@@ -184,7 +184,7 @@
 			"api_key": {
 				"type": "apiKey",
 				"name": "access_token",
-				"in": "query",
+				"in": "header",
 				"flow": "implicit",
 				"scopes": {
 					"write:pets": "modify things",
@@ -1345,7 +1345,7 @@
 		"api_key": {
 			"type": "apiKey",
 			"name": "access_token",
-			"in": "query",
+			"in": "header",
 			"flow": "implicit",
 			"scopes": {
 				"write:pets": "modify things",

@@ -29,7 +29,7 @@ const models: TsoaRoute.Models = {
     "LoginRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "email": {"dataType":"string","required":true},
+            "noInduk": {"dataType":"string","required":true},
             "password": {"dataType":"string","required":true},
         },
         "additionalProperties": false,

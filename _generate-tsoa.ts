@@ -18,7 +18,7 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
       api_key: {
         type: "apiKey",
         name: "access_token",
-        in: "query",
+        in: "header",
         flow: "implicit",
         scopes: {
             "write:pets": "modify things",
@@ -45,7 +45,7 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
         api_key: {
           type: "apiKey",
           name: "access_token",
-          in: "query",
+          in: "header",
           flow: "implicit",
           scopes: {
               "write:pets": "modify things",

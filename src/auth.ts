@@ -8,11 +8,13 @@ export function expressAuthentication(
   scopes?: string[]
 ): Promise<any> {
     if (securityName === "api_key") {
+      const headerToken = request.headers['access_token']
       let token:string;
-      if (request.query && request.query.access_token) {
-        token = String(request.query.access_token);
+      if (request.headers && headerToken) {
+        token = String(headerToken);
       }
-  
+      
+      console.log(request.headers)
       
       return new Promise((resolve, reject) => {
 

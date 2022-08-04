@@ -1,5 +1,5 @@
 export interface LoginRequestParameter{
-  email: string;
+  noInduk: string;
   password: string;
 }
 

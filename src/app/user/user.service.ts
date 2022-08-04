@@ -3,7 +3,7 @@ import { User } from '@entity/user';
 
 export const getAllUserService = async () => {
   try {
-    const query:string = `SELECT u.id, u.name, u.noInduk, u.email, r.role as role FROM user u LEFT JOIN role r ON u.roleId = r.id`;
+    const query:string = `SELECT u.id, u.name, u.noInduk, u.email, r.role as role FROM user u LEFT JOIN role r ON u.rolesId = r.id`;
     const users = await User.query(query)
     return users;
   } catch (e) {
