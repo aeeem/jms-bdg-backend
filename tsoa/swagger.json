@@ -1160,7 +1160,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:vendor"
+						]
 					}
 				],
 				"parameters": []
@@ -1182,7 +1184,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:vendor"
+						]
 					}
 				],
 				"parameters": [],
@@ -1214,7 +1218,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:vendor"
+						]
 					}
 				],
 				"parameters": [
@@ -1265,7 +1271,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:vendor"
+						]
 					}
 				],
 				"parameters": [
@@ -1298,7 +1306,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:vendor"
+						]
 					}
 				],
 				"parameters": [
