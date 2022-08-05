@@ -810,7 +810,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:transaction"
+						]
 					}
 				],
 				"parameters": []
@@ -832,7 +834,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:transaction"
+						]
 					}
 				],
 				"parameters": [],
@@ -861,7 +865,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -912,7 +918,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -945,7 +953,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -978,7 +988,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:user"
+						]
 					}
 				],
 				"parameters": []
@@ -1002,7 +1014,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:user"
+						]
 					}
 				],
 				"parameters": [],
@@ -1051,7 +1065,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:user"
+						]
 					}
 				],
 				"parameters": [
@@ -1109,7 +1125,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:user"
+						]
 					}
 				],
 				"parameters": [

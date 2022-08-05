@@ -487,7 +487,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:transaction"]}]),
 
             function TransactionController_getAllTransaction(request: any, response: any, next: any) {
             const args = {
@@ -510,7 +510,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/transaction',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["create:transaction"]}]),
 
             function TransactionController_createTransaction(request: any, response: any, next: any) {
             const args = {
@@ -534,7 +534,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/transaction/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["update:transaction"]}]),
 
             function TransactionController_updateTransaction(request: any, response: any, next: any) {
             const args = {
@@ -559,7 +559,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/transaction/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["delete:transaction"]}]),
 
             function TransactionController_deleteTransaction(request: any, response: any, next: any) {
             const args = {
@@ -583,7 +583,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction/search/:query',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:transaction"]}]),
 
             function TransactionController_searchTransaction(request: any, response: any, next: any) {
             const args = {
@@ -607,7 +607,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/user-permission/get-all',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:user"]}]),
 
             function UserPermissionController_getAllUser(request: any, response: any, next: any) {
             const args = {
@@ -630,7 +630,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/user-permission/create',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["create:user"]}]),
 
             function UserPermissionController_createUser(request: any, response: any, next: any) {
             const args = {
@@ -654,7 +654,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/user-permission/update/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["update:user"]}]),
 
             function UserPermissionController_updateUser(request: any, response: any, next: any) {
             const args = {
@@ -679,7 +679,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/user-permission/delete/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["delete:user"]}]),
 
             function UserPermissionController_deleteUser(request: any, response: any, next: any) {
             const args = {

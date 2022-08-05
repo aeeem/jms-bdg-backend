@@ -10,25 +10,30 @@ import { createTransactionService, deleteTransactionService, getAllTransactionSe
 export class TransactionController extends Controller{
   
   @Get('/')
+  @Security('api_key',['read:transaction'])
   public async getAllTransaction() {
     return getAllTransactionService()
   }
 
   @Post('/')
+  @Security('api_key',['create:transaction'])
   public async createTransaction(@Body() payload: TransactionRequestParameter) {
     return createTransactionService(payload);
   }
   
   @Put('/{id}/')
+  @Security('api_key',['update:transaction'])
   public async updateTransaction(@Query('id') id: string, @Body() payload: TransactionRequestParameter) {
   }
 
   @Delete('/{id}/')
+  @Security('api_key',['delete:transaction'])
   public async deleteTransaction(@Query('id') id: string) {
     return deleteTransactionService(id);
   }
 
   @Get('/search/:query')
+  @Security('api_key', ['read:transaction'])
   public async searchTransaction(@Query('query') query: string) {
     return searchTransactionService(query);
   }
