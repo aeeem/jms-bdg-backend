@@ -276,7 +276,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:customer"
+						]
 					}
 				],
 				"parameters": []
@@ -298,7 +300,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:customer"
+						]
 					}
 				],
 				"parameters": [],
@@ -332,7 +336,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:customer"
+						]
 					}
 				],
 				"parameters": [
@@ -365,7 +371,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:customer"
+						]
 					}
 				],
 				"parameters": [
@@ -416,7 +424,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:customer"
+						]
 					}
 				],
 				"parameters": [

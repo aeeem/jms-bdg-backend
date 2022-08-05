@@ -127,7 +127,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:customer"]}]),
 
             function CustomerController_getAllCustomer(request: any, response: any, next: any) {
             const args = {
@@ -150,7 +150,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer/search/:query',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:customer"]}]),
 
             function CustomerController_searchCustomer(request: any, response: any, next: any) {
             const args = {
@@ -174,7 +174,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["create:customer"]}]),
 
             function CustomerController_createCustomer(request: any, response: any, next: any) {
             const args = {
@@ -198,7 +198,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/customer/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["update:customer"]}]),
 
             function CustomerController_updateCustomer(request: any, response: any, next: any) {
             const args = {
@@ -223,7 +223,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/customer/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["delete:customer"]}]),
 
             function CustomerController_deleteCustomer(request: any, response: any, next: any) {
             const args = {

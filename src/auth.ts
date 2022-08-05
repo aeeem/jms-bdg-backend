@@ -11,47 +11,38 @@ export async function expressAuthentication(
   scopes?: string[]
 ): Promise<any> {
   try {
-    if(securityName === "api_key"){
+    if (securityName === "api_key") {
       const headerToken = request.headers['access_token']
-      let token:string = ""
-      if(request.headers && headerToken){
+      let token: string = ""
+      if (request.headers && headerToken) {
         token = String(headerToken)
       }
-      
-      if(!token) throw "No token provided"
-
-      const decoded:any = await verifyToken(token)
-
+      if (!token) throw "No token provided"
+      const decoded: any = await verifyToken(token)
       if (decoded instanceof Error) throw decoded.message
-
       const user = await User.findOne({
         where: { id: decoded.id },
         relations: ['role', 'role.scopes']
       });
-      if(!user) {
+      if (!user) {
         throw E_ErrorType.E_USER_NOT_FOUND
       }
-      const userScopes:any = user.role.scopes;
+      const userScopes: any = user.role.scopes;
       const userScopeKeys = Object.keys(userScopes)
-            .filter(key => !['id','created_at','updated_at'].includes(key) && userScopes[key] === true)
-            .map(scope=> (scope.replace(/_/g,":")))
-     
+        .filter(key => !['id', 'created_at', 'updated_at'].includes(key) && userScopes[key] === true)
+        .map(scope => (scope.replace(/_/g, ":")))
+
       const isScopeValid = scopes?.every(scope => userScopeKeys.includes(scope))
-
-      if(!isScopeValid) throw E_ErrorType.E_USER_IS_NOT_AUTHORIZED
-
-      return new Promise((resolve,reject)=> {
+      if (!isScopeValid) throw E_ErrorType.E_USER_IS_NOT_AUTHORIZED
+      return new Promise((resolve, reject) => {
         resolve(decoded)
       })
     }
-    
-  } catch (error:any) {
-    return new Promise((resolve,reject) => {
+  } catch (error: any) {
+    return new Promise((resolve, reject) => {
       reject(new Error(error))
     })
   }
- 
-
-  }
+}
 
 
