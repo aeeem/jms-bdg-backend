@@ -642,7 +642,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:stock"
+						]
 					}
 				],
 				"parameters": []
@@ -664,7 +666,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:stock"
+						]
 					}
 				],
 				"parameters": [],
@@ -693,7 +697,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:stock"
+						]
 					}
 				],
 				"parameters": [
@@ -724,7 +730,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:stock"
+						]
 					}
 				],
 				"parameters": [
@@ -767,7 +775,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:stock"
+						]
 					}
 				],
 				"parameters": [

@@ -367,7 +367,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:stock"]}]),
 
             function StockController_getAllStock(request: any, response: any, next: any) {
             const args = {
@@ -390,7 +390,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/stock',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["update:stock"]}]),
 
             function StockController_updateStock(request: any, response: any, next: any) {
             const args = {
@@ -414,7 +414,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/stock/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["delete:stock"]}]),
 
             function StockController_deleteStock(request: any, response: any, next: any) {
             const args = {
@@ -438,7 +438,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.patch('/api/stock/:id',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["update:stock"]}]),
 
             function StockController_patchStock(request: any, response: any, next: any) {
             const args = {
@@ -463,7 +463,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock/search/:query',
-            authenticateMiddleware([{"api_key":[]}]),
+            authenticateMiddleware([{"api_key":["read:stock"]}]),
 
             function StockController_findStock(request: any, response: any, next: any) {
             const args = {
