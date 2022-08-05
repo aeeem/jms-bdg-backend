@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn } from "typeorm";
 import { Scope } from "./scopes";
 import { User } from './user';
 
@@ -14,6 +14,6 @@ export class Role extends BaseEntity {
   @JoinColumn()
   scopes: Scope;
 
-  @OneToMany(() => User, (user: User) => user.roles, { onDelete: 'CASCADE' })
+  @OneToOne(() => User)
   user: User;
 }

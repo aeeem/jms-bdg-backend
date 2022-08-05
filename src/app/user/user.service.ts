@@ -1,11 +1,23 @@
 import { Role } from '@entity/role';
 import { User } from '@entity/user';
+import { scopeFormatter } from 'src/helper/scopeHelper';
 
 export const getAllUserService = async () => {
   try {
-    const query:string = `SELECT u.id, u.name, u.noInduk, u.email, r.role as role FROM user u LEFT JOIN role r ON u.rolesId = r.id`;
-    const users = await User.query(query)
-    return users;
+    const users = await User.find( { 
+      relations: ['role', 'role.scopes']
+    });
+    const formattedUsers = users.map(user => {
+      const scopes = scopeFormatter(user.role.scopes)
+      return {
+        id: user.id,
+        noInduk: user.noInduk,
+        name: user.name,
+        role: user.role.role,
+        scopes: scopes
+      }
+    })
+    return formattedUsers;
   } catch (e) {
     console.error(e);
   }
@@ -41,16 +53,16 @@ export const createUserService = async ({ email, roles }: { email: string, roles
 
 export const updateUserService = async ({ id, email, roles }: { id: number, email: string, roles: string[] }) => {
   try {
-    const _updatedUser = await User.findOne({ where: { id }, relations: ['roles'] });
+    const _updatedUser = await User.findOne({ where: { id }, relations: ['role'] });
     if (!_updatedUser) return { message: "User is not found!" };
     _updatedUser['email'] = email;
-    await Promise.all(_updatedUser['roles']?.map(async (_role) => {
-      try {
-        return _role.remove();
-      } catch (e) {
-        console.error(e);
-      }
-    }));
+    // await Promise.all(_updatedUser['role']?.map(async (_role) => {
+    //   try {
+    //     return _role.remove();
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }));
     await _updatedUser.save();
 
     await Promise.all(roles.map(async (_role) => {
