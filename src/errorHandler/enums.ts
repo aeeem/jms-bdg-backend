@@ -16,6 +16,7 @@ export enum E_ErrorType {
   E_VALIDATION_ERROR            = 'E_VALIDATION_ERROR',
   E_USER_NOT_FOUND              = 'User not found',
   E_USER_IS_NOT_AUTHORIZED      = 'User is not authorized',
+
 }
 
 export enum HTTP_CODE {
