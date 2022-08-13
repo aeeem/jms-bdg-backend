@@ -8,7 +8,7 @@ import { ProductRequestParameter } from "./product.interfaces";
 export const getAllProductsService = async () => {
   try {
     return await Product.find({
-      relations: ["stocks",'stocks.vendor']
+      relations: ["stock",'stock.vendor']
     });
   } catch (e) {
     console.log(e)

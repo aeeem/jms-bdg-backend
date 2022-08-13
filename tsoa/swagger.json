@@ -649,6 +649,47 @@
 				]
 			}
 		},
+		"/api/roles": {
+			"get": {
+				"operationId": "GetAllRoles",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Roles"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:role"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/statistic/dashboard": {
+			"get": {
+				"operationId": "GetDashboardStats",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Statistic"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/api/stock": {
 			"get": {
 				"operationId": "GetAllStock",
