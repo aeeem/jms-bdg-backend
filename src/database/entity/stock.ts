@@ -15,7 +15,7 @@ export class Stock extends BaseEntity {
   @Column()
   buy_price: number;
 
-  @Column()
+  @Column({ nullable: true })
   sell_price: number;
 
   @OneToOne(() => Product)
