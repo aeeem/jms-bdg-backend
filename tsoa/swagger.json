@@ -231,23 +231,7 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"role": {},
-										"name": {},
-										"noInduk": {},
-										"id": {},
-										"token": {}
-									},
-									"required": [
-										"role",
-										"name",
-										"noInduk",
-										"id",
-										"token"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -317,7 +301,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:customer"
+						]
 					}
 				],
 				"parameters": []
@@ -339,7 +325,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:customer"
+						]
 					}
 				],
 				"parameters": [],
@@ -373,7 +361,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:customer"
+						]
 					}
 				],
 				"parameters": [
@@ -406,7 +396,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:customer"
+						]
 					}
 				],
 				"parameters": [
@@ -457,7 +449,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:customer"
+						]
 					}
 				],
 				"parameters": [
@@ -491,7 +485,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:products"
+							"read:product"
 						]
 					}
 				],
@@ -515,7 +509,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:products"
+							"write:product"
 						]
 					}
 				],
@@ -551,7 +545,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:products"
+							"update:product"
 						]
 					}
 				],
@@ -604,7 +598,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:products"
+							"delete:product"
 						]
 					}
 				],
@@ -639,7 +633,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:products"
+							"read:product"
 						]
 					}
 				],
@@ -714,7 +708,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:stock"
+						]
 					}
 				],
 				"parameters": []
@@ -736,7 +732,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:stock"
+						]
 					}
 				],
 				"parameters": [],
@@ -765,7 +763,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:stock"
+						]
 					}
 				],
 				"parameters": [
@@ -796,7 +796,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:stock"
+						]
 					}
 				],
 				"parameters": [
@@ -839,7 +841,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:stock"
+						]
 					}
 				],
 				"parameters": [
@@ -872,7 +876,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:transaction"
+						]
 					}
 				],
 				"parameters": []
@@ -894,7 +900,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:transaction"
+						]
 					}
 				],
 				"parameters": [],
@@ -923,7 +931,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -974,7 +984,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -1007,7 +1019,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:transaction"
+						]
 					}
 				],
 				"parameters": [
@@ -1040,7 +1054,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:user"
+						]
 					}
 				],
 				"parameters": []
@@ -1064,7 +1080,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:user"
+						]
 					}
 				],
 				"parameters": [],
@@ -1113,7 +1131,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:user"
+						]
 					}
 				],
 				"parameters": [
@@ -1171,7 +1191,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:user"
+						]
 					}
 				],
 				"parameters": [
@@ -1204,7 +1226,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:vendor"
+						]
 					}
 				],
 				"parameters": []
@@ -1226,7 +1250,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"create:vendor"
+						]
 					}
 				],
 				"parameters": [],
@@ -1258,7 +1284,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"update:vendor"
+						]
 					}
 				],
 				"parameters": [
@@ -1309,7 +1337,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"delete:vendor"
+						]
 					}
 				],
 				"parameters": [
@@ -1342,7 +1372,9 @@
 				],
 				"security": [
 					{
-						"api_key": []
+						"api_key": [
+							"read:vendor"
+						]
 					}
 				],
 				"parameters": [

@@ -1,60 +1,50 @@
 import * as express from "express";
 import { verifyToken } from "./helper/jwt";
-import jwt from 'jsonwebtoken'
+import { User } from "@entity/user";
+import { E_ErrorType } from "./errorHandler/enums";
 
-export function expressAuthentication(
+
+
+export async function expressAuthentication(
   request: express.Request,
   securityName: string,
   scopes?: string[]
 ): Promise<any> {
-
+  try {
     if (securityName === "api_key") {
       const headerToken = request.headers['access_token']
-      let token:string;
+      let token: string = ""
       if (request.headers && headerToken) {
-        token = String(headerToken);
+        token = String(headerToken)
       }
-      
+      if (!token) throw "No token provided"
+      const decoded: any = await verifyToken(token)
+      if (decoded instanceof Error) throw decoded.message
+      const user = await User.findOne({
+        where: { id: decoded.id },
+        relations: ['role', 'role.scopes']
+      });
+      if (!user) {
+        throw E_ErrorType.E_USER_NOT_FOUND
+      }
+      const userScopes: any = user.role.scopes;
+      const userScopeKeys = Object.keys(userScopes)
+        .filter(key => !['id', 'created_at', 'updated_at'].includes(key) && userScopes[key] === true)
+        .map(scope => (scope.replace(/_/g, ":")))
+
+      const isScopeValid = scopes?.every(scope => userScopeKeys.includes(scope))
+      if (!isScopeValid) throw E_ErrorType.E_USER_IS_NOT_AUTHORIZED
       return new Promise((resolve, reject) => {
-
-        if (!token)  reject(new Error("No token provided"));
-        jwt.verify(token, process.env.JWT_SECRET!, (err, decoded) => {
-          if (err)  reject(new Error("Token is unauthorized"));
-           resolve(decoded);
-        })
+        resolve(decoded)
       })
-      
-
     }
-    
-    return Promise.reject(new Error("Unknown security name"))
-
-  // if (securityName === "jwt") {
-  //   const token =
-  //     request.body.token ||
-  //     request.query.token ||
-  //     request.headers["x-access-token"];
-
-  //   return new Promise((resolve, reject) => {
-  //     if (!token) {
-  //       reject(new Error("No token provided"));
-  //     }
-  //     jwt.verify(token, "[secret]", function (err: any, decoded: any) {
-  //       if (err) {
-  //         reject(err);
-  //       } else {
-  //         // Check if JWT contains all required scopes
-  //         if(scopes && scopes.length > 0) {
-  //           for (let scope of scopes) {
-  //             if (!decoded.scopes.includes(scope)) {
-  //               reject(new Error("JWT does not contain required scope."));
-  //             }
-  //           }
-  //           resolve(decoded);
-  //         }else reject(new Error("JWT does not contain required scope.")) 
-  //       }
-  //     });
-  //   });
-  // }
-
+  } catch (error: any) {
+    return new Promise((resolve, reject) => {
+      reject(new Error(error))
+    })
+  }
 }
+
+
+
+

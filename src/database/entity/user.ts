@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity, ManyToOne, OneToOne, JoinColumn } from "typeorm";
 import { Role } from './role';
 
 @Entity({ name: 'user' })
@@ -18,6 +18,7 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @ManyToOne(() => Role, (role: Role) => role.user, { onDelete: 'CASCADE' })
-  roles: Role[];
+  @OneToOne(() => Role)
+  @JoinColumn()
+  role: Role;
 }

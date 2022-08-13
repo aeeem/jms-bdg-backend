@@ -6,10 +6,8 @@ export const createToken = (payload: object) => {
 
 export const verifyToken = (token: string) => {
   try {
-    jwt.verify(token, process.env.JWT_SECRET!, (err, decoded) => {
-      if (err) throw Error(err.message);
-      return decoded;
-    })
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    return decoded
   } catch (error) {
     return error
   }

@@ -1,8 +1,11 @@
 import { User } from "@entity/user";
+import { SUCCESS_MESSAGE } from "src/constants/languageEnums";
 import { ErrorHandler } from "src/errorHandler";
-import { E_ErrorType } from "src/errorHandler/enums";
+import { E_ErrorType, HTTP_CODE } from "src/errorHandler/enums";
 import { compareHash, createHashPassword } from "src/helper/bcrypt";
 import { createToken } from "src/helper/jwt";
+import makeResponse from "src/helper/response";
+import { scopeFormatter } from "src/helper/scopeHelper";
 import { LoginRequestParameter, RegisterRequestParameter } from "./auth.interface";
 
 
@@ -18,23 +21,35 @@ import { LoginRequestParameter, RegisterRequestParameter } from "./auth.interfac
  */
 export const loginService = async (payload: LoginRequestParameter) => {
   try {
-    const user = await User.findOne({ where: { noInduk: payload.noInduk } });
+    const user = await User.findOne({ 
+      where: { noInduk: payload.noInduk },
+      relations: ['role', 'role.scopes']
+    });
     if (!user) throw E_ErrorType.E_LOGIN_WRONG_NIP;
 
     const isPasswordMatch = await compareHash(payload.password, user.password);
     if (!isPasswordMatch) throw E_ErrorType.E_LOGIN_WRONG_PASSWORD
 
-    const api_token = createToken({ id: user.id, noInduk: user.noInduk, role: user.roles });
+    const userScope = scopeFormatter(user.role.scopes);
 
-    return { 
-      token     : api_token,
-      id        : user.id,
-      noInduk   : user.noInduk,
-      name      : user.name,
-      role      : user.roles
-    };
+    const api_token = createToken({ id: user.id, noInduk: user.noInduk });
+
+    return makeResponse.success({
+      data: {
+        token     : api_token,
+        id        : user.id,
+        noInduk   : user.noInduk,
+        name      : user.name,
+        role      : user.role.role,
+        scopes    : userScope
+      },
+      stat_code: HTTP_CODE.OK,
+      stat_msg : SUCCESS_MESSAGE.LOGIN_SUCCESS
+    })
+    
 
   } catch (e) {
+    console.log(e)
     throw new ErrorHandler(e)
   }
 }
@@ -61,7 +76,11 @@ export const registerUserService = async (payload: RegisterRequestParameter) => 
 
     await newUser.save();
 
-    return newUser;
+    return makeResponse.success({
+      data: newUser,
+      stat_code: HTTP_CODE.OK,
+      stat_msg : SUCCESS_MESSAGE.REGISTER_SUCCESS
+    });
   } catch (e) {
     throw new ErrorHandler(e)
   }
