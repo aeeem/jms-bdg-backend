@@ -649,7 +649,7 @@
 				]
 			}
 		},
-		"/roles": {
+		"/api/roles": {
 			"get": {
 				"operationId": "GetAllRoles",
 				"responses": {
@@ -668,7 +668,7 @@
 				"security": [
 					{
 						"api_key": [
-							"read:roles"
+							"read:role"
 						]
 					}
 				],

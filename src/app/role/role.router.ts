@@ -2,10 +2,10 @@ import { Controller, Get, Route, Security, Tags } from "tsoa";
 import { getAllRoleService } from "./role.service";
 
 @Tags('Roles')
-@Route('/roles')
+@Route('/api/roles')
 export class RoleController extends Controller{
 
-  @Security('api_key', ['read:roles'])
+  @Security('api_key', ['read:role'])
   @Get('/')
   public async getAllRoles(){
     return getAllRoleService()
