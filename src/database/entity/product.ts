@@ -13,11 +13,11 @@ export class Product extends BaseEntity {
   @Column({ unique: true })
   name: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   arrival_date: Date;
-  
-  @OneToOne(() => Stock)
-  stocks: Stock
+
+  @OneToOne(() => Stock, stock => stock.product, { cascade: true })
+  stock: Stock
 
   @CreateDateColumn()
   created_at: Date;

@@ -1,7 +1,7 @@
 export type ProductRequestParameter = {
   sku: string;
   name: string;
-  vendorId: string;
+  vendorId: number;
   tanggalMasuk: Date;
   hargaModal: number;
   hargaJual: number;
