@@ -18,31 +18,23 @@ export const getAllProductsService = async () => {
 
 export const createProductService = async (payload: ProductRequestParameter) => {
   try {
-    const vendor                            = await Vendor.findOne({where: {id: payload.vendorId}});
-    console.log("payload  ", payload)
-    if(!vendor) throw E_ErrorType.E_VENDOR_NOT_FOUND; 
+    const vendor = await Vendor.findOne({where: {id: payload.vendorId}});
 
-    const query = await Product.createQueryBuilder()
-      .insert()
-      .into(Product)
-      .values({
-        sku: payload.sku,
-        name: payload.name,
-        arrival_date: payload.tanggalMasuk,
-        stocks: {
-          total_stock: payload.stok,
-          buy_price: payload.hargaModal,
-          sell_price: payload.hargaJual
-          
-        }
-      })
-      .execute()
-    
-    
-    console.log(query)
-    // return await Product.findOne({
-    //   where: { name: payload.name }
-    // });
+    if(!vendor) throw E_ErrorType.E_VENDOR_NOT_FOUND; 
+    const stock = new Stock();
+    stock.buy_price   = payload.hargaModal;
+    stock.sell_price  = payload.hargaJual;
+    stock.total_stock = payload.stok;
+    stock.vendorId    = payload.vendorId
+
+    const newProduct        = new Product();
+    newProduct.sku          = payload.sku;
+    newProduct.name         = payload.name;
+    newProduct.arrival_date = payload.tanggalMasuk;
+    newProduct.stock        = stock;
+    await newProduct.save();
+
+    return newProduct
   } catch (e:any) {
     console.log(e)
     throw new ErrorHandler(e); 
