@@ -6,6 +6,42 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"LoginRequestParameter": {
+				"properties": {
+					"noInduk": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"noInduk",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RegisterRequestParameter": {
+				"properties": {
+					"noInduk": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"noInduk",
+					"password",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CustomerRequestParameter": {
 				"properties": {
 					"contact_number": {
@@ -23,6 +59,26 @@
 			},
 			"ProductRequestParameter": {
 				"properties": {
+					"stok": {
+						"type": "number",
+						"format": "double"
+					},
+					"hargaJual": {
+						"type": "number",
+						"format": "double"
+					},
+					"hargaModal": {
+						"type": "number",
+						"format": "double"
+					},
+					"tanggalMasuk": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"vendorId": {
+						"type": "number",
+						"format": "double"
+					},
 					"name": {
 						"type": "string"
 					},
@@ -31,6 +87,11 @@
 					}
 				},
 				"required": [
+					"stok",
+					"hargaJual",
+					"hargaModal",
+					"tanggalMasuk",
+					"vendorId",
 					"name",
 					"sku"
 				],
@@ -117,7 +178,11 @@
 			},
 			"VendorRequestParameter": {
 				"properties": {
-					"kode": {
+					"shipping_cost": {
+						"type": "number",
+						"format": "double"
+					},
+					"code": {
 						"type": "string"
 					},
 					"pic_phone_number": {
@@ -134,22 +199,106 @@
 					}
 				},
 				"required": [
-					"kode",
-					"pic_phone_number",
-					"pic_name",
-					"address",
-					"name"
+					"shipping_cost",
+					"code"
 				],
 				"type": "object"
 			}
 		},
-		"securitySchemes": {}
+		"securitySchemes": {
+			"api_key": {
+				"type": "apiKey",
+				"name": "access_token",
+				"in": "header",
+				"flow": "implicit",
+				"scopes": {
+					"write:pets": "modify things",
+					"read:pets": "read things"
+				}
+			}
+		}
 	},
 	"info": {
 		"title": ""
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/api/auth/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"role": {},
+										"name": {},
+										"noInduk": {},
+										"id": {},
+										"token": {}
+									},
+									"required": [
+										"role",
+										"name",
+										"noInduk",
+										"id",
+										"token"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authorization"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/auth/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Authorization"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/customer": {
 			"get": {
 				"operationId": "GetAllCustomer",
@@ -166,7 +315,11 @@
 				"tags": [
 					"Customer"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -184,7 +337,11 @@
 				"tags": [
 					"Customer"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -214,7 +371,11 @@
 				"tags": [
 					"Customer"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -243,7 +404,11 @@
 				"tags": [
 					"Customer"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -290,7 +455,11 @@
 				"tags": [
 					"Customer"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -319,7 +488,13 @@
 				"tags": [
 					"Products"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": [
+							"read:products"
+						]
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -337,7 +512,13 @@
 				"tags": [
 					"Products"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": [
+							"read:products"
+						]
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -367,7 +548,13 @@
 				"tags": [
 					"Products"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": [
+							"read:products"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -414,7 +601,13 @@
 				"tags": [
 					"Products"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": [
+							"read:products"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -443,7 +636,13 @@
 				"tags": [
 					"Products"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": [
+							"read:products"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -472,7 +671,11 @@
 				"tags": [
 					"Stock"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": []
 			},
 			"put": {
@@ -485,15 +688,16 @@
 								"schema": {}
 							}
 						}
-					},
-					"404": {
-						"description": "Stock is not found!"
 					}
 				},
 				"tags": [
 					"Stock"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -518,7 +722,11 @@
 				"tags": [
 					"Stock"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -545,7 +753,11 @@
 				"tags": [
 					"Stock"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -584,7 +796,11 @@
 				"tags": [
 					"Stock"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -613,7 +829,11 @@
 				"tags": [
 					"Transaction"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -631,7 +851,11 @@
 				"tags": [
 					"Transaction"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -656,7 +880,11 @@
 				"tags": [
 					"Transaction"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -703,7 +931,11 @@
 				"tags": [
 					"Transaction"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -732,7 +964,11 @@
 				"tags": [
 					"Transaction"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -761,7 +997,11 @@
 				"tags": [
 					"User Permission"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": []
 			}
 		},
@@ -781,7 +1021,11 @@
 				"tags": [
 					"User Permission"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -826,7 +1070,11 @@
 				"tags": [
 					"User Permission"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -880,7 +1128,11 @@
 				"tags": [
 					"User Permission"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -909,7 +1161,11 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": []
 			},
 			"post": {
@@ -927,7 +1183,11 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,
@@ -939,38 +1199,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/api/vendor/search/{query}": {
-			"get": {
-				"operationId": "FindVendor",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Vendor"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/vendor/{id}": {
+			},
 			"put": {
 				"operationId": "UpdateVendor",
 				"responses": {
@@ -986,7 +1215,11 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
@@ -1033,11 +1266,48 @@
 				"tags": [
 					"Vendor"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "query",
 						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/vendor/search": {
+			"get": {
+				"operationId": "FindVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Vendor"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -1105,5 +1375,17 @@
 		{
 			"url": "/"
 		}
-	]
+	],
+	"securitydefinitions": {
+		"api_key": {
+			"type": "apiKey",
+			"name": "access_token",
+			"in": "header",
+			"flow": "implicit",
+			"scopes": {
+				"write:pets": "modify things",
+				"read:pets": "read things"
+			}
+		}
+	}
 }

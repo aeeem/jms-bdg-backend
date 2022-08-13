@@ -1,5 +1,8 @@
 import { Product } from "@entity/product";
-import { ErrorHandler, E_ErrorType } from "src/errorHandler";
+import { Stock } from "@entity/stock";
+import { Vendor } from "@entity/vendor";
+import { E_ErrorType } from "src/errorHandler/enums";
+import { ErrorHandler } from "../../errorHandler";
 import { ProductRequestParameter } from "./product.interfaces";
 
 export const getAllProductsService = async () => {
@@ -15,14 +18,25 @@ export const getAllProductsService = async () => {
 
 export const createProductService = async (payload: ProductRequestParameter) => {
   try {
-    const _newProduct         = new Product();
-    _newProduct['name']       = payload.name;
-    _newProduct['sku']        = payload.sku
-    await _newProduct.save();
-    return await Product.findOne({
-      where: { name: payload.name }
-    });
+    const vendor = await Vendor.findOne({where: {id: payload.vendorId}});
+
+    if(!vendor) throw E_ErrorType.E_VENDOR_NOT_FOUND; 
+    const stock = new Stock();
+    stock.buy_price   = payload.hargaModal;
+    stock.sell_price  = payload.hargaJual;
+    stock.total_stock = payload.stok;
+    stock.vendorId    = payload.vendorId
+
+    const newProduct        = new Product();
+    newProduct.sku          = payload.sku;
+    newProduct.name         = payload.name;
+    newProduct.arrival_date = payload.tanggalMasuk;
+    newProduct.stock        = stock;
+    await newProduct.save();
+
+    return newProduct
   } catch (e:any) {
+    console.log(e)
     throw new ErrorHandler(e); 
   }
 }

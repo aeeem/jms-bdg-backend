@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Patch, Post, Put, Query, Response, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Patch, Put, Query, Response, Route, Security, Tags } from "tsoa";
 import { StockRequestParameter } from "./stock.interfaces";
 import { findStockService, getAllStocksService, updateStockService } from "./stock.service";
 
 @Tags('Stock')
 @Route('/api/stock')
+@Security('api_key')
 export class StockController extends Controller{
   
   @Get('/')
@@ -11,7 +12,6 @@ export class StockController extends Controller{
     return getAllStocksService()
   }
 
-  @Response(404, 'Stock is not found!')
   @Put('/')
   public async updateStock(@Body() body : StockRequestParameter) {
     return updateStockService(body)

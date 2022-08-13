@@ -1,6 +1,5 @@
-import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
 import { Stock } from "./stock";
-import { TransactionDetail } from "./transactionDetail";
 
 @Entity({ name: 'product' })
 export class Product extends BaseEntity {
@@ -9,13 +8,16 @@ export class Product extends BaseEntity {
   id: number
 
   @Column({ unique: true, })
-  sku!: string;
+  sku: string;
 
   @Column({ unique: true })
-  name!: string;
-  
-  @OneToMany(() => Stock, stock => stock.product, { cascade: true })
-  stocks: Stock[]
+  name: string;
+
+  @Column({ nullable: true })
+  arrival_date: Date;
+
+  @OneToOne(() => Stock, stock => stock.product, { cascade: true })
+  stock: Stock
 
   @CreateDateColumn()
   created_at: Date;

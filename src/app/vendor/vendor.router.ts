@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { VendorRequestParameter } from "./vendor.interfaces";
 import { addVendorService, deleteVendorService, findVendorService, getAllVendorService, updateVendorService } from "./vendor.service";
 
 @Tags('Vendor')
 @Route('/api/vendor')
+@Security('api_key')
 export class VendorController extends Controller{
 
   @Get('/')
@@ -11,7 +12,7 @@ export class VendorController extends Controller{
     return getAllVendorService()
   }
 
-  @Get('/search/:query')
+  @Get('/search/')
   public async findVendor(@Query('query') query: string) {
     return findVendorService(query)
   }
@@ -21,12 +22,12 @@ export class VendorController extends Controller{
     return addVendorService(body)
   }
   
-  @Put('/{id}/')
+  @Put('/')
   public async updateVendor(@Query('id') id: string, @Body() body : VendorRequestParameter) {
     return updateVendorService(id,body)
   }
 
-  @Delete('/{id}/')
+  @Delete('/')
   public async deleteVendor(@Query('id') id: string) {
     return deleteVendorService(id)
   }

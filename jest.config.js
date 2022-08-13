@@ -8,5 +8,5 @@ module.exports = {
   moduleNameMapper: {
     "^@database(.*)$": "<rootDir>/src/database$1",
     "^@entity(.*)$": "<rootDir>/src/database/entity$1",
-  }
+  },
 };

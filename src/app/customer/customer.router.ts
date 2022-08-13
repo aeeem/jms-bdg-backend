@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Post, Put, Query, Route, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { createCustomerService, deleteCustomerService, getAllCustomerService, searchCustomerService, updateCustomerService } from "./customer.service";
 import { CustomerRequestParameter } from "./customer.interface";
 
 @Tags('Customer')
 @Route('/api/customer')
+@Security('api_key')
 export class CustomerController extends Controller {
 
   @Get('/')
