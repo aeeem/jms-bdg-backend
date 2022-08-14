@@ -1,4 +1,4 @@
-name: cd
+name: deployment
 
 on:
   push:
@@ -18,11 +18,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            export PATH="$PATH:/home/***/.nvm/versions/node/v16.16.0/bin/"
+            export PATH="$PATH:/home/***/.nvm/versions/node/v16.16.0/bin"
             cd ~/jms-bdg-backend
             git pull origin main
             git status
-            npm install
-            npm run build
+            yarn install
+            yarn run build
             pm2 reload dev-jms
             pm2 restart dev-jms
