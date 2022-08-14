@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Deploy Using ssh
         uses: appleboy/ssh-action@master
         with:
@@ -24,5 +23,5 @@ jobs:
             git status
             yarn install
             yarn build
-            pm2 reload ExampleCiCdAutoDeployVps
-            pm2 restart ExampleCiCdAutoDeployVps
+            pm2 reload dev-jms
+            pm2 restart dev-jms
