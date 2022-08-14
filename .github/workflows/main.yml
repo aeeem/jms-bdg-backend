@@ -21,7 +21,7 @@ jobs:
             cd ~/jms-bdg-backend
             git pull origin main
             git status
-            yarn install
-            yarn build
+            npm install
+            npm run build
             pm2 reload dev-jms
             pm2 restart dev-jms
