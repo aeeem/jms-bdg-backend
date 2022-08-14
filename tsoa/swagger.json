@@ -466,6 +466,39 @@
 				]
 			}
 		},
+		"/api/pegawai": {
+			"get": {
+				"operationId": "GetAllEmployee",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pegawai"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "CreateEmployee",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Pegawai"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/api/products": {
 			"get": {
 				"operationId": "GetAllProducts",
