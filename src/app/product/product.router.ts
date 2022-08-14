@@ -14,7 +14,7 @@ export class ProductsController extends Controller{
   }
 
   @Post('/')
-  @Security('api_key',['write:product'])
+  @Security('api_key',['create:product'])
   public async createProduct(@Body() payload: ProductRequestParameter) {
     return createProductService(payload);
   }

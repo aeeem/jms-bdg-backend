@@ -509,7 +509,7 @@
 				"security": [
 					{
 						"api_key": [
-							"write:product"
+							"create:product"
 						]
 					}
 				],
