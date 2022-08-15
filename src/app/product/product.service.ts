@@ -2,14 +2,16 @@ import { Product } from "@entity/product";
 import { Stock } from "@entity/stock";
 import { Vendor } from "@entity/vendor";
 import { E_ErrorType } from "src/errorHandler/enums";
+import makeResponse from "src/helper/response";
 import { ErrorHandler } from "../../errorHandler";
 import { ProductRequestParameter } from "./product.interfaces";
 
 export const getAllProductsService = async () => {
   try {
-    return await Product.find({
-      relations: ["stock",'stock.vendor']
-    });
+    const products = await Product.find({
+        relations: ["stock",'stock.vendor']
+      })
+    return makeResponse.success<Product[]>({data:products, stat_msg:"SUCCESS"});
   } catch (e) {
     console.log(e)
     throw new ErrorHandler(e); 

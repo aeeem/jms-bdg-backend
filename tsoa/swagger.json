@@ -524,9 +524,7 @@
 						}
 					}
 				}
-			}
-		},
-		"/api/products/{id}": {
+			},
 			"put": {
 				"operationId": "UpdateProduct",
 				"responses": {
