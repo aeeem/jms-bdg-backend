@@ -1,0 +1,28 @@
+name: deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy Using ssh
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            export PATH="$PATH:/home/***/.nvm/versions/node/v16.16.0/bin/pm2:/home/***/.nvm/versions/node/v16.16.0/bin/yarn"
+            cd ~/jms-bdg-backend
+            git pull origin main
+            git status
+            yarn install
+            yarn run build
+            pm2 reload dev-jms
+            pm2 restart dev-jms

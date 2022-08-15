@@ -1,12 +1,12 @@
 import Database from "@database";
-import initialSeeds from "../../database/seeds/factories/initialSeeds";
+// import initialSeeds from "../../database/seeds/seeder/initialSeeds";
 import { makeRequest } from "../../helper/testHelper";
 
 describe('Product', () => {
   const db = new Database()
   beforeAll(async () => {
     await db.connectToDBTest()
-    await initialSeeds.productSeeder()
+    // await initialSeeds.productSeeder()
   })
 
   afterAll(async () => {
