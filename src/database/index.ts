@@ -12,7 +12,7 @@ export default class Database {
     await createConnection({
       type: 'postgres',
       host: 'localhost',
-      port: 3306,
+      port: 5432,
       username: process.env.DEV_DATABASE_USERNAME,
       password: process.env.DEV_DATABASE_PASSWORD,
       database: process.env.DEV_DATABASE_NAME,
