@@ -8,10 +8,10 @@ export class Scope extends BaseEntity {
   id: number;
 
   // CRUD PRODUCT
-  @Column({ default: false , type: 'bool'})
+  @Column({ default: false })
   read_product: boolean = false;
 
-  @Column({ default: false , type: 'boolean'})
+  @Column({ default: false })
   create_product: boolean;
 
   @Column({ default: false })
