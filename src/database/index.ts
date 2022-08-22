@@ -10,8 +10,12 @@ export default class Database {
 
   public async connectToDB(): Promise<void> {
     await createConnection({
-      type: 'sqlite',
-      database:`${root}/database.sqlite` ,
+      type: 'postgres',
+      host: 'localhost',
+      port: 3306,
+      username: process.env.DEV_DATABASE_USERNAME,
+      password: process.env.DEV_DATABASE_PASSWORD,
+      database: process.env.DEV_DATABASE_NAME,
       entities: [
         __dirname + "/entity/*.ts",
         __dirname + "/entity/*.js"
