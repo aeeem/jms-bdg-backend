@@ -14,7 +14,7 @@
     "tsoa:generate": "ts-node _generate-tsoa.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "build:dev": "yarn build && scp -r ./build/* devjms@172.104.177.238:/home/devjms/dev_build",
+    "build:dev": "yarn build && scp -r ./dist/* devjms@jmsbdg.com:/home/devjms/jms-bdg-backend",
     "start:service": "pm2 start npm --name 'dev-jms' -- run 'start'"
   },
   "_moduleAliases": {

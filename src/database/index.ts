@@ -1,7 +1,5 @@
 import { Connection, createConnection } from "typeorm";
 import dotenv from 'dotenv';
-import { createDatabase } from "typeorm-extension";
-import { root } from "src/path";
 
 dotenv.config({});
 export default class Database {
