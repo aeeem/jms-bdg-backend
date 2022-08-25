@@ -31,7 +31,7 @@ export class ProductsController extends Controller{
     return deleteProductService({ id: Number(id) });
   }
 
-  @Get('/search/:query')
+  @Get('/search/')
   @Security('api_key',['read:product'])
   public async searchProduct(@Query('query') query: string) {
     return searchProductService({ query });

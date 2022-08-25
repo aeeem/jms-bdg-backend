@@ -610,7 +610,7 @@
 				]
 			}
 		},
-		"/api/products/search/{query}": {
+		"/api/products/search": {
 			"get": {
 				"operationId": "SearchProduct",
 				"responses": {

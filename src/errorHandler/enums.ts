@@ -1,5 +1,6 @@
 export enum E_ErrorType {
   E_PRODUCT_NOT_FOUND           = "Product is Not Found",
+  E_STOCK_NOT_FOUND             = "Stock is Not Found",
   E_DATABASE_ERROR              = 'E_DATABASE_ERROR',
   E_UNKNOWN_ERROR               = 'E_UNKNOWN_ERROR',
   E_NOT_FOUND                   = 'E_NOT_FOUND',

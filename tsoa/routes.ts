@@ -346,7 +346,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/products/search/:query',
+        app.get('/api/products/search',
             authenticateMiddleware([{"api_key":["read:product"]}]),
 
             function ProductsController_searchProduct(request: any, response: any, next: any) {
