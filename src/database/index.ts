@@ -1,6 +1,5 @@
 import { Connection, createConnection } from "typeorm";
 import dotenv from 'dotenv';
-import { createDatabase } from "typeorm-extension";
 
 dotenv.config({});
 export default class Database {
@@ -9,12 +8,12 @@ export default class Database {
 
   public async connectToDB(): Promise<void> {
     await createConnection({
-      type: envString("postgres", "postgres"),
-      host: envString(process.env.DATABASE_HOST!, process.env.DEV_DATABASE_HOST!),
-      port: envString(Number(process.env.DATABASE_PORT!), Number(process.env.DEV_DATABASE_PORT!)),
-      username: envString(process.env.DATABASE_USERNAME!, process.env.DEV_DATABASE_USERNAME!),
-      password: envString(process.env.DATABASE_PASSWORD!, process.env.DEV_DATABASE_PASSWORD!),
-      database: envString(process.env.DATABASE_NAME!, process.env.DEV_DATABASE_NAME!),
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: process.env.DEV_DATABASE_USERNAME,
+      password: process.env.DEV_DATABASE_PASSWORD,
+      database: process.env.DEV_DATABASE_NAME,
       entities: [
         __dirname + "/entity/*.ts",
         __dirname + "/entity/*.js"

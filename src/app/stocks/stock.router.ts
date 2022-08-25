@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Put, Query, Response, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Patch, Path, Put, Query, Response, Route, Security, Tags } from "tsoa";
 import { StockRequestParameter } from "./stock.interfaces";
 import { findStockService, getAllStocksService, updateStockService } from "./stock.service";
 
@@ -13,10 +13,10 @@ export class StockController extends Controller{
     return getAllStocksService()
   }
 
-  @Put('/')
+  @Put('/{id}')
   @Security('api_key',['update:stock'])
-  public async updateStock(@Body() body : StockRequestParameter) {
-    return updateStockService(body)
+  public async updateStock(@Path() id:string, @Body() body : StockRequestParameter) {
+    return updateStockService(body, id)
   }
 
   @Delete('/{id}/')
@@ -26,8 +26,8 @@ export class StockController extends Controller{
 
   @Patch('/{id}/')
   @Security('api_key',['update:stock'])
-  public async patchStock(@Query('id') id: string, @Body() body: StockRequestParameter) {
-    return updateStockService(body)
+  public async patchStock(@Path() id: string, @Body() body: StockRequestParameter) {
+    return updateStockService(body,id)
   }
 
   @Get('/search/:query')

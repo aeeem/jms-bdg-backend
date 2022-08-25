@@ -1,5 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { E_TransactionStatus } from "../enum/transaction";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Customer } from "./customer";
 import { TransactionDetail } from "./transactionDetail";
 
@@ -23,12 +22,8 @@ export class Transaction extends BaseEntity {
   @JoinColumn()
   transactionDetails: TransactionDetail[];
   
-  @Column({
-    type: 'enum',
-    enum: E_TransactionStatus,
-    default: E_TransactionStatus.PENDING
-  })
-  status: E_TransactionStatus;
+  @Column()
+  status: string;
 
   @CreateDateColumn()
   created_at: Date;

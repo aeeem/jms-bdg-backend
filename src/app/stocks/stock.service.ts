@@ -3,8 +3,9 @@ import { StockRequestParameter } from "./stock.interfaces";
 import _ from 'lodash'
 import { Product } from "@entity/product";
 import { Vendor } from "@entity/vendor";
-import {  } from "../../errorHandler";
+import { ErrorHandler } from "../../errorHandler";
 import { E_ErrorType } from "src/errorHandler/enums";
+import makeResponse from "src/helper/response";
 
 export const getAllStocksService = async () => {
   try {
@@ -46,8 +47,8 @@ export const findStockService = async (query: string) => {
 export const updateExistingStockService = async ({id, body} : {id: string , body: StockRequestParameter}) => {
   try {
     const stock           = await Stock.findOneOrFail({ where: { id: id } });
-    stock['buy_price']    = body.buy_price;
-    stock['total_stock']  = body.total_stock;
+    stock['buy_price']    = body.buy_price? body.buy_price : stock['buy_price'];
+    stock['total_stock']  = body.total_stock? body.total_stock : stock['total_stock'];
     await stock.save();
     
     return await Stock.findOne({
@@ -58,39 +59,29 @@ export const updateExistingStockService = async ({id, body} : {id: string , body
   }
 }
 
-export const updateStockService = async (body: StockRequestParameter) => {
+export const updateStockService = async (body: StockRequestParameter, id: string) => {
   try {
-    const product   = await Product.findOne({ where: { id: body.productId } });
-    const vendor    = await Vendor.findOne({ where: { id: body.vendorId } });
-
-    if(!product || !vendor) throw E_ErrorType.E_PRODUCT_OR_VENDOR_NOT_FOUND;
-
     const existingStock = await Stock.findOne({
       where: {
-        product,
-        vendor
+        id
       }
     });
-
     if(existingStock){
-      existingStock['buy_price']    = body.buy_price;
-      existingStock['total_stock']  = body.total_stock;
+      existingStock['vendorId']     = body.vendorId? body.vendorId : existingStock['vendorId'];
+      existingStock['productId']    = body.productId? body.productId : existingStock['productId'];
+      existingStock['buy_price']    = body.buy_price ? body.buy_price : existingStock['buy_price'];
+      existingStock['total_stock']  = body.total_stock ? body.total_stock : existingStock['total_stock'];
+      existingStock['sell_price']   = body.sell_price ? body.sell_price : existingStock['sell_price'];
       await existingStock.save();
-      return await Stock.findOne({
+      let stock = await Stock.findOne({
         where: { id: existingStock.id }
       });
-    } else {
-      const _newStock = new Stock();
-      _newStock['buy_price']      = body.buy_price;
-      _newStock['total_stock']    = body.total_stock;
-      _newStock.product = product;
-      _newStock.vendor = vendor;
-      await _newStock.save();
-      return await Stock.findOne({
-        where: { id: _newStock.id }
-      });
+      if(stock) return makeResponse.success({data: stock, stat_code: 200, stat_msg: "Stock updated successfully!"});
     }
+
+    throw E_ErrorType.E_PRODUCT_OR_VENDOR_NOT_FOUND
   } catch (error) {
+    return new ErrorHandler(error)
     console.error(error)
   }
 }

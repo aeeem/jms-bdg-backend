@@ -1,0 +1,35 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HTTP_CODE = exports.E_ErrorType = void 0;
+var E_ErrorType;
+(function (E_ErrorType) {
+    E_ErrorType["E_PRODUCT_NOT_FOUND"] = "Product is Not Found";
+    E_ErrorType["E_DATABASE_ERROR"] = "E_DATABASE_ERROR";
+    E_ErrorType["E_UNKNOWN_ERROR"] = "E_UNKNOWN_ERROR";
+    E_ErrorType["E_NOT_FOUND"] = "E_NOT_FOUND";
+    E_ErrorType["E_UNAUTHORIZED"] = "E_UNAUTHORIZED";
+    E_ErrorType["E_FORBIDDEN"] = "E_FORBIDDEN";
+    E_ErrorType["E_INTERNAL_SERVER_ERROR"] = "E_INTERNAL_SERVER_ERROR";
+    E_ErrorType["E_BAD_REQUEST"] = "E_BAD_REQUEST";
+    E_ErrorType["ER_DUP_ENTRY"] = "ER_DUP_ENTRY";
+    E_ErrorType["E_PRODUCT_OR_VENDOR_NOT_FOUND"] = "E_PRODUCT_OR_VENDOR_NOT_FOUND";
+    E_ErrorType["E_VENDOR_NOT_FOUND"] = "Partai tidak ditemukan.";
+    E_ErrorType["E_USER_EXISTS"] = "User already exists";
+    E_ErrorType["E_LOGIN_WRONG_PASSWORD"] = "Password salah!";
+    E_ErrorType["E_LOGIN_WRONG_NIP"] = "No Induk tidak ditemukan";
+    E_ErrorType["E_VALIDATION_ERROR"] = "E_VALIDATION_ERROR";
+    E_ErrorType["E_USER_NOT_FOUND"] = "User not found";
+    E_ErrorType["E_USER_IS_NOT_AUTHORIZED"] = "User is not authorized";
+})(E_ErrorType = exports.E_ErrorType || (exports.E_ErrorType = {}));
+var HTTP_CODE;
+(function (HTTP_CODE) {
+    HTTP_CODE[HTTP_CODE["OK"] = 200] = "OK";
+    HTTP_CODE[HTTP_CODE["CREATED"] = 201] = "CREATED";
+    HTTP_CODE[HTTP_CODE["ACCEPTED"] = 202] = "ACCEPTED";
+    HTTP_CODE[HTTP_CODE["NO_CONTENT"] = 204] = "NO_CONTENT";
+    HTTP_CODE[HTTP_CODE["BAD_REQUEST"] = 400] = "BAD_REQUEST";
+    HTTP_CODE[HTTP_CODE["UNAUTHORIZED"] = 401] = "UNAUTHORIZED";
+    HTTP_CODE[HTTP_CODE["FORBIDDEN"] = 403] = "FORBIDDEN";
+    HTTP_CODE[HTTP_CODE["NOT_FOUND"] = 404] = "NOT_FOUND";
+    HTTP_CODE[HTTP_CODE["INTERNAL_SERVER_ERROR"] = 500] = "INTERNAL_SERVER_ERROR";
+})(HTTP_CODE = exports.HTTP_CODE || (exports.HTTP_CODE = {}));

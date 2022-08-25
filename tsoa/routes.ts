@@ -61,7 +61,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StockRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"vendorId":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"buy_price":{"dataType":"double","required":true},"total_stock":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"vendorId":{"dataType":"double"},"productId":{"dataType":"double"},"sell_price":{"dataType":"double"},"buy_price":{"dataType":"double"},"total_stock":{"dataType":"double"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
@@ -438,11 +438,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/api/stock',
+        app.put('/api/stock/:id',
             authenticateMiddleware([{"api_key":["update:stock"]}]),
 
             function StockController_updateStock(request: any, response: any, next: any) {
             const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
                     body: {"in":"body","name":"body","required":true,"ref":"StockRequestParameter"},
             };
 
@@ -491,7 +492,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function StockController_patchStock(request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
                     body: {"in":"body","name":"body","required":true,"ref":"StockRequestParameter"},
             };
 

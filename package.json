@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "prestart": "npm run build",
-    "start": "node -r ./tspaths ./build/src/index.js",
+    "start": "node -r ./tspaths.js ./dist/src/index.js",
     "start:dev": "nodemon -w src -e ts -r tsconfig-paths/register --exec ts-node ./src/index.ts",
     "dev": "concurrently \"npm run tsoa:generate_\" \"npm run start:dev\"",
     "prebuild": "rimraf ./build && npm run tsoa:generate",
@@ -14,8 +14,8 @@
     "tsoa:generate": "ts-node _generate-tsoa.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "build:dev": "yarn build && scp -r ./build/* devjms@172.104.177.238:/home/devjms/dev_build",
-    "start:service" : "pm2 start npm --name 'dev-jms' -- run 'start'"
+    "build:dev": "yarn build && scp -r ./dist/* devjms@jmsbdg.com:/home/devjms/jms-bdg-backend",
+    "start:service": "pm2 start npm --name 'dev-jms' -- run 'start'"
   },
   "_moduleAliases": {
     "@database": "./build/src/database/index.js",
@@ -50,7 +50,8 @@
     "ts-jest": "^28.0.6",
     "ts-node": "^10.8.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "typescript-bundle": "^1.0.18"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
