@@ -5,12 +5,15 @@ on:
     branches:
       - main
 
-env:
-  SSH_KEY: $
 
 jobs:
-  cd:
+  build-and-deploy:
+
     runs-on: ubuntu-latest
+
+    env:
+      SSH_KEY: $
+
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js
