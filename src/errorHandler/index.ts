@@ -46,6 +46,12 @@ export class ErrorHandler extends Error {
         this.message  = E_ErrorType.E_LOGIN_WRONG_NIP
         this.status   = HTTP_CODE.UNAUTHORIZED
         break;
+      
+      case E_ErrorType.E_CUSTOMER_NOT_FOUND:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err)
+        this.message  = E_ErrorType.E_CUSTOMER_NOT_FOUND
+        this.status   = HTTP_CODE.INTERNAL_SERVER_ERROR
+        break;
 
       case E_ErrorType.E_VENDOR_NOT_FOUND:
         this.type    = this.getEnumKeyByEnumValue(E_ErrorType, this.err)
@@ -54,6 +60,7 @@ export class ErrorHandler extends Error {
         break;
       default:
         switch(this.err.name){
+          
           case 'QueryFailedError':
             this.handleDatabaseError(this.err)
             break;

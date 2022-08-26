@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, { Express, query } from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -14,10 +14,11 @@ const app: Express = express();
 /************************************************************************************
  *                              Basic Express Middlewares
  ***********************************************************************************/
-const db = new Database();
+export const db = new Database();
 app.on('ready', async () => {
   await db.connectToDB()
 })
+
 app.set('json spaces', 2);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
