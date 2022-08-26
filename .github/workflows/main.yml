@@ -21,11 +21,11 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-    - run: yarn install
-    - run: yarn build
-    - run: mkdir ~/.ssh
-    - run: 'echo "$SSH_KEY" >> ~/.ssh/github-action'
-    - run: chmod 400 ~/.ssh/github-action
-    - run: echo -e "Host github-actions-tutorial\n\tUser devjms\n\tHostname jmsdev.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
-    - run: rsync -a ssh dist/ devjms:~/jms-bdg-backend/dist
-    - run: ssh devjms "pm2 reload all"
+      - run: yarn install
+      - run: yarn build
+      - run: mkdir ~/.ssh
+      - run: 'echo "$SSH_KEY" >> ~/.ssh/github-action'
+      - run: chmod 400 ~/.ssh/github-action
+      - run: echo -e "Host github-actions-tutorial\n\tUser devjms\n\tHostname jmsdev.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
+      - run: rsync -a ssh dist/ devjms:~/jms-bdg-backend/dist
+      - run: ssh devjms "pm2 reload all"
