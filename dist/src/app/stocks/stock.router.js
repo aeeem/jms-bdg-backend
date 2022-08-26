@@ -30,9 +30,9 @@ let StockController = class StockController extends tsoa_1.Controller {
             return (0, stock_service_1.getAllStocksService)();
         });
     }
-    updateStock(body) {
+    updateStock(id, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, stock_service_1.updateStockService)(body);
+            return (0, stock_service_1.updateStockService)(body, id);
         });
     }
     deleteStock(id) {
@@ -41,7 +41,7 @@ let StockController = class StockController extends tsoa_1.Controller {
     }
     patchStock(id, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, stock_service_1.updateStockService)(body);
+            return (0, stock_service_1.updateStockService)(body, id);
         });
     }
     findStock(query) {
@@ -58,11 +58,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], StockController.prototype, "getAllStock", null);
 __decorate([
-    (0, tsoa_1.Put)('/'),
+    (0, tsoa_1.Put)('/{id}'),
     (0, tsoa_1.Security)('api_key', ['update:stock']),
-    __param(0, (0, tsoa_1.Body)()),
+    __param(0, (0, tsoa_1.Path)()),
+    __param(1, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], StockController.prototype, "updateStock", null);
 __decorate([
@@ -76,7 +77,7 @@ __decorate([
 __decorate([
     (0, tsoa_1.Patch)('/{id}/'),
     (0, tsoa_1.Security)('api_key', ['update:stock']),
-    __param(0, (0, tsoa_1.Query)('id')),
+    __param(0, (0, tsoa_1.Path)()),
     __param(1, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),

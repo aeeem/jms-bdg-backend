@@ -15,9 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeStockService = exports.updateStockService = exports.updateExistingStockService = exports.findStockService = exports.addStockService = exports.getAllStocksService = void 0;
 const stock_1 = require("@entity/stock");
 const lodash_1 = __importDefault(require("lodash"));
-const product_1 = require("@entity/product");
-const vendor_1 = require("@entity/vendor");
+const errorHandler_1 = require("../../errorHandler");
 const enums_1 = require("src/errorHandler/enums");
+const response_1 = __importDefault(require("src/helper/response"));
 const getAllStocksService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return yield stock_1.Stock.find({
@@ -61,8 +61,8 @@ exports.findStockService = findStockService;
 const updateExistingStockService = ({ id, body }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const stock = yield stock_1.Stock.findOneOrFail({ where: { id: id } });
-        stock['buy_price'] = body.buy_price;
-        stock['total_stock'] = body.total_stock;
+        stock['buy_price'] = body.buy_price ? body.buy_price : stock['buy_price'];
+        stock['total_stock'] = body.total_stock ? body.total_stock : stock['total_stock'];
         yield stock.save();
         return yield stock_1.Stock.findOne({
             where: { id }
@@ -73,39 +73,30 @@ const updateExistingStockService = ({ id, body }) => __awaiter(void 0, void 0, v
     }
 });
 exports.updateExistingStockService = updateExistingStockService;
-const updateStockService = (body) => __awaiter(void 0, void 0, void 0, function* () {
+const updateStockService = (body, id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const product = yield product_1.Product.findOne({ where: { id: body.productId } });
-        const vendor = yield vendor_1.Vendor.findOne({ where: { id: body.vendorId } });
-        if (!product || !vendor)
-            throw enums_1.E_ErrorType.E_PRODUCT_OR_VENDOR_NOT_FOUND;
         const existingStock = yield stock_1.Stock.findOne({
             where: {
-                product,
-                vendor
+                id
             }
         });
         if (existingStock) {
-            existingStock['buy_price'] = body.buy_price;
-            existingStock['total_stock'] = body.total_stock;
+            existingStock['vendorId'] = body.vendorId ? body.vendorId : existingStock['vendorId'];
+            existingStock['productId'] = body.productId ? body.productId : existingStock['productId'];
+            existingStock['buy_price'] = body.buy_price ? body.buy_price : existingStock['buy_price'];
+            existingStock['total_stock'] = body.total_stock ? body.total_stock : existingStock['total_stock'];
+            existingStock['sell_price'] = body.sell_price ? body.sell_price : existingStock['sell_price'];
             yield existingStock.save();
-            return yield stock_1.Stock.findOne({
+            let stock = yield stock_1.Stock.findOne({
                 where: { id: existingStock.id }
             });
+            if (stock)
+                return response_1.default.success({ data: stock, stat_code: 200, stat_msg: "Stock updated successfully!" });
         }
-        else {
-            const _newStock = new stock_1.Stock();
-            _newStock['buy_price'] = body.buy_price;
-            _newStock['total_stock'] = body.total_stock;
-            _newStock.product = product;
-            _newStock.vendor = vendor;
-            yield _newStock.save();
-            return yield stock_1.Stock.findOne({
-                where: { id: _newStock.id }
-            });
-        }
+        throw enums_1.E_ErrorType.E_PRODUCT_OR_VENDOR_NOT_FOUND;
     }
     catch (error) {
+        return new errorHandler_1.ErrorHandler(error);
         console.error(error);
     }
 });

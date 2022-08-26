@@ -107,6 +107,10 @@
                         "type": "number",
                         "format": "double"
                     },
+                    "sell_price": {
+                        "type": "number",
+                        "format": "double"
+                    },
                     "buy_price": {
                         "type": "number",
                         "format": "double"
@@ -116,12 +120,6 @@
                         "format": "double"
                     }
                 },
-                "required": [
-                    "vendorId",
-                    "productId",
-                    "buy_price",
-                    "total_stock"
-                ],
                 "type": "object"
             },
             "TransactionRequestParameter": {
@@ -714,7 +712,9 @@
                     }
                 ],
                 "parameters": []
-            },
+            }
+        },
+        "/api/stock/{id}": {
             "put": {
                 "operationId": "UpdateStock",
                 "responses": {
@@ -737,7 +737,16 @@
                         ]
                     }
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -748,9 +757,7 @@
                         }
                     }
                 }
-            }
-        },
-        "/api/stock/{id}": {
+            },
             "delete": {
                 "operationId": "DeleteStock",
                 "responses": {
@@ -803,7 +810,7 @@
                 ],
                 "parameters": [
                     {
-                        "in": "query",
+                        "in": "path",
                         "name": "id",
                         "required": true,
                         "schema": {
