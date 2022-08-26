@@ -25,6 +25,8 @@ jobs:
       - run: yarn build
       - run: mkdir ~/.ssh
       - run: 'echo "$SSH_KEY" >> ~/.ssh/github-action'
+      - run: 'cat $SSH_KEY'
+      - run: 'cat ~/.ssh/github-action'
       - run: chmod 400 ~/.ssh/github-action
       - run: echo -e "Host devjms\n\tUser devjms\n\tHostname jmsbdg.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
       - run: rsync -a ssh dist/ devjms:~/jms-bdg-backend/dist
