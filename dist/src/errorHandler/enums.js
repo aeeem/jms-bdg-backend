@@ -4,6 +4,7 @@ exports.HTTP_CODE = exports.E_ErrorType = void 0;
 var E_ErrorType;
 (function (E_ErrorType) {
     E_ErrorType["E_PRODUCT_NOT_FOUND"] = "Product is Not Found";
+    E_ErrorType["E_STOCK_NOT_FOUND"] = "Stock is Not Found";
     E_ErrorType["E_DATABASE_ERROR"] = "E_DATABASE_ERROR";
     E_ErrorType["E_UNKNOWN_ERROR"] = "E_UNKNOWN_ERROR";
     E_ErrorType["E_NOT_FOUND"] = "E_NOT_FOUND";

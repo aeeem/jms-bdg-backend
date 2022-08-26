@@ -17,7 +17,7 @@ function expressAuthentication(request, securityName, scopes) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             if (securityName === "api_key") {
-                const headerToken = request.headers['access_token'];
+                const headerToken = request.headers['authorization'];
                 let token = "";
                 if (request.headers && headerToken) {
                     token = String(headerToken);

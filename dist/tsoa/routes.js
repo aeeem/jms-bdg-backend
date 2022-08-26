@@ -241,7 +241,7 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.put('/api/products/:id', authenticateMiddleware([{ "api_key": ["update:product"] }]), function ProductsController_updateProduct(request, response, next) {
+    app.put('/api/products', authenticateMiddleware([{ "api_key": ["update:product"] }]), function ProductsController_updateProduct(request, response, next) {
         const args = {
             id: { "in": "query", "name": "id", "required": true, "dataType": "string" },
             payload: { "in": "body", "name": "payload", "required": true, "ref": "ProductRequestParameter" },
@@ -259,7 +259,7 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.delete('/api/products/:id', authenticateMiddleware([{ "api_key": ["delete:product"] }]), function ProductsController_deleteProduct(request, response, next) {
+    app.delete('/api/products', authenticateMiddleware([{ "api_key": ["delete:product"] }]), function ProductsController_deleteProduct(request, response, next) {
         const args = {
             id: { "in": "query", "name": "id", "required": true, "dataType": "string" },
         };
@@ -276,7 +276,7 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.get('/api/products/search/:query', authenticateMiddleware([{ "api_key": ["read:product"] }]), function ProductsController_searchProduct(request, response, next) {
+    app.get('/api/products/search', authenticateMiddleware([{ "api_key": ["read:product"] }]), function ProductsController_searchProduct(request, response, next) {
         const args = {
             query: { "in": "query", "name": "query", "required": true, "dataType": "string" },
         };

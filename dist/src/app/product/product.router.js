@@ -67,7 +67,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "createProduct", null);
 __decorate([
-    (0, tsoa_1.Put)('/{id}/'),
+    (0, tsoa_1.Put)('/'),
     (0, tsoa_1.Security)('api_key', ['update:product']),
     __param(0, (0, tsoa_1.Query)('id')),
     __param(1, (0, tsoa_1.Body)()),
@@ -76,7 +76,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "updateProduct", null);
 __decorate([
-    (0, tsoa_1.Delete)('/{id}/'),
+    (0, tsoa_1.Delete)('/'),
     (0, tsoa_1.Security)('api_key', ['delete:product']),
     __param(0, (0, tsoa_1.Query)('id')),
     __metadata("design:type", Function),
@@ -84,7 +84,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "deleteProduct", null);
 __decorate([
-    (0, tsoa_1.Get)('/search/:query'),
+    (0, tsoa_1.Get)('/search/'),
     (0, tsoa_1.Security)('api_key', ['read:product']),
     __param(0, (0, tsoa_1.Query)('query')),
     __metadata("design:type", Function),

@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Number)
 ], Stock.prototype, "sell_price", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => product_1.Product),
+    (0, typeorm_1.OneToOne)(() => product_1.Product, { onDelete: "CASCADE" }),
     (0, typeorm_1.JoinColumn)({ name: "productId" }),
     __metadata("design:type", product_1.Product)
 ], Stock.prototype, "product", void 0);
