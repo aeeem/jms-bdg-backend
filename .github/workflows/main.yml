@@ -26,6 +26,6 @@ jobs:
       - run: mkdir ~/.ssh
       - run: 'echo "$SSH_KEY" >> ~/.ssh/github-action'
       - run: chmod 400 ~/.ssh/github-action
-      - run: echo -e "Host jmsdev\n\tUser devjms\n\tHostname jmsdev.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
+      - run: echo -e "Host jmsdev\n\tUser devjms\n\tHostname jmsbdg.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
       - run: rsync -a ssh dist/ devjms:~/jms-bdg-backend/dist
       - run: ssh devjms "pm2 reload all"
