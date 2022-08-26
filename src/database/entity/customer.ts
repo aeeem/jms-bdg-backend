@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, OneToMany, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { CustomerDeposit } from "./customerDeposit";
+import { CustomerMonetary } from "./customerMonetary";
 import { Transaction } from "./transaction";
 
 @Entity('customer')
@@ -13,8 +13,8 @@ export class Customer extends BaseEntity {
   @Column()
   contact_number: string;
 
-  @OneToMany(() => CustomerDeposit, (deposit: CustomerDeposit) => deposit.customer, { onDelete: 'CASCADE'})
-  deposits: CustomerDeposit[]
+  @OneToMany(() => CustomerMonetary, (deposit: CustomerMonetary) => deposit.customer, { onDelete: 'CASCADE'})
+  monetary: CustomerMonetary[]
 
   @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer, { onDelete: 'CASCADE' })
   @JoinTable()

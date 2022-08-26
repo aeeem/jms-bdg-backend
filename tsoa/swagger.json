@@ -44,6 +44,14 @@
 			},
 			"CustomerRequestParameter": {
 				"properties": {
+					"piutang": {
+						"type": "number",
+						"format": "double"
+					},
+					"hutang": {
+						"type": "number",
+						"format": "double"
+					},
 					"contact_number": {
 						"type": "string"
 					},
@@ -55,6 +63,25 @@
 					"contact_number",
 					"name"
 				],
+				"type": "object"
+			},
+			"CustomerUpdateRequestParameter": {
+				"properties": {
+					"piutang": {
+						"type": "number",
+						"format": "double"
+					},
+					"hutang": {
+						"type": "number",
+						"format": "double"
+					},
+					"contact_number": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
 				"type": "object"
 			},
 			"ProductRequestParameter": {
@@ -341,6 +368,117 @@
 				}
 			}
 		},
+		"/api/customer/{id}": {
+			"get": {
+				"operationId": "FindCustomerById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CustomerUpdateRequestParameter"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"delete:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/customer/search/{query}": {
 			"get": {
 				"operationId": "SearchCustomer",
@@ -368,94 +506,6 @@
 					{
 						"in": "path",
 						"name": "query",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/customer/{id}": {
-			"put": {
-				"operationId": "UpdateCustomer",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Customer"
-				],
-				"security": [
-					{
-						"api_key": [
-							"update:customer"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/CustomerRequestParameter"
-							}
-						}
-					}
-				}
-			},
-			"delete": {
-				"operationId": "DeleteCustomer",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Customer"
-				],
-				"security": [
-					{
-						"api_key": [
-							"delete:customer"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "id",
 						"required": true,
 						"schema": {
 							"type": "string"

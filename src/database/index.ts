@@ -54,6 +54,10 @@ export default class Database {
   public async closeConnection(): Promise<void> {
     await this.connection.close();
   }
+
+  public queryRunner(){
+    return this.connection.createQueryRunner();
+  }
 }
 
 
