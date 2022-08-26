@@ -19,19 +19,19 @@ export class ProductsController extends Controller{
     return createProductService(payload);
   }
 
-  @Put('/{id}/')
+  @Put('/')
   @Security('api_key',['update:product'])
   public async updateProduct(@Query('id') id: string, @Body() payload: ProductRequestParameter) {
     return updateProductService(Number(id), payload);
   }
 
-  @Delete('/{id}/')
+  @Delete('/')
   @Security('api_key',['delete:product'])
   public async deleteProduct(@Query('id') id: string) {
     return deleteProductService({ id: Number(id) });
   }
 
-  @Get('/search/:query')
+  @Get('/search/')
   @Security('api_key',['read:product'])
   public async searchProduct(@Query('query') query: string) {
     return searchProductService({ query });

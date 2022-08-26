@@ -1,24 +1,24 @@
 import { Vendor } from "@entity/vendor";
-import * as response from 'src/helper/response'
+import makeResponse from 'src/helper/response'
 import _ from "lodash";
 import { VendorRequestParameter } from "./vendor.interfaces";
 
 export const getAllVendorService = async () => {
   try {
     const vendors = await Vendor.find()
-    return response.success<Vendor[]>({data:vendors, stat_msg:"SUCCESS"});
+    return makeResponse.success<Vendor[]>({data:vendors, stat_msg:"SUCCESS"});
   } catch (error) {
-    response.error({ stat_msg:"FAILED", stat_code: 404});
+    makeResponse.error({ stat_msg:"FAILED", stat_code: 404});
   }
 }
 
 export const findVendorService = async (query: string) => {
   try {
-    const vendor = await Vendor.createQueryBuilder()
-      .where('vendor.code LIKE :query', { query })
+    const vendor = await Vendor.createQueryBuilder("vendor")
+      .where('vendor.code LIKE :query', { query: `%${query}%` })
       .getMany();
-    if (_.isEmpty(vendor)) return { message: "Vendor is not found!" };
-    return response.success<Vendor[]>({data:vendor, stat_msg:"SUCCESS"});
+    if (_.isEmpty(vendor)) makeResponse.success<Vendor[]>({data:vendor, stat_msg:"NOT_FOUND"});
+    return makeResponse.success<Vendor[]>({data:vendor, stat_msg:"SUCCESS"});
   } catch (error) {
     console.error(error)
   }

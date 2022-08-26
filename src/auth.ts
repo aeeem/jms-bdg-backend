@@ -12,7 +12,7 @@ export async function expressAuthentication(
 ): Promise<any> {
   try {
     if (securityName === "api_key") {
-      const headerToken = request.headers['access_token']
+      const headerToken = request.headers['authorization']
       let token: string = ""
       if (request.headers && headerToken) {
         token = String(headerToken)
