@@ -4,6 +4,7 @@ import { Stock } from "@entity/stock";
 import { Transaction } from "@entity/transaction";
 import { TransactionDetail } from "@entity/transactionDetail";
 import _ from "lodash";
+import { db } from "src/app";
 import { ErrorHandler } from "src/errorHandler";
 import { E_ErrorType } from "src/errorHandler/enums";
 import { TransactionRequestParameter } from "./transaction.interface";
@@ -28,8 +29,9 @@ export const getAllTransactionService = async () => {
 
 
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
+  const queryRunner = db.queryRunner()
   try {
-    const customer            = await Customer.findOne({ where : { id : payload.customer_id }})
+    const customer = await Customer.findOne({ where : { id : payload.customer_id }})
     if(!customer) throw E_ErrorType.E_CUSTOMER_NOT_FOUND
 
     const products = await Product.find({ relations: ['stocks'] })
@@ -37,20 +39,24 @@ export const createTransactionService = async (payload: TransactionRequestParame
     let expected_total_price = 0
     let actual_total_price = 0;
 
-    const transactionDetails  = payload.detail.map((transactionDetail) => {
+    const transactionDetails  = await Promise.all(payload.detail.map(async (transactionDetail) => {
       const product = products.find((product) => product.id === transactionDetail.productId)
       if(!product) throw E_ErrorType.E_PRODUCT_NOT_FOUND
 
       expected_total_price += product.stock.sell_price      * transactionDetail.amount
       actual_total_price   += transactionDetail.final_price * transactionDetail.amount
+
+      product.stock.total_stock -= transactionDetail.amount
+      await queryRunner.manager.save(transaction)
+
       const detail          = new TransactionDetail()
-      
       detail.amount         = transactionDetail.amount
       detail.final_price    = transactionDetail.final_price
       detail.sub_total      = transactionDetail.sub_total
       detail.product_id     = transactionDetail.productId
+
       return detail
-    })
+    }))
 
     if(expected_total_price !== payload.expected_total_price) throw E_ErrorType.E_EXPECTED_TOTAL_PRICE_NOT_MATCH
 
@@ -60,12 +66,15 @@ export const createTransactionService = async (payload: TransactionRequestParame
     transaction.expected_total_price  = expected_total_price
     transaction.actual_total_price    = payload.actual_total_price
 
-    await transaction.save()
+    await queryRunner.manager.save(transaction)
 
     return transaction
 
   } catch (error) {
+    await queryRunner.rollbackTransaction()
     throw new ErrorHandler(error)
+  }finally{
+    await queryRunner.release()
   }
 }
 

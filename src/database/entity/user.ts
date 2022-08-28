@@ -16,12 +16,12 @@ export class User extends BaseEntity {
   name: string;
 
   @Column({
-    nullable: false
+    nullable: true
   })
   birth_date: Date;
 
   @Column({
-    nullable: false
+    nullable: true
   })
   phone_number: string
 
@@ -32,6 +32,8 @@ export class User extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   role_id: number;
 }
