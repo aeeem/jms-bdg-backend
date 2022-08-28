@@ -1,4 +1,4 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Customer } from "./customer";
 import { TransactionDetail } from "./transactionDetail";
 
@@ -14,8 +14,21 @@ export class Transaction extends BaseEntity {
   @Column()
   actual_total_price: number;
 
+  @Column()
+  amount_paid: number;
+
+  @Column({
+    nullable: true
+  })
+  change: number;
+
+  @Column({
+    nullable: true
+  })
+  outstanding_amount: number;
+
   @ManyToOne(()=>Customer, (customer: Customer) => customer.id, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @JoinColumn({name: 'customer_id'})
   customer: Customer;
 
   @OneToMany(() => TransactionDetail, (transactionDetail: TransactionDetail) => transactionDetail.transaction, { cascade: true, onDelete: 'CASCADE' })
@@ -25,6 +38,9 @@ export class Transaction extends BaseEntity {
   @Column()
   status: string;
 
+  @Column()
+  customer_id: number;
+  
   @CreateDateColumn()
   created_at: Date;
 

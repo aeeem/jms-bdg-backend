@@ -1,4 +1,5 @@
 import { Transaction } from "@entity/transaction";
+import makeResponse from "src/helper/response";
 import { Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { TransactionRequestParameter, Transactionss } from "./transaction.interface";
 import { createTransactionService, deleteTransactionService, getAllTransactionService, searchTransactionService } from "./transaction.service";
@@ -12,13 +13,27 @@ export class TransactionController extends Controller{
   @Get('/')
   @Security('api_key',['read:transaction'])
   public async getAllTransaction() {
-    return getAllTransactionService()
+    try {
+      const transactions = await getAllTransactionService()
+      return makeResponse.success({
+        data: transactions
+      })
+    } catch (error) {
+      return error
+    }
   }
 
   @Post('/')
   @Security('api_key',['create:transaction'])
   public async createTransaction(@Body() payload: TransactionRequestParameter) {
-    return createTransactionService(payload);
+    try {
+      const createdTransaction = await createTransactionService(payload);
+      return makeResponse.success({
+        data: createdTransaction
+      })
+    } catch (error:any) {
+      return error
+    }
   }
   
   @Put('/{id}/')
