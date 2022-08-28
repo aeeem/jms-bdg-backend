@@ -15,10 +15,23 @@ export class User extends BaseEntity {
   @Column()
   name: string;
 
+  @Column({
+    nullable: false
+  })
+  birth_date: Date;
+
+  @Column({
+    nullable: false
+  })
+  phone_number: string
+
   @Column()
   password: string;
 
   @OneToOne(() => Role)
-  @JoinColumn()
+  @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @Column()
+  role_id: number;
 }

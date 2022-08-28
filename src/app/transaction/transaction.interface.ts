@@ -7,7 +7,7 @@ export type TransactionRequestParameter = {
   detail: {
     amount: number;
     final_price: number;
-    productId: string;
+    productId: number;
     sub_total: number;
   }[]
 };

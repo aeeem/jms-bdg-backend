@@ -4,6 +4,8 @@ import { Stock } from "@entity/stock";
 import { Transaction } from "@entity/transaction";
 import { TransactionDetail } from "@entity/transactionDetail";
 import _ from "lodash";
+import { ErrorHandler } from "src/errorHandler";
+import { E_ErrorType } from "src/errorHandler/enums";
 import { TransactionRequestParameter } from "./transaction.interface";
 
 
@@ -27,28 +29,43 @@ export const getAllTransactionService = async () => {
 
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
   try {
-    const customer            = await Customer.findOneOrFail({ where : { id : payload.customer_id }})
-    const transactionDetails  = await Promise.all(payload.detail.map(async (detail)=>{
-      const stock                       = await Stock.findOneOrFail({ where : { id : detail.productId }})
-      const _newTransactionDetail       = new TransactionDetail()
-      _newTransactionDetail.amount      = detail.amount
-      _newTransactionDetail.final_price = detail.final_price
-      _newTransactionDetail.sub_total   = detail.sub_total
-      _newTransactionDetail.stock       = stock
-      return _newTransactionDetail
-    }))
+    const customer            = await Customer.findOne({ where : { id : payload.customer_id }})
+    if(!customer) throw E_ErrorType.E_CUSTOMER_NOT_FOUND
+
+    const products = await Product.find({ relations: ['stocks'] })
+
+    let expected_total_price = 0
+    let actual_total_price = 0;
+
+    const transactionDetails  = payload.detail.map((transactionDetail) => {
+      const product = products.find((product) => product.id === transactionDetail.productId)
+      if(!product) throw E_ErrorType.E_PRODUCT_NOT_FOUND
+
+      expected_total_price += product.stock.sell_price      * transactionDetail.amount
+      actual_total_price   += transactionDetail.final_price * transactionDetail.amount
+      const detail          = new TransactionDetail()
+      
+      detail.amount         = transactionDetail.amount
+      detail.final_price    = transactionDetail.final_price
+      detail.sub_total      = transactionDetail.sub_total
+      detail.product_id     = transactionDetail.productId
+      return detail
+    })
+
+    if(expected_total_price !== payload.expected_total_price) throw E_ErrorType.E_EXPECTED_TOTAL_PRICE_NOT_MATCH
+
     const transaction = new Transaction()
     transaction.customer              = customer
     transaction.transactionDetails    = transactionDetails
-    transaction.expected_total_price  = payload.expected_total_price
+    transaction.expected_total_price  = expected_total_price
     transaction.actual_total_price    = payload.actual_total_price
 
-    return await transaction.save()
+    await transaction.save()
 
-
+    return transaction
 
   } catch (error) {
-    console.error(error)
+    throw new ErrorHandler(error)
   }
 }
 

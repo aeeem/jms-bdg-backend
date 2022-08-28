@@ -159,7 +159,8 @@
 									"format": "double"
 								},
 								"productId": {
-									"type": "string"
+									"type": "number",
+									"format": "double"
 								},
 								"final_price": {
 									"type": "number",
