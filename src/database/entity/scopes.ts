@@ -112,6 +112,19 @@ export class Scope extends BaseEntity {
   @Column({ default: false })
   delete_vendor: boolean;
 
+  // CRUD VENDOR
+  @Column({ default: false })
+  create_pegawai: boolean;
+
+  @Column({ default: false })
+  read_pegawai: boolean;
+
+  @Column({ default: false })
+  update_pegawai: boolean;
+
+  @Column({ default: false })
+  delete_pegawai: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 
