@@ -452,39 +452,66 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
 				},
 				"tags": [
-					"Pegawai"
+					"Customer"
 				],
-				"security": [],
-				"parameters": []
-			},
-			"post": {
-				"operationId": "CreateEmployee",
+				"security": [
+					{
+						"api_key": [
+							"delete:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/customer/search/{query}": {
+			"get": {
+				"operationId": "SearchCustomer",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
 					}
 				},
 				"tags": [
-					"Pegawai"
+					"Customer"
 				],
-				"security": [],
-				"parameters": []
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/pegawai": {
