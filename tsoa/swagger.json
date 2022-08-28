@@ -226,6 +226,10 @@
 						},
 						"type": "array"
 					},
+					"amount_paid": {
+						"type": "number",
+						"format": "double"
+					},
 					"customer_id": {
 						"type": "number",
 						"format": "double"
@@ -241,6 +245,7 @@
 				},
 				"required": [
 					"detail",
+					"amount_paid",
 					"customer_id",
 					"actual_total_price",
 					"expected_total_price"

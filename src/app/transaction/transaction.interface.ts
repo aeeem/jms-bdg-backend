@@ -4,6 +4,7 @@ export type TransactionRequestParameter = {
   expected_total_price: number;
   actual_total_price: number;
   customer_id: number;
+  amount_paid: number;
   detail: {
     amount: number;
     final_price: number;

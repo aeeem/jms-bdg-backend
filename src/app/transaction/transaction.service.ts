@@ -1,10 +1,10 @@
 import { Customer } from "@entity/customer";
 import { Product } from "@entity/product";
-import { Stock } from "@entity/stock";
 import { Transaction } from "@entity/transaction";
 import { TransactionDetail } from "@entity/transactionDetail";
 import _ from "lodash";
 import { db } from "src/app";
+import { TRANSACTION_STATUS } from "src/constants/languageEnums";
 import { ErrorHandler } from "src/errorHandler";
 import { E_ErrorType } from "src/errorHandler/enums";
 import { TransactionRequestParameter } from "./transaction.interface";
@@ -12,17 +12,50 @@ import { TransactionRequestParameter } from "./transaction.interface";
 
 export const getAllTransactionService = async () => {
   try {
-    return await Transaction.find({
+    const transactions = await Transaction.find({
       relations: [
         'customer',
         'transactionDetails',
-        'transactionDetails.stock',
-        'transactionDetails.stock.product',
-        'transactionDetails.stock.vendor'
+        'transactionDetails.product',
+        'transactionDetails.product.stock',
+        'transactionDetails.product.stock.vendor'
       ]
     });
+    return transactions.map(transaction=>{
+      return {
+        id: transaction.id,
+        expected_total_price: transaction.expected_total_price,
+        actual_total_price: transaction.actual_total_price,
+        amount_paid: transaction.amount_paid,
+        change: transaction.change,
+        outstanding_amount: transaction.outstanding_amount,
+        customer: {
+          id: transaction.customer.id,
+          name: transaction.customer.name,
+          phone: transaction.customer.contact_number,
+        },
+        items: transaction.transactionDetails.map(detail=>{
+          return {
+            id: detail.id,
+            amount: detail.amount,
+            final_price: detail.final_price,
+            product: {
+              id: detail.product.id,
+              name: detail.product.name,
+              vendor: detail.product.stock.vendor.name
+            },
+            sub_total: detail.sub_total
+
+          }
+        }),
+        status: transaction.status,
+        created_at: transaction.created_at,
+        updated_at: transaction.updated_at
+      }
+    })
   } catch (error) {
-    console.error(error)
+    console.log(error)
+    return Promise.reject(new ErrorHandler(error))
   }
 }
 
@@ -31,10 +64,11 @@ export const getAllTransactionService = async () => {
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
   const queryRunner = db.queryRunner()
   try {
+    await queryRunner.startTransaction()
     const customer = await Customer.findOne({ where : { id : payload.customer_id }})
     if(!customer) throw E_ErrorType.E_CUSTOMER_NOT_FOUND
 
-    const products = await Product.find({ relations: ['stocks'] })
+    const products = await Product.find({ relations: ['stock'] })
 
     let expected_total_price = 0
     let actual_total_price = 0;
@@ -47,7 +81,7 @@ export const createTransactionService = async (payload: TransactionRequestParame
       actual_total_price   += transactionDetail.final_price * transactionDetail.amount
 
       product.stock.total_stock -= transactionDetail.amount
-      await queryRunner.manager.save(transaction)
+      await queryRunner.manager.save(product)
 
       const detail          = new TransactionDetail()
       detail.amount         = transactionDetail.amount
@@ -58,6 +92,7 @@ export const createTransactionService = async (payload: TransactionRequestParame
       return detail
     }))
 
+    // safety check in-case someone try to alter the payload incorrectly
     if(expected_total_price !== payload.expected_total_price) throw E_ErrorType.E_EXPECTED_TOTAL_PRICE_NOT_MATCH
 
     const transaction = new Transaction()
@@ -65,14 +100,24 @@ export const createTransactionService = async (payload: TransactionRequestParame
     transaction.transactionDetails    = transactionDetails
     transaction.expected_total_price  = expected_total_price
     transaction.actual_total_price    = payload.actual_total_price
+    transaction.amount_paid           = payload.amount_paid
+    if(payload.amount_paid < actual_total_price) {
+      transaction.status              = TRANSACTION_STATUS.PENDING
+      transaction.outstanding_amount  = actual_total_price - payload.amount_paid
+    }else{
+      transaction.status              = TRANSACTION_STATUS.PAID
+      transaction.change              = payload.amount_paid - actual_total_price
+    }
 
     await queryRunner.manager.save(transaction)
+    await queryRunner.commitTransaction()
 
     return transaction
 
-  } catch (error) {
+  } catch (error:any) {
     await queryRunner.rollbackTransaction()
-    throw new ErrorHandler(error)
+    console.log(error)
+    return Promise.reject(new ErrorHandler(error))
   }finally{
     await queryRunner.release()
   }
@@ -89,7 +134,7 @@ export const searchTransactionService = async (query: string) => {
       if(_.isEmpty(transaction)) return { message: "Transaction is not found!" };
       return transaction
   } catch (error) {
-    console.error(error)
+    return Promise.reject(new ErrorHandler(error))
   }
 }
 
@@ -106,7 +151,7 @@ export const updateTransactionService = async (id:string , payload: TransactionR
       where: { id }
     });
   } catch (error) {
-    console.error(error)
+    return Promise.reject(new ErrorHandler(error))
   }
 }
 
@@ -116,6 +161,6 @@ export const deleteTransactionService = async (id:string) => {
     await transaction.remove();
     return { message: "Transaction is deleted!" };
   } catch (error) {
-    console.error(error)
+    return Promise.reject(new ErrorHandler(error))
   }
 }

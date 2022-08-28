@@ -13,18 +13,25 @@ export class TransactionController extends Controller{
   @Get('/')
   @Security('api_key',['read:transaction'])
   public async getAllTransaction() {
-    return getAllTransactionService()
+    try {
+      const transactions = await getAllTransactionService()
+      return makeResponse.success({
+        data: transactions
+      })
+    } catch (error) {
+      return error
+    }
   }
 
   @Post('/')
   @Security('api_key',['create:transaction'])
   public async createTransaction(@Body() payload: TransactionRequestParameter) {
     try {
-      const createdProduct =  createTransactionService(payload);
+      const createdTransaction = await createTransactionService(payload);
       return makeResponse.success({
-        data: createdProduct
+        data: createdTransaction
       })
-    } catch (error) {
+    } catch (error:any) {
       return error
     }
   }
