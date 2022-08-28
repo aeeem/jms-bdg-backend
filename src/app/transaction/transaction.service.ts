@@ -59,8 +59,6 @@ export const getAllTransactionService = async () => {
   }
 }
 
-
-
 export const createTransactionService = async (payload: TransactionRequestParameter) => {
   const queryRunner = db.queryRunner()
   try {
