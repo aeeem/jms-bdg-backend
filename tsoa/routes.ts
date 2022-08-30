@@ -158,7 +158,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/customer/:id',
+        app.get('/api/customer/detail/:id',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
 
             function CustomerController_findCustomerById(request: any, response: any, next: any) {
@@ -182,12 +182,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/customer/search/:query',
+        app.get('/api/customer/search',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
 
             function CustomerController_searchCustomer(request: any, response: any, next: any) {
             const args = {
-                    query: {"in":"path","name":"query","required":true,"dataType":"string"},
+                    query: {"in":"query","name":"query","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

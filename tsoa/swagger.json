@@ -368,7 +368,7 @@
 				}
 			}
 		},
-		"/api/customer/{id}": {
+		"/api/customer/detail/{id}": {
 			"get": {
 				"operationId": "FindCustomerById",
 				"responses": {
@@ -401,7 +401,44 @@
 						}
 					}
 				]
-			},
+			}
+		},
+		"/api/customer/search": {
+			"get": {
+				"operationId": "SearchCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/customer/{id}": {
 			"put": {
 				"operationId": "UpdateCustomer",
 				"responses": {
@@ -471,41 +508,6 @@
 					{
 						"in": "path",
 						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/customer/search/{query}": {
-			"get": {
-				"operationId": "SearchCustomer",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Customer"
-				],
-				"security": [
-					{
-						"api_key": [
-							"read:customer"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "query",
 						"required": true,
 						"schema": {
 							"type": "string"
