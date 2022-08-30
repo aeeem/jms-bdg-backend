@@ -1,5 +1,5 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { E_Recievables } from "../enum/hutangPiutang";
+import { E_Recievables, E_Recievables_Source } from "../enum/hutangPiutang";
 import { Customer } from "./customer";
 import { Transaction } from "./transaction";
 
@@ -22,9 +22,12 @@ export class CustomerMonetary extends BaseEntity {
   @JoinColumn({ name: "cusotmer_id" })
   customer: Customer;
 
-  @OneToMany(() => Transaction, (transaction: Transaction) => transaction.customer, { onDelete: 'CASCADE' })
-  @JoinTable()
-  transactions: Transaction[];
+  @Column({
+    nullable: true,
+    type: 'enum',
+    enum: E_Recievables_Source,
+  })
+  source: E_Recievables_Source;
 
   @CreateDateColumn()
   created_at: Date;

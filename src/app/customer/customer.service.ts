@@ -12,7 +12,8 @@ import { CustomerRequestParameter, CustomerUpdateRequestParameter } from "./cust
 export const getAllCustomerService = async () => {
   try {
     return await Customer.find({relations:[
-      'monetary', 'monetary.transactions'
+      'transactions',
+      'monetary'
     ]});
   } catch (error) {
     return error
@@ -21,13 +22,18 @@ export const getAllCustomerService = async () => {
 
 export const getCustomerByIdService = async (id: string) => {
   try {
-    const customer = await Customer.findOne({where:{id}, relations:[
-      'monetary', 'monetary.transactions'
-    ]});
-    if (_.isEmpty(customer)) return customer
+    const customer = await Customer.findOne({
+      where:{ id }, 
+      relations:[
+        'transactions',
+        'monetary',
+      ]
+    });
+    if (!customer) throw E_ErrorType.E_CUSTOMER_NOT_FOUND
     return customer
   } catch (error) {
-    throw new ErrorHandler(error)
+    console.log(error)
+    return Promise.reject (new ErrorHandler(error))
   }
 }
 

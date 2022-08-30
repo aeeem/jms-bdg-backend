@@ -7,6 +7,8 @@ import { AuthController } from './../src/app/auth/auth.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CustomerController } from './../src/app/customer/customer.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { employeeController } from './../src/app/employee/employee.router';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductsController } from './../src/app/product/product.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { RoleController } from './../src/app/role/role.router';
@@ -59,6 +61,16 @@ const models: TsoaRoute.Models = {
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"piutang":{"dataType":"double"},"hutang":{"dataType":"double"},"contact_number":{"dataType":"string"},"name":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateEmployeeRequest": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime","required":true},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ChangeEmployeeRole": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"stok":{"dataType":"double","required":true},"hargaJual":{"dataType":"double","required":true},"hargaModal":{"dataType":"double","required":true},"tanggalMasuk":{"dataType":"datetime","required":true},"vendorId":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"sku":{"dataType":"string","required":true}},"validators":{}},
@@ -71,7 +83,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"detail":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"string","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},"customer_id":{"dataType":"double","required":true},"actual_total_price":{"dataType":"double","required":true},"expected_total_price":{"dataType":"double","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"detail":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},"amount_paid":{"dataType":"double","required":true},"customer_id":{"dataType":"double","required":true},"actual_total_price":{"dataType":"double","required":true},"expected_total_price":{"dataType":"double","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
@@ -273,6 +285,127 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.deleteCustomer.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/pegawai',
+            authenticateMiddleware([{"api_key":["read:pegawai"]}]),
+
+            function employeeController_getAllEmployee(request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.getAllEmployee.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/pegawai',
+            authenticateMiddleware([{"api_key":["create:pegawai"]}]),
+
+            function employeeController_createEmployee(request: any, response: any, next: any) {
+            const args = {
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateEmployeeRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.createEmployee.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.put('/api/pegawai/:id',
+            authenticateMiddleware([{"api_key":["update:pegawai"]}]),
+
+            function employeeController_updateEmployee(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateEmployeeRequest"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.updateEmployee.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.delete('/api/pegawai/:id',
+            authenticateMiddleware([{"api_key":["delete:pegawai"]}]),
+
+            function employeeController_deleteEmployee(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.deleteEmployee.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.patch('/api/pegawai/:id',
+            authenticateMiddleware([{"api_key":["update:pegawai"]}]),
+
+            function employeeController_changeEmployeeRole(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    undefined: {"in":"body","required":true,"ref":"ChangeEmployeeRole"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.changeEmployeeRole.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

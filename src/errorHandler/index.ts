@@ -23,6 +23,26 @@ export class ErrorHandler extends Error {
 
   errorTypeParser() {
     switch(this.err){
+      case E_ErrorType.E_FORBIDDEN_ROLE_INPUT:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err);;
+        this.message  = E_ErrorType.E_FORBIDDEN_ROLE_INPUT
+        this.status   = HTTP_CODE.NOT_FOUND
+        break;
+      case E_ErrorType.E_ROLE_NOT_FOUND:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err);;
+        this.message  = E_ErrorType.E_ROLE_NOT_FOUND
+        this.status   = HTTP_CODE.NOT_FOUND
+        break;
+      case E_ErrorType.E_EMPLOYEE_NOT_FOUND:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err);;
+        this.message  = E_ErrorType.E_EMPLOYEE_NOT_FOUND
+        this.status   = HTTP_CODE.NOT_FOUND
+        break;
+      case E_ErrorType.E_EXPECTED_TOTAL_PRICE_NOT_MATCH:
+        this.type     = this.getEnumKeyByEnumValue(E_ErrorType, this.err);
+        this.message  = E_ErrorType.E_EXPECTED_TOTAL_PRICE_NOT_MATCH
+        this.status   = HTTP_CODE.BAD_REQUEST
+        break;
       case E_ErrorType.E_PRODUCT_NOT_FOUND:
         this.type     = E_ErrorType.E_NOT_FOUND;
         this.message  = E_ErrorType.E_PRODUCT_NOT_FOUND
