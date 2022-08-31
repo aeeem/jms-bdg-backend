@@ -22,6 +22,7 @@ export enum E_ErrorType {
   E_VALIDATION_ERROR                = 'E_VALIDATION_ERROR',
   E_USER_NOT_FOUND                  = 'User not found',
   E_USER_IS_NOT_AUTHORIZED          = 'User is not authorized',
+  E_TOKEN_EXPIRED                   = 'Token expired',
 
 }
 

@@ -43,7 +43,7 @@ export const searchCustomerService = async (query: string) => {
     const customer = await Customer.createQueryBuilder("customer")
     .where('customer.name LIKE :query', { query: `%${query}%` })
     .leftJoinAndSelect('customer.monetary', 'monetary')
-    .leftJoinAndSelect('monetary.transactions', 'transactions')
+    .leftJoinAndSelect('customer.transactions', 'transactions')
     .orderBy('customer.id', 'ASC')
     .getMany()
     if (_.isEmpty(customer)) throw E_ErrorType.E_CUSTOMER_NOT_FOUND;
