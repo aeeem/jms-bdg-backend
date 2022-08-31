@@ -20,7 +20,8 @@ export class CustomerController extends Controller {
       new ErrorHandler(error)
     }
   }
-  @Get('/{id}')
+
+  @Get('/detail/{id}')
   @Security('api_key', ['read:customer'])
   public async findCustomerById(@Path() id: string) {
     try {
@@ -34,13 +35,13 @@ export class CustomerController extends Controller {
     }
   }
 
-  @Get('/search/{query}')
+  @Get('/search/')
   @Security('api_key',['read:customer'])
-  public async searchCustomer(query: string) {
+  public async searchCustomer(@Query('query') query: string) {
     try {
-      return searchCustomerService(query);
+      const customer = await searchCustomerService(query);
+      return  makeResponse.success({data: customer})
     } catch (error:any) {
-      console.log('here')
       return makeResponse.error({
         stat_code: HTTP_CODE.INTERNAL_SERVER_ERROR,
         stat_msg: error.message

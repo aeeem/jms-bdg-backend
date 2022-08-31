@@ -39,9 +39,13 @@ export const getCustomerByIdService = async (id: string) => {
 
 export const searchCustomerService = async (query: string) => {
   try {
-    const customer = await Customer.createQueryBuilder()
-      .where('name LIKE :query', { query: `%${query}%` })
-      .getMany();
+    
+    const customer = await Customer.createQueryBuilder("customer")
+    .where('customer.name LIKE :query', { query: `%${query}%` })
+    .leftJoinAndSelect('customer.monetary', 'monetary')
+    .leftJoinAndSelect('monetary.transactions', 'transactions')
+    .orderBy('customer.id', 'ASC')
+    .getMany()
     if (_.isEmpty(customer)) throw E_ErrorType.E_CUSTOMER_NOT_FOUND;
     return customer;
   } catch (error) {
@@ -67,7 +71,9 @@ export const createCustomerService = async (payload: CustomerRequestParameter) =
       _customerMonet.amount = payload.piutang;
       _customerMonet.type = E_Recievables.RECIEVABLE;
     }
-    await queryRunner.manager.save(_customerMonet);
+    if(payload.hutang || payload.piutang) {
+      await queryRunner.manager.save(_customerMonet);
+    }
     await queryRunner.commitTransaction()
     return await Customer.findOne({
       where: { id: _newCustomer.id }
