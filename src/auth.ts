@@ -2,6 +2,7 @@ import * as express from "express";
 import { verifyToken } from "./helper/jwt";
 import { User } from "@entity/user";
 import { E_ErrorType } from "./errorHandler/enums";
+import { ErrorHandler } from "./errorHandler";
 
 
 
@@ -19,7 +20,8 @@ export async function expressAuthentication(
       }
       if (!token) throw "No token provided"
       const decoded: any = await verifyToken(token)
-      if (decoded instanceof Error) throw decoded.message
+      if (decoded instanceof Error) throw E_ErrorType.E_TOKEN_EXPIRED
+      
       const user = await User.findOne({
         where: { id: decoded.id },
         relations: ['role', 'role.scopes']
@@ -40,7 +42,7 @@ export async function expressAuthentication(
     }
   } catch (error: any) {
     return new Promise((resolve, reject) => {
-      reject(new Error(error))
+      reject(new ErrorHandler(error))
     })
   }
 }

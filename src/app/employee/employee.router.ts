@@ -10,7 +10,11 @@ export class employeeController extends Controller{
   @Security('api_key',['read:pegawai'])
   @Get("/")
   public async getAllEmployee(){
-    return getAllEmployeeService();
+    try {
+      return getAllEmployeeService();
+    } catch (error) {
+      console.log('[Employee] fail get employee')
+    }
   }
   
   @Security('api_key',['create:pegawai'])
