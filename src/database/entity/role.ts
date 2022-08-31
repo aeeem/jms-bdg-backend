@@ -14,6 +14,6 @@ export class Role extends BaseEntity {
   @JoinColumn()
   scopes: Scope;
 
-  @OneToOne(() => User)
+  // @OneToOne(() => User)
   user: User;
 }
