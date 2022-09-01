@@ -45,7 +45,7 @@ export const getAllEmployeeService = async () => {
 
 export const searchEmployeeService = async (query: string) => {
   try {
-    
+    // TODO based on https://github.com/mochaazul/jms-bdg-backend/pull/15#discussion_r960374243
     const employees = await User.createQueryBuilder("user")
     .where('user.name LIKE :query', { query: `%${query}%` })
     .leftJoinAndSelect('user.role', 'role')
