@@ -1,7 +1,7 @@
 import makeResponse from "src/helper/response";
-import { Body, Controller, Delete, Get, Patch, Path, Post, Put, Route, Security, Tags } from "tsoa";
+import { Body, Controller, Delete, Get, Patch, Path, Post, Put, Query, Route, Security, Tags } from "tsoa";
 import { ChangeEmployeeRole, CreateEmployeeRequest } from "./employee.interface";
-import { changeEmployeeRoleService, createEmployeeService, deleteEmployeeService, getAllEmployeeService, updateEmployeeService } from "./employee.service";
+import { changeEmployeeRoleService, createEmployeeService, deleteEmployeeService, getAllEmployeeService, searchEmployeeService, updateEmployeeService } from "./employee.service";
 
 @Tags('Pegawai')
 @Route('/api/pegawai')
@@ -39,6 +39,16 @@ export class employeeController extends Controller{
         data: updatedEmployee
       })
     } catch (error) {
+      return error
+    }
+  }
+
+  @Get('/search/')
+  @Security('api_key',['read:customer'])
+  public async searchEmployee(@Query('query') query: string) {
+    try {
+      return searchEmployeeService(query)
+    } catch (error:any) {
       return error
     }
   }

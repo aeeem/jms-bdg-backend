@@ -110,9 +110,7 @@
 				"required": [
 					"role_id",
 					"phone_number",
-					"birth_date",
 					"noInduk",
-					"email",
 					"name"
 				],
 				"type": "object"
@@ -749,6 +747,41 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/pegawai/search": {
+			"get": {
+				"operationId": "SearchEmployee",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Pegawai"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/products": {

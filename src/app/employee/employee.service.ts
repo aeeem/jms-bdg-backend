@@ -1,11 +1,27 @@
 import { Role } from "@entity/role"
 import { User } from "@entity/user"
+import _ from "lodash";
 import { CreateEmployeeRequest, RoleLists } from "src/app/employee/employee.interface"
 import { ErrorHandler } from "src/errorHandler"
 import { E_ErrorType } from "src/errorHandler/enums"
 import { createHashPassword } from "src/helper/bcrypt"
 import makeResponse from "src/helper/response"
 import { Not } from "typeorm"
+
+const formatResponse = (employees:User[]) => {
+  return  employees.map(employee => {
+    return {
+      id          : employee.id,
+      name        : employee.name,
+      email       : employee.email,
+      noInduk     : employee.noInduk,
+      role        : employee.role,
+      roleName    : employee.role.role,
+      phone_number: employee.phone_number,
+      birth_date  : employee.birth_date
+    }
+  })
+}
 
 
 export const getAllEmployeeService = async () => {
@@ -19,23 +35,27 @@ export const getAllEmployeeService = async () => {
      relations: ['role']
     })
 
-    const formatResponse = employees.map(employee => {
-      return {
-        id          : employee.id,
-        name        : employee.name,
-        email       : employee.email,
-        noInduk     : employee.noInduk,
-        role        : employee.role,
-        roleName    : employee.role.role,
-        phoneNumber : employee.phone_number,
-        birth_date  : employee.birth_date
-      }
-    })
-
-    return makeResponse.success({data:formatResponse, stat_msg:"SUCCESS"});
+    const formatEmployee = formatResponse(employees)
+    return makeResponse.success({data:formatEmployee, stat_msg:"SUCCESS"});
   } catch (error) {
     console.log(error)
     return new ErrorHandler(error)
+  }
+}
+
+export const searchEmployeeService = async (query: string) => {
+  try {
+    
+    const employees = await User.createQueryBuilder("user")
+    .where('user.name LIKE :query', { query: `%${query}%` })
+    .leftJoinAndSelect('user.role', 'role')
+    .orderBy('user.id', 'ASC')
+    .getMany()
+    if (_.isEmpty(employees)) makeResponse.success<User[]>({data:employees, stat_msg:E_ErrorType.E_USER_NOT_FOUND});
+    const formatEmployee = formatResponse(employees)
+    return makeResponse.success({data:formatEmployee, stat_msg:"SUCCESS"});
+  } catch (error) {
+    throw new ErrorHandler(error)
   }
 }
 
@@ -49,9 +69,7 @@ export const createEmployeeService = async (payload:CreateEmployeeRequest) => {
     if(defaultPassword instanceof Error) throw defaultPassword.message
 
     employee.name         = payload.name
-    employee.email        = payload.email
     employee.noInduk      = payload.noInduk
-    employee.birth_date   = payload.birth_date
     employee.phone_number = payload.phone_number
     employee.role_id      = payload.role_id
     employee.role         = role as Role
@@ -92,7 +110,6 @@ export const deleteEmployeeService = async (id:number) => {
     await employee.remove()
     return employee
   } catch (error) {
-    console.log(error)
     return new ErrorHandler(error)
   }
 }

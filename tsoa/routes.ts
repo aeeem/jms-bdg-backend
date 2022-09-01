@@ -63,7 +63,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateEmployeeRequest": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime","required":true},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime"},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string"},"name":{"dataType":"string","required":true}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ChangeEmployeeRole": {
@@ -357,6 +357,30 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.updateEmployee.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/pegawai/search',
+            authenticateMiddleware([{"api_key":["read:customer"]}]),
+
+            function employeeController_searchEmployee(request: any, response: any, next: any) {
+            const args = {
+                    query: {"in":"query","name":"query","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new employeeController();
+
+
+              const promise = controller.searchEmployee.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

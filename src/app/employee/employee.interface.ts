@@ -8,9 +8,9 @@ export enum RoleLists{
 
 export type CreateEmployeeRequest={
   name: string;
-  email: string;
+  email?: string;
   noInduk: string;
-  birth_date: Date;
+  birth_date?: Date;
   phone_number: string;
   role_id: number
 }
