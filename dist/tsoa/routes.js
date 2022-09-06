@@ -19,6 +19,8 @@ const auth_router_1 = require("./../src/app/auth/auth.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const customer_router_1 = require("./../src/app/customer/customer.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+const employee_router_1 = require("./../src/app/employee/employee.router");
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const product_router_1 = require("./../src/app/product/product.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const role_router_1 = require("./../src/app/role/role.router");
@@ -60,7 +62,22 @@ const models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CustomerRequestParameter": {
         "dataType": "refAlias",
-        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "contact_number": { "dataType": "string", "required": true }, "name": { "dataType": "string", "required": true } }, "validators": {} },
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "piutang": { "dataType": "double" }, "hutang": { "dataType": "double" }, "contact_number": { "dataType": "string", "required": true }, "name": { "dataType": "string", "required": true } }, "validators": {} },
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CustomerUpdateRequestParameter": {
+        "dataType": "refAlias",
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "piutang": { "dataType": "double" }, "hutang": { "dataType": "double" }, "contact_number": { "dataType": "string" }, "name": { "dataType": "string" } }, "validators": {} },
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateEmployeeRequest": {
+        "dataType": "refAlias",
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "role_id": { "dataType": "double", "required": true }, "phone_number": { "dataType": "string", "required": true }, "birth_date": { "dataType": "datetime", "required": true }, "noInduk": { "dataType": "string", "required": true }, "email": { "dataType": "string", "required": true }, "name": { "dataType": "string", "required": true } }, "validators": {} },
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ChangeEmployeeRole": {
+        "dataType": "refAlias",
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "role_id": { "dataType": "double", "required": true } }, "validators": {} },
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
@@ -75,7 +92,7 @@ const models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
         "dataType": "refAlias",
-        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "detail": { "dataType": "array", "array": { "dataType": "nestedObjectLiteral", "nestedProperties": { "sub_total": { "dataType": "double", "required": true }, "productId": { "dataType": "string", "required": true }, "final_price": { "dataType": "double", "required": true }, "amount": { "dataType": "double", "required": true } } }, "required": true }, "customer_id": { "dataType": "double", "required": true }, "actual_total_price": { "dataType": "double", "required": true }, "expected_total_price": { "dataType": "double", "required": true } }, "validators": {} },
+        "type": { "dataType": "nestedObjectLiteral", "nestedProperties": { "detail": { "dataType": "array", "array": { "dataType": "nestedObjectLiteral", "nestedProperties": { "sub_total": { "dataType": "double", "required": true }, "productId": { "dataType": "double", "required": true }, "final_price": { "dataType": "double", "required": true }, "amount": { "dataType": "double", "required": true } } }, "required": true }, "amount_paid": { "dataType": "double", "required": true }, "customer_id": { "dataType": "double", "required": true }, "actual_total_price": { "dataType": "double", "required": true }, "expected_total_price": { "dataType": "double", "required": true } }, "validators": {} },
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
@@ -140,9 +157,26 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.get('/api/customer/search/:query', authenticateMiddleware([{ "api_key": ["read:customer"] }]), function CustomerController_searchCustomer(request, response, next) {
+    app.get('/api/customer/detail/:id', authenticateMiddleware([{ "api_key": ["read:customer"] }]), function CustomerController_findCustomerById(request, response, next) {
         const args = {
-            query: { "in": "path", "name": "query", "required": true, "dataType": "string" },
+            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new customer_router_1.CustomerController();
+            const promise = controller.findCustomerById.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/customer/search', authenticateMiddleware([{ "api_key": ["read:customer"] }]), function CustomerController_searchCustomer(request, response, next) {
+        const args = {
+            query: { "in": "query", "name": "query", "required": true, "dataType": "string" },
         };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];
@@ -176,8 +210,8 @@ function RegisterRoutes(app) {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.put('/api/customer/:id', authenticateMiddleware([{ "api_key": ["update:customer"] }]), function CustomerController_updateCustomer(request, response, next) {
         const args = {
-            id: { "in": "query", "name": "id", "required": true, "dataType": "string" },
-            payload: { "in": "body", "name": "payload", "required": true, "ref": "CustomerRequestParameter" },
+            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+            payload: { "in": "body", "name": "payload", "required": true, "ref": "CustomerUpdateRequestParameter" },
         };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];
@@ -194,7 +228,7 @@ function RegisterRoutes(app) {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.delete('/api/customer/:id', authenticateMiddleware([{ "api_key": ["delete:customer"] }]), function CustomerController_deleteCustomer(request, response, next) {
         const args = {
-            id: { "in": "query", "name": "id", "required": true, "dataType": "string" },
+            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
         };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];
@@ -202,6 +236,91 @@ function RegisterRoutes(app) {
             validatedArgs = getValidatedArgs(args, request, response);
             const controller = new customer_router_1.CustomerController();
             const promise = controller.deleteCustomer.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/pegawai', authenticateMiddleware([{ "api_key": ["read:pegawai"] }]), function employeeController_getAllEmployee(request, response, next) {
+        const args = {};
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new employee_router_1.employeeController();
+            const promise = controller.getAllEmployee.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/api/pegawai', authenticateMiddleware([{ "api_key": ["create:pegawai"] }]), function employeeController_createEmployee(request, response, next) {
+        const args = {
+            body: { "in": "body", "name": "body", "required": true, "ref": "CreateEmployeeRequest" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new employee_router_1.employeeController();
+            const promise = controller.createEmployee.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.put('/api/pegawai/:id', authenticateMiddleware([{ "api_key": ["update:pegawai"] }]), function employeeController_updateEmployee(request, response, next) {
+        const args = {
+            id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+            body: { "in": "body", "name": "body", "required": true, "ref": "CreateEmployeeRequest" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new employee_router_1.employeeController();
+            const promise = controller.updateEmployee.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.delete('/api/pegawai/:id', authenticateMiddleware([{ "api_key": ["delete:pegawai"] }]), function employeeController_deleteEmployee(request, response, next) {
+        const args = {
+            id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new employee_router_1.employeeController();
+            const promise = controller.deleteEmployee.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.patch('/api/pegawai/:id', authenticateMiddleware([{ "api_key": ["update:pegawai"] }]), function employeeController_changeEmployeeRole(request, response, next) {
+        const args = {
+            id: { "in": "path", "name": "id", "required": true, "dataType": "double" },
+            undefined: { "in": "body", "required": true, "ref": "ChangeEmployeeRole" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new employee_router_1.employeeController();
+            const promise = controller.changeEmployeeRole.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, undefined, next);
         }
         catch (err) {

@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Customer = void 0;
 const typeorm_1 = require("typeorm");
-const customerDeposit_1 = require("./customerDeposit");
+const customerMonetary_1 = require("./customerMonetary");
 const transaction_1 = require("./transaction");
 let Customer = class Customer extends typeorm_1.BaseEntity {
 };
@@ -28,9 +28,9 @@ __decorate([
     __metadata("design:type", String)
 ], Customer.prototype, "contact_number", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => customerDeposit_1.CustomerDeposit, (deposit) => deposit.customer, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.OneToMany)(() => customerMonetary_1.CustomerMonetary, (deposit) => deposit.customer, { onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
-], Customer.prototype, "deposits", void 0);
+], Customer.prototype, "monetary", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => transaction_1.Transaction, (transaction) => transaction.customer, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinTable)(),

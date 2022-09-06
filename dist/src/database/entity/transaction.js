@@ -28,8 +28,26 @@ __decorate([
     __metadata("design:type", Number)
 ], Transaction.prototype, "actual_total_price", void 0);
 __decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "amount_paid", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "change", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "outstanding_amount", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => customer_1.Customer, (customer) => customer.id, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.JoinColumn)({ name: 'customer_id' }),
     __metadata("design:type", customer_1.Customer)
 ], Transaction.prototype, "customer", void 0);
 __decorate([
@@ -41,6 +59,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Transaction.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "customer_id", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

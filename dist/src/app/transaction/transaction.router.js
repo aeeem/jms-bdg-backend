@@ -20,19 +20,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionController = void 0;
+const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const transaction_service_1 = require("./transaction.service");
 let TransactionController = class TransactionController extends tsoa_1.Controller {
     getAllTransaction() {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, transaction_service_1.getAllTransactionService)();
+            try {
+                const transactions = yield (0, transaction_service_1.getAllTransactionService)();
+                return response_1.default.success({
+                    data: transactions
+                });
+            }
+            catch (error) {
+                return error;
+            }
         });
     }
     createTransaction(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, transaction_service_1.createTransactionService)(payload);
+            try {
+                const createdTransaction = yield (0, transaction_service_1.createTransactionService)(payload);
+                return response_1.default.success({
+                    data: createdTransaction
+                });
+            }
+            catch (error) {
+                return error;
+            }
         });
     }
     updateTransaction(id, payload) {

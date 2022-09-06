@@ -44,6 +44,14 @@
             },
             "CustomerRequestParameter": {
                 "properties": {
+                    "piutang": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "hutang": {
+                        "type": "number",
+                        "format": "double"
+                    },
                     "contact_number": {
                         "type": "string"
                     },
@@ -54,6 +62,70 @@
                 "required": [
                     "contact_number",
                     "name"
+                ],
+                "type": "object"
+            },
+            "CustomerUpdateRequestParameter": {
+                "properties": {
+                    "piutang": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "hutang": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "contact_number": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateEmployeeRequest": {
+                "properties": {
+                    "role_id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "phone_number": {
+                        "type": "string"
+                    },
+                    "birth_date": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "noInduk": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "role_id",
+                    "phone_number",
+                    "birth_date",
+                    "noInduk",
+                    "email",
+                    "name"
+                ],
+                "type": "object"
+            },
+            "ChangeEmployeeRole": {
+                "properties": {
+                    "role_id": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "role_id"
                 ],
                 "type": "object"
             },
@@ -132,7 +204,8 @@
                                     "format": "double"
                                 },
                                 "productId": {
-                                    "type": "string"
+                                    "type": "number",
+                                    "format": "double"
                                 },
                                 "final_price": {
                                     "type": "number",
@@ -153,6 +226,10 @@
                         },
                         "type": "array"
                     },
+                    "amount_paid": {
+                        "type": "number",
+                        "format": "double"
+                    },
                     "customer_id": {
                         "type": "number",
                         "format": "double"
@@ -168,6 +245,7 @@
                 },
                 "required": [
                     "detail",
+                    "amount_paid",
                     "customer_id",
                     "actual_total_price",
                     "expected_total_price"
@@ -341,7 +419,42 @@
                 }
             }
         },
-        "/api/customer/search/{query}": {
+        "/api/customer/detail/{id}": {
+            "get": {
+                "operationId": "FindCustomerById",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Customer"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "read:customer"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/customer/search": {
             "get": {
                 "operationId": "SearchCustomer",
                 "responses": {
@@ -366,7 +479,7 @@
                 ],
                 "parameters": [
                     {
-                        "in": "path",
+                        "in": "query",
                         "name": "query",
                         "required": true,
                         "schema": {
@@ -401,7 +514,7 @@
                 ],
                 "parameters": [
                     {
-                        "in": "query",
+                        "in": "path",
                         "name": "id",
                         "required": true,
                         "schema": {
@@ -414,7 +527,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/CustomerRequestParameter"
+                                "$ref": "#/components/schemas/CustomerUpdateRequestParameter"
                             }
                         }
                     }
@@ -427,17 +540,7 @@
                         "description": "Ok",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ],
-                                    "type": "object"
-                                }
+                                "schema": {}
                             }
                         }
                     }
@@ -454,7 +557,7 @@
                 ],
                 "parameters": [
                     {
-                        "in": "query",
+                        "in": "path",
                         "name": "id",
                         "required": true,
                         "schema": {
@@ -462,6 +565,190 @@
                         }
                     }
                 ]
+            }
+        },
+        "/api/pegawai": {
+            "get": {
+                "operationId": "GetAllEmployee",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Pegawai"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "read:pegawai"
+                        ]
+                    }
+                ],
+                "parameters": []
+            },
+            "post": {
+                "operationId": "CreateEmployee",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Pegawai"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:pegawai"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateEmployeeRequest"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pegawai/{id}": {
+            "put": {
+                "operationId": "UpdateEmployee",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Pegawai"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "update:pegawai"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateEmployeeRequest"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "DeleteEmployee",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Pegawai"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "delete:pegawai"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    }
+                ]
+            },
+            "patch": {
+                "operationId": "ChangeEmployeeRole",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Pegawai"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "update:pegawai"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeEmployeeRole"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/products": {

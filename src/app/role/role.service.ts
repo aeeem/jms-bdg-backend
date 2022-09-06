@@ -1,25 +1,20 @@
-import { Role } from "@entity/role"
-import { ErrorHandler } from "src/errorHandler"
-import { scopeFormatter } from "src/helper/scopeHelper"
-
+import { Role } from '@entity/role'
+import { Errors } from 'src/errorHandler'
+import { scopeFormatter } from 'src/helper/scopeHelper'
 
 export const getAllRoleService = async () => {
   try {
-    const roles = await Role.find({
-      relations: [
-        'scopes'
-      ]
-    })
+    const roles = await Role.find( { relations: ['scopes'] } )
 
-    const formattedRoles = roles.map(role=>{
+    const formattedRoles = roles.map( role => {
       return {
         ...role,
-        scopes: scopeFormatter(role.scopes)
+        scopes: scopeFormatter( role.scopes )
       }
-    })
+    } )
     
     return formattedRoles
-  } catch (error:any) {
-    return new ErrorHandler(error)
+  } catch ( error: any ) {
+    return new Errors( error )
   }
 }

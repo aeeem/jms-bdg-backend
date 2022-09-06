@@ -31,14 +31,32 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "name", void 0);
 __decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", Date)
+], User.prototype, "birth_date", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", String)
+], User.prototype, "phone_number", void 0);
+__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => role_1.Role),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.JoinColumn)({ name: 'role_id' }),
     __metadata("design:type", role_1.Role)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.Column)({
+        nullable: true
+    }),
+    __metadata("design:type", Number)
+], User.prototype, "role_id", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)({ name: 'user' })
 ], User);

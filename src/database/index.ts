@@ -1,66 +1,58 @@
-import { Connection, createConnection } from "typeorm";
-import dotenv from 'dotenv';
+/* eslint-disable n/no-path-concat */
+/* eslint-disable no-console */
+import { Connection, createConnection } from 'typeorm'
+import dotenv from 'dotenv'
 
-dotenv.config({});
+dotenv.config( {} )
 export default class Database {
+  public connection: Connection
 
-  public connection: Connection;
-
-  public async connectToDB(): Promise<void> {
-    await createConnection({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: process.env.DEV_DATABASE_USERNAME,
-      password: process.env.DEV_DATABASE_PASSWORD,
-      database: process.env.DEV_DATABASE_NAME,
-      entities: [
-        __dirname + "/entity/*.ts",
-        __dirname + "/entity/*.js"
-      ],
-      logging: false,
+  public async connectToDB (): Promise<void> {
+    await createConnection( {
+      type       : 'postgres',
+      host       : 'localhost',
+      port       : 5432,
+      username   : process.env.DEV_DATABASE_USERNAME,
+      password   : process.env.DEV_DATABASE_PASSWORD,
+      database   : process.env.DEV_DATABASE_NAME,
+      entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
+      logging    : false,
       synchronize: true
-    }).then(_con => {
-      this.connection = _con;
-      console.log("Connected to db!!");
-    }).catch(console.error)
+    } ).then( _con => {
+      this.connection = _con
+      console.log( 'Connected to db!!' )
+    } )
+      .catch( console.error )
   }
 
-  public async connectToDBTest(): Promise<void> {
-    await createConnection({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: process.env.TEST_DATABASE_USERNAME,
-      password: process.env.TEST_DATABASE_PASSWORD,
-      database: process.env.TEST_DATABASE_NAME,
-      entities: [
-        __dirname + "/entity/*.ts",
-        __dirname + "/entity/*.js"
-      ],
-      dropSchema: true,
+  public async connectToDBTest (): Promise<void> {
+    await createConnection( {
+      type       : 'mysql',
+      host       : 'localhost',
+      port       : 3306,
+      username   : process.env.TEST_DATABASE_USERNAME,
+      password   : process.env.TEST_DATABASE_PASSWORD,
+      database   : process.env.TEST_DATABASE_NAME,
+      entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
+      dropSchema : true,
       synchronize: true,
-      logging: false
-    }).then(_con => {
-      this.connection = _con;
-      console.log("Connected to db!!");
-    }).catch(console.error)
+      logging    : false
+    } ).then( _con => {
+      this.connection = _con
+      console.log( 'Connected to db!!' )
+    } )
+      .catch( console.error )
   }
 
-  public getConnection(): Connection {
-    return this.connection;
+  public getConnection (): Connection {
+    return this.connection
   }
 
-  public async closeConnection(): Promise<void> {
-    await this.connection.close();
+  public async closeConnection (): Promise<void> {
+    await this.connection.close()
   }
 
-  public queryRunner(){
-    return this.connection.createQueryRunner();
+  public queryRunner () {
+    return this.connection.createQueryRunner()
   }
-}
-
-
-function envString<T>(prodString: T, devString: T): T {
-  return process.env.NODE_ENV === 'production' ? prodString : devString
 }

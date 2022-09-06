@@ -67,6 +67,9 @@ class Database {
             yield this.connection.close();
         });
     }
+    queryRunner() {
+        return this.connection.createQueryRunner();
+    }
 }
 exports.default = Database;
 function envString(prodString, devString) {

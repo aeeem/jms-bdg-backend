@@ -151,6 +151,22 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Scope.prototype, "delete_vendor", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Scope.prototype, "create_pegawai", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Scope.prototype, "read_pegawai", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Scope.prototype, "update_pegawai", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], Scope.prototype, "delete_pegawai", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Scope.prototype, "created_at", void 0);

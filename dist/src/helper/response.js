@@ -9,11 +9,12 @@ const success = ({ data, stat_code = 200, stat_msg = "" }) => {
     };
 };
 exports.success = success;
-const error = ({ data, stat_code = 400, stat_msg = "" }) => {
+const error = ({ type, stat_code = 400, stat_msg = "", stack }) => {
     return {
-        data,
+        type,
         stat_code,
-        stat_msg
+        stat_msg,
+        stack
     };
 };
 exports.error = error;
