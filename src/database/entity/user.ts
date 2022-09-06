@@ -26,7 +26,7 @@ export class User extends BaseEntity {
   @Column()
     password: string
 
-  @OneToOne( () => Role )
+  @ManyToOne( () => Role, ( role: Role ) => role.id, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'role_id' } )
     role: Role
 

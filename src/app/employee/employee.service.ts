@@ -16,11 +16,14 @@ export const getAllEmployeeService = async () => {
 
     const formatResponse = employees.map( employee => {
       return {
-        id     : employee.id,
-        name   : employee.name,
-        email  : employee.email,
-        noInduk: employee.noInduk,
-        role   : employee.role.role
+        id         : employee.id,
+        name       : employee.name,
+        email      : employee.email,
+        noInduk    : employee.noInduk,
+        role       : employee.role,
+        roleName   : employee.role.role,
+        phoneNumber: employee.phone_number,
+        birth_date : employee.birth_date
       }
     } )
 
@@ -32,8 +35,10 @@ export const getAllEmployeeService = async () => {
 
 export const createEmployeeService = async ( payload: CreateEmployeeRequest ) => {
   try {
+    const role = await Role.findOne( { where: { id: payload.role_id } } )
+    if ( !role ) throw E_ErrorType.E_ROLE_NOT_FOUND
+    
     const employee = new User()
-
     const defaultPassword = await createHashPassword( 'masuk123' )
     if ( defaultPassword instanceof Error ) throw defaultPassword.message
 
@@ -43,6 +48,7 @@ export const createEmployeeService = async ( payload: CreateEmployeeRequest ) =>
     employee.birth_date = payload.birth_date
     employee.phone_number = payload.phone_number
     employee.role_id = payload.role_id
+    employee.role = role
     employee.password = defaultPassword
     await employee.save()
     return employee
