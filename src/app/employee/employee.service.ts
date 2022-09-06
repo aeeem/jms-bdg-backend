@@ -36,7 +36,7 @@ export const getAllEmployeeService = async () => {
 export const createEmployeeService = async ( payload: CreateEmployeeRequest ) => {
   try {
     const role = await Role.findOne( { where: { id: payload.role_id } } )
-    if ( !role ) throw E_ErrorType.E_ROLE_NOT_FOUND
+    if ( !role ) throw E_ERROR.ROLE_NOT_FOUND
     
     const employee = new User()
     const defaultPassword = await createHashPassword( 'masuk123' )

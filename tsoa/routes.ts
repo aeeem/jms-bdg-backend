@@ -52,43 +52,97 @@ const models: TsoaRoute.Models = {
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CustomerRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"piutang":{"dataType":"double"},"hutang":{"dataType":"double"},"contact_number":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "contact_number": {"dataType":"string","required":true},
+            "hutang": {"dataType":"double"},
+            "piutang": {"dataType":"double"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CustomerUpdateRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"piutang":{"dataType":"double"},"hutang":{"dataType":"double"},"contact_number":{"dataType":"string"},"name":{"dataType":"string"}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string"},
+            "contact_number": {"dataType":"string"},
+            "hutang": {"dataType":"double"},
+            "piutang": {"dataType":"double"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateEmployeeRequest": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime","required":true},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string","required":true},"name":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "email": {"dataType":"string","required":true},
+            "noInduk": {"dataType":"string","required":true},
+            "birth_date": {"dataType":"datetime","required":true},
+            "phone_number": {"dataType":"string","required":true},
+            "role_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ChangeEmployeeRole": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "role_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"stok":{"dataType":"double","required":true},"hargaJual":{"dataType":"double","required":true},"hargaModal":{"dataType":"double","required":true},"tanggalMasuk":{"dataType":"datetime","required":true},"vendorId":{"dataType":"double","required":true},"name":{"dataType":"string","required":true},"sku":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "sku": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+            "vendorId": {"dataType":"double","required":true},
+            "tanggalMasuk": {"dataType":"datetime","required":true},
+            "hargaModal": {"dataType":"double","required":true},
+            "hargaJual": {"dataType":"double","required":true},
+            "stok": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StockRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"vendorId":{"dataType":"double"},"productId":{"dataType":"double"},"sell_price":{"dataType":"double"},"buy_price":{"dataType":"double"},"total_stock":{"dataType":"double"}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "total_stock": {"dataType":"double"},
+            "buy_price": {"dataType":"double"},
+            "sell_price": {"dataType":"double"},
+            "productId": {"dataType":"double"},
+            "vendorId": {"dataType":"double"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"detail":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},"amount_paid":{"dataType":"double","required":true},"customer_id":{"dataType":"double","required":true},"actual_total_price":{"dataType":"double","required":true},"expected_total_price":{"dataType":"double","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "expected_total_price": {"dataType":"double","required":true},
+            "actual_total_price": {"dataType":"double","required":true},
+            "customer_id": {"dataType":"double","required":true},
+            "amount_paid": {"dataType":"double","required":true},
+            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"final_price":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"shipping_cost":{"dataType":"double","required":true},"code":{"dataType":"string","required":true},"pic_phone_number":{"dataType":"string"},"pic_name":{"dataType":"string"},"address":{"dataType":"string"},"name":{"dataType":"string"}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string"},
+            "address": {"dataType":"string"},
+            "pic_name": {"dataType":"string"},
+            "pic_phone_number": {"dataType":"string"},
+            "code": {"dataType":"string","required":true},
+            "shipping_cost": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };

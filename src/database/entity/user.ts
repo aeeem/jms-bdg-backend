@@ -1,5 +1,5 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn
+  Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne
 } from 'typeorm'
 import { Role } from './role'
 
