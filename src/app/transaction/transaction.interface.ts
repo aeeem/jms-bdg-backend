@@ -7,7 +7,6 @@ export interface TransactionRequestParameter {
   amount_paid: number
   detail: Array<{
     amount: number
-    final_price: number
     productId: number
     sub_total: number
   }>
