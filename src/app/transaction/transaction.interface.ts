@@ -5,6 +5,7 @@ export interface TransactionRequestParameter {
   actual_total_price: number
   customer_id: number
   amount_paid: number
+  deposit?: number
   detail: Array<{
     amount: number
     productId: number
