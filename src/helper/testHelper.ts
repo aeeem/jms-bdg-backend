@@ -1,4 +1,6 @@
-import app from '../app'
 import supertest from 'supertest'
+import dotenv from 'dotenv'
 
-export const makeRequest = supertest( app )
+dotenv.config( {} )
+
+export const makeRequest = supertest( process.env.TEST_URL )

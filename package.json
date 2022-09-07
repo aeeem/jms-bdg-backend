@@ -18,6 +18,10 @@
     "start:service": "pm2 start npm --name 'dev-jms' -- run 'start'",
     "eslint": "eslint --ext .ts --fix ./src -c .eslintrc.js"
   },
+  "moduleDirectories": [
+    "node_modules",
+    "src"
+],
   "_moduleAliases": {
     "@database": "./build/src/database/index.js",
     "@entity": "./build/src/database/entity/"

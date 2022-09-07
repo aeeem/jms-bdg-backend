@@ -27,9 +27,9 @@ export default class Database {
 
   public async connectToDBTest (): Promise<void> {
     await createConnection( {
-      type       : 'mysql',
+      type       : 'postgres',
       host       : 'localhost',
-      port       : 3306,
+      port       : 5432,
       username   : process.env.TEST_DATABASE_USERNAME,
       password   : process.env.TEST_DATABASE_PASSWORD,
       database   : process.env.TEST_DATABASE_NAME,
