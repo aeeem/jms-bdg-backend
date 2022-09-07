@@ -74,14 +74,13 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
       expected_total_price += product.stock.sell_price * transactionDetail.amount
-      actual_total_price += transactionDetail.final_price * transactionDetail.amount
+      actual_total_price += transactionDetail.sub_total
 
       product.stock.total_stock -= transactionDetail.amount
       await queryRunner.manager.save( product )
 
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
-      detail.final_price = transactionDetail.final_price
       detail.sub_total = transactionDetail.sub_total
       detail.product_id = transactionDetail.productId
 
