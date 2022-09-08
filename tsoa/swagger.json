@@ -218,6 +218,10 @@
 						"type": "number",
 						"format": "double"
 					},
+					"deposit": {
+						"type": "number",
+						"format": "double"
+					},
 					"detail": {
 						"items": {
 							"properties": {
@@ -229,10 +233,6 @@
 									"type": "number",
 									"format": "double"
 								},
-								"final_price": {
-									"type": "number",
-									"format": "double"
-								},
 								"amount": {
 									"type": "number",
 									"format": "double"
@@ -241,7 +241,6 @@
 							"required": [
 								"sub_total",
 								"productId",
-								"final_price",
 								"amount"
 							],
 							"type": "object"

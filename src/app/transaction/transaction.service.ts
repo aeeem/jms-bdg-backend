@@ -37,10 +37,9 @@ export const getAllTransactionService = async () => {
         },
         items: transaction.transactionDetails.map( detail => {
           return {
-            id         : detail.id,
-            amount     : detail.amount,
-            final_price: detail.final_price,
-            product    : {
+            id     : detail.id,
+            amount : detail.amount,
+            product: {
               id    : detail.product.id,
               name  : detail.product.name,
               vendor: detail.product.stock.vendor.name
