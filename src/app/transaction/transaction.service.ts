@@ -1,4 +1,5 @@
 import { Customer } from '@entity/customer'
+import { CustomerMonetary } from '@entity/customerMonetary'
 import { Product } from '@entity/product'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
@@ -6,6 +7,7 @@ import _ from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
+import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
 import { TransactionRequestParameter } from './transaction.interface'
 
@@ -35,10 +37,9 @@ export const getAllTransactionService = async () => {
         },
         items: transaction.transactionDetails.map( detail => {
           return {
-            id         : detail.id,
-            amount     : detail.amount,
-            final_price: detail.final_price,
-            product    : {
+            id     : detail.id,
+            amount : detail.amount,
+            product: {
               id    : detail.product.id,
               name  : detail.product.name,
               vendor: detail.product.stock.vendor.name
@@ -74,14 +75,13 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
       expected_total_price += product.stock.sell_price * transactionDetail.amount
-      actual_total_price += transactionDetail.final_price * transactionDetail.amount
+      actual_total_price += transactionDetail.sub_total
 
       product.stock.total_stock -= transactionDetail.amount
       await queryRunner.manager.save( product )
 
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
-      detail.final_price = transactionDetail.final_price
       detail.sub_total = transactionDetail.sub_total
       detail.product_id = transactionDetail.productId
 
@@ -97,12 +97,26 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     transaction.expected_total_price = expected_total_price
     transaction.actual_total_price = payload.actual_total_price
     transaction.amount_paid = payload.amount_paid
+
     if ( payload.amount_paid < actual_total_price ) {
       transaction.status = TRANSACTION_STATUS.PENDING
       transaction.outstanding_amount = actual_total_price - payload.amount_paid
+      const customerMonet = new CustomerMonetary()
+      customerMonet.customer = customer
+      customerMonet.amount = transaction.outstanding_amount
+      customerMonet.type = E_Recievables.DEBT
+      await queryRunner.manager.save( customerMonet )
     } else {
       transaction.status = TRANSACTION_STATUS.PAID
       transaction.change = payload.amount_paid - actual_total_price
+    }
+
+    if ( payload.deposit ) {
+      const customerMonet = new CustomerMonetary()
+      customerMonet.amount = payload.deposit
+      customerMonet.customer = customer
+      customerMonet.type = E_Recievables.RECIEVABLE
+      await queryRunner.manager.save( customerMonet )
     }
 
     await queryRunner.manager.save( transaction )
