@@ -44,76 +44,78 @@
 			},
 			"CustomerRequestParameter": {
 				"properties": {
-					"piutang": {
-						"type": "number",
-						"format": "double"
+					"name": {
+						"type": "string"
+					},
+					"contact_number": {
+						"type": "string"
 					},
 					"hutang": {
 						"type": "number",
 						"format": "double"
 					},
-					"contact_number": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
+					"piutang": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
-					"contact_number",
-					"name"
+					"name",
+					"contact_number"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CustomerUpdateRequestParameter": {
 				"properties": {
-					"piutang": {
-						"type": "number",
-						"format": "double"
+					"name": {
+						"type": "string"
+					},
+					"contact_number": {
+						"type": "string"
 					},
 					"hutang": {
 						"type": "number",
 						"format": "double"
 					},
-					"contact_number": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
+					"piutang": {
+						"type": "number",
+						"format": "double"
 					}
 				},
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CreateEmployeeRequest": {
 				"properties": {
-					"role_id": {
-						"type": "number",
-						"format": "double"
+					"name": {
+						"type": "string"
 					},
-					"phone_number": {
+					"email": {
+						"type": "string"
+					},
+					"noInduk": {
 						"type": "string"
 					},
 					"birth_date": {
 						"type": "string",
 						"format": "date-time"
 					},
-					"noInduk": {
+					"phone_number": {
 						"type": "string"
 					},
-					"email": {
-						"type": "string"
-					},
-					"name": {
-						"type": "string"
+					"role_id": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"role_id",
 					"phone_number",
-					"noInduk",
-					"name"
+					"role_id"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"ChangeEmployeeRole": {
 				"properties": {
@@ -125,19 +127,18 @@
 				"required": [
 					"role_id"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"ProductRequestParameter": {
 				"properties": {
-					"stok": {
-						"type": "number",
-						"format": "double"
+					"sku": {
+						"type": "string"
 					},
-					"hargaJual": {
-						"type": "number",
-						"format": "double"
+					"name": {
+						"type": "string"
 					},
-					"hargaModal": {
+					"vendorId": {
 						"type": "number",
 						"format": "double"
 					},
@@ -145,39 +146,34 @@
 						"type": "string",
 						"format": "date-time"
 					},
-					"vendorId": {
+					"hargaModal": {
 						"type": "number",
 						"format": "double"
 					},
-					"name": {
-						"type": "string"
+					"hargaJual": {
+						"type": "number",
+						"format": "double"
 					},
-					"sku": {
-						"type": "string"
+					"stok": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
-					"stok",
-					"hargaJual",
-					"hargaModal",
-					"tanggalMasuk",
-					"vendorId",
+					"sku",
 					"name",
-					"sku"
+					"vendorId",
+					"tanggalMasuk",
+					"hargaModal",
+					"hargaJual",
+					"stok"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"StockRequestParameter": {
 				"properties": {
-					"vendorId": {
-						"type": "number",
-						"format": "double"
-					},
-					"productId": {
-						"type": "number",
-						"format": "double"
-					},
-					"sell_price": {
+					"total_stock": {
 						"type": "number",
 						"format": "double"
 					},
@@ -185,15 +181,48 @@
 						"type": "number",
 						"format": "double"
 					},
-					"total_stock": {
+					"sell_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"productId": {
+						"type": "number",
+						"format": "double"
+					},
+					"vendorId": {
 						"type": "number",
 						"format": "double"
 					}
 				},
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"TransactionRequestParameter": {
 				"properties": {
+					"expected_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"actual_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount_paid": {
+						"type": "number",
+						"format": "double"
+					},
+					"deposit": {
+						"type": "number",
+						"format": "double"
+					},
+					"transaction_date": {
+						"type": "string",
+						"format": "date-time"
+					},
 					"detail": {
 						"items": {
 							"properties": {
@@ -205,10 +234,6 @@
 									"type": "number",
 									"format": "double"
 								},
-								"final_price": {
-									"type": "number",
-									"format": "double"
-								},
 								"amount": {
 									"type": "number",
 									"format": "double"
@@ -217,66 +242,51 @@
 							"required": [
 								"sub_total",
 								"productId",
-								"final_price",
 								"amount"
 							],
 							"type": "object"
 						},
 						"type": "array"
-					},
-					"amount_paid": {
-						"type": "number",
-						"format": "double"
-					},
-					"customer_id": {
-						"type": "number",
-						"format": "double"
-					},
-					"actual_total_price": {
-						"type": "number",
-						"format": "double"
-					},
-					"expected_total_price": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
-					"detail",
-					"amount_paid",
-					"customer_id",
+					"expected_total_price",
 					"actual_total_price",
-					"expected_total_price"
+					"customer_id",
+					"amount_paid",
+					"detail"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			},
 			"VendorRequestParameter": {
 				"properties": {
-					"shipping_cost": {
-						"type": "number",
-						"format": "double"
-					},
-					"code": {
-						"type": "string"
-					},
-					"pic_phone_number": {
-						"type": "string"
-					},
-					"pic_name": {
+					"name": {
 						"type": "string"
 					},
 					"address": {
 						"type": "string"
 					},
-					"name": {
+					"pic_name": {
 						"type": "string"
+					},
+					"pic_phone_number": {
+						"type": "string"
+					},
+					"code": {
+						"type": "string"
+					},
+					"shipping_cost": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
-					"shipping_cost",
-					"code"
+					"code",
+					"shipping_cost"
 				],
-				"type": "object"
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {
@@ -1263,7 +1273,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -1316,7 +1326,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -1326,7 +1336,7 @@
 				]
 			}
 		},
-		"/api/transaction/search/{query}": {
+		"/api/transaction/search": {
 			"get": {
 				"operationId": "SearchTransaction",
 				"responses": {
@@ -1642,17 +1652,7 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}

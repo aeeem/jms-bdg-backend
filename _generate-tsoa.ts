@@ -1,14 +1,16 @@
-import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig } from 'tsoa'
+import {
+  generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig
+} from 'tsoa'
 
-(async () => {
+void ( async () => {
   const specOptions: ExtendedSpecConfig = {
-    basePath: "/",
-    entryFile: "src/app.ts",
-    noImplicitAdditionalProperties: "throw-on-extras",
-    controllerPathGlobs: ["src/**/*.router.ts"],
-    outputDirectory: "tsoa",
-    specVersion: 3,
-    securityDefinitions:{
+    basePath                      : '/',
+    entryFile                     : 'src/app.ts',
+    noImplicitAdditionalProperties: 'throw-on-extras',
+    controllerPathGlobs           : ['src/**/*.router.ts'],
+    outputDirectory               : 'tsoa',
+    specVersion                   : 3,
+    securityDefinitions           : {
       // jwt: {
       //   type: "apiKey",
       //   name: "Authorization",
@@ -16,13 +18,13 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
         
       // },
       api_key: {
-        type: "apiKey",
-        name: "access_token",
-        in: "header",
-        flow: "implicit",
+        type  : 'apiKey',
+        name  : 'access_token',
+        in    : 'header',
+        flow  : 'implicit',
         scopes: {
-            "write:pets": "modify things",
-            "read:pets": "read things"
+          'write:pets': 'modify things',
+          'read:pets' : 'read things'
         }
       }
       // tsoa_auth: {
@@ -35,7 +37,7 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
       //   }
       // }
     },
-    spec:{
+    spec: {
       securitydefinitions: {
         // jwt: {
         //   type: "apiKey",
@@ -43,13 +45,13 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
         //   in: "header"
         // },
         api_key: {
-          type: "apiKey",
-          name: "access_token",
-          in: "header",
-          flow: "implicit",
+          type  : 'apiKey',
+          name  : 'access_token',
+          in    : 'header',
+          flow  : 'implicit',
           scopes: {
-              "write:pets": "modify things",
-              "read:pets": "read things"
+            'write:pets': 'modify things',
+            'read:pets' : 'read things'
           }
         }
         // tsoa_auth: {
@@ -63,18 +65,18 @@ import {generateRoutes, generateSpec, ExtendedRoutesConfig, ExtendedSpecConfig }
         // }
       }
     }
-  };
+  }
 
-  const routeOptions:ExtendedRoutesConfig = {
-    middleware: "express",
-    basePath: "/",
-    entryFile: "src/app.ts",
-    noImplicitAdditionalProperties: "throw-on-extras",
-    controllerPathGlobs: ["src/**/*.router.ts"],
-    routesDir: "tsoa",
-    authenticationModule: "src/auth.ts",
-  };
+  const routeOptions: ExtendedRoutesConfig = {
+    middleware                    : 'express',
+    basePath                      : '/',
+    entryFile                     : 'src/app.ts',
+    noImplicitAdditionalProperties: 'throw-on-extras',
+    controllerPathGlobs           : ['src/**/*.router.ts'],
+    routesDir                     : 'tsoa',
+    authenticationModule          : 'src/auth.ts'
+  }
 
-  await generateSpec(specOptions);
-  await generateRoutes(routeOptions);
-})();
+  await generateSpec( specOptions )
+  await generateRoutes( routeOptions )
+} )()

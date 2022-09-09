@@ -3,8 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HTTP_CODE = exports.E_ErrorType = void 0;
 var E_ErrorType;
 (function (E_ErrorType) {
-    E_ErrorType["E_PRODUCT_NOT_FOUND"] = "Product is Not Found";
-    E_ErrorType["E_STOCK_NOT_FOUND"] = "Stock is Not Found";
+    E_ErrorType["E_FORBIDDEN_ROLE_INPUT"] = "Pembuatan user dengan role super admin tidak diperbolehkan";
+    E_ErrorType["E_ROLE_NOT_FOUND"] = "Role tidak ditemukan";
+    E_ErrorType["E_EMPLOYEE_NOT_FOUND"] = "Pegawai tidak ditemukan";
+    E_ErrorType["E_EXPECTED_TOTAL_PRICE_NOT_MATCH"] = "Total tidak sesuai";
+    E_ErrorType["E_PRODUCT_NOT_FOUND"] = "Product tidak ditemukan";
+    E_ErrorType["E_STOCK_NOT_FOUND"] = "Stock Tidak ditemukan";
+    E_ErrorType["E_CUSTOMER_NOT_FOUND"] = "Pelanggan Tidak ditemukan";
     E_ErrorType["E_DATABASE_ERROR"] = "E_DATABASE_ERROR";
     E_ErrorType["E_UNKNOWN_ERROR"] = "E_UNKNOWN_ERROR";
     E_ErrorType["E_NOT_FOUND"] = "E_NOT_FOUND";
@@ -21,6 +26,7 @@ var E_ErrorType;
     E_ErrorType["E_VALIDATION_ERROR"] = "E_VALIDATION_ERROR";
     E_ErrorType["E_USER_NOT_FOUND"] = "User not found";
     E_ErrorType["E_USER_IS_NOT_AUTHORIZED"] = "User is not authorized";
+    E_ErrorType["E_TOKEN_EXPIRED"] = "Token expired";
 })(E_ErrorType = exports.E_ErrorType || (exports.E_ErrorType = {}));
 var HTTP_CODE;
 (function (HTTP_CODE) {

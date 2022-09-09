@@ -13,6 +13,7 @@ exports.expressAuthentication = void 0;
 const jwt_1 = require("./helper/jwt");
 const user_1 = require("@entity/user");
 const enums_1 = require("./errorHandler/enums");
+const errorHandler_1 = require("./errorHandler");
 function expressAuthentication(request, securityName, scopes) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -26,7 +27,7 @@ function expressAuthentication(request, securityName, scopes) {
                     throw "No token provided";
                 const decoded = yield (0, jwt_1.verifyToken)(token);
                 if (decoded instanceof Error)
-                    throw decoded.message;
+                    throw enums_1.E_ErrorType.E_TOKEN_EXPIRED;
                 const user = yield user_1.User.findOne({
                     where: { id: decoded.id },
                     relations: ['role', 'role.scopes']
@@ -48,7 +49,7 @@ function expressAuthentication(request, securityName, scopes) {
         }
         catch (error) {
             return new Promise((resolve, reject) => {
-                reject(new Error(error));
+                reject(new errorHandler_1.ErrorHandler(error));
             });
         }
     });

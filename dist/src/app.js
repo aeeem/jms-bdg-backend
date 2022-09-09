@@ -35,23 +35,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.db = void 0;
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
 const helmet_1 = __importDefault(require("helmet"));
 const cors_1 = __importDefault(require("cors"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const tsoa_1 = require("tsoa");
 const routes_1 = require("../tsoa/routes");
-const errorHandler_1 = require("./errorHandler");
 const _database_1 = __importDefault(require("@database"));
-const enums_1 = require("./errorHandler/enums");
+const errorResponder_1 = __importDefault(require("./middleware/errorResponder"));
 const app = (0, express_1.default)();
 /************************************************************************************
  *                              Basic Express Middlewares
  ***********************************************************************************/
-const db = new _database_1.default();
+exports.db = new _database_1.default();
 app.on('ready', () => __awaiter(void 0, void 0, void 0, function* () {
-    yield db.connectToDB();
+    yield exports.db.connectToDB();
 }));
 app.set('json spaces', 2);
 app.use(express_1.default.json());
@@ -75,30 +74,7 @@ app.use("/docs", swagger_ui_express_1.default.serve, (req, res) => __awaiter(voi
 /************************************************************************************
  *                               Express Error Handling
  ***********************************************************************************/
-app.use((err, req, res, next) => {
-    if (err instanceof tsoa_1.ValidateError) {
-        console.error(`Caught Validation Error for ${req.path}:`, err.fields);
-        return res.status(422).json({
-            type: enums_1.E_ErrorType.E_VALIDATION_ERROR,
-            message: "Validation Failed",
-            details: err === null || err === void 0 ? void 0 : err.fields,
-        });
-    }
-    if (err instanceof errorHandler_1.ErrorHandler) {
-        return res.status(err.status || 500).json({
-            type: err.type,
-            message: err.message
-        });
-    }
-    if (err instanceof Error) {
-        return res.status(500).json({
-            errorName: err.name,
-            message: err.message,
-            stack: err.stack || 'no stack defined'
-        });
-    }
-    next();
-});
+app.use(errorResponder_1.default);
 app.emit('ready');
 app.use(function notFoundHandler(_req, res) {
     return res.status(404).send({ message: "Not Found" });

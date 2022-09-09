@@ -1,23 +1,23 @@
-import Database from "@database";
+import Database from '@database'
 // import initialSeeds from "../../database/seeds/seeder/initialSeeds";
-import { makeRequest } from "../../helper/testHelper";
+import { makeRequest } from '../../helper/testHelper'
 
-describe('Product', () => {
+describe( 'Product', () => {
   const db = new Database()
-  beforeAll(async () => {
+  beforeAll( async () => {
     await db.connectToDBTest()
     // await initialSeeds.productSeeder()
-  })
+  } )
 
-  afterAll(async () => {
+  afterAll( async () => {
     await db.closeConnection()
-  })
+  } )
   
-  test('GET /api/products', async () => {
-    await makeRequest.get('/api/products')
-    .expect(200)
-    .then((res)=>{
-      expect(res).toBe(200);
-    });
-  })
-})
+  test( 'GET /api/products', async () => {
+    await makeRequest.get( '/api/products' )
+      .expect( 200 )
+      .then( res => {
+        expect( res ).toBe( 200 )
+      } )
+  } )
+} )

@@ -1,36 +1,34 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Product } from "./product";
-import { Transaction } from "./transaction";
+import {
+  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn
+} from 'typeorm'
+import { Product } from './product'
+import { Transaction } from './transaction'
 
-@Entity({name:'transaction_detail'})
+@Entity( { name: 'transaction_detail' } )
 export class TransactionDetail extends BaseEntity {
-  
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number
 
   @Column()
-  amount: number;
+    amount: number
 
   @Column()
-  sub_total: number;
+    sub_total: number
 
-  @Column()
-  final_price: number;
-
-  @ManyToOne(()=> Transaction, (transaction: Transaction) => transaction.id, {onDelete: 'CASCADE'})
+  @ManyToOne( () => Transaction, ( transaction: Transaction ) => transaction.id, { onDelete: 'CASCADE' } )
   @JoinColumn()
-  transaction: Transaction;
+    transaction: Transaction
 
-  @ManyToOne(()=> Product, (product: Product) => product.id, {onDelete: 'CASCADE'})
-  @JoinColumn({name: 'product_id'})
-  product: Product;
+  @ManyToOne( () => Product, ( product: Product ) => product.id, { onDelete: 'CASCADE' } )
+  @JoinColumn( { name: 'product_id' } )
+    product: Product
 
   @Column()
-  product_id: number;
+    product_id: number
 
   @CreateDateColumn()
-  created_at: Date;
+    created_at: Date
 
   @UpdateDateColumn()
-  updated_at: Date;
+    updated_at: Date
 }

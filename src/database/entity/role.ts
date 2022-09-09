@@ -1,19 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn } from "typeorm";
-import { Scope } from "./scopes";
-import { User } from './user';
+import {
+  Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToOne, JoinColumn
+} from 'typeorm'
+import { Scope } from './scopes'
+import { User } from './user'
 
-@Entity({ name: 'role' })
+@Entity( { name: 'role' } )
 export class Role extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+    id: number
 
   @Column()
-  role: string;
+    role: string
 
-  @OneToOne(() => Scope)
+  @OneToOne( () => Scope )
   @JoinColumn()
-  scopes: Scope;
+    scopes: Scope
 
-  // @OneToOne(() => User)
-  user: User;
+  @OneToOne( () => User )
+    user: User
 }

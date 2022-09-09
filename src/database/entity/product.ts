@@ -1,28 +1,28 @@
-import { Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany, OneToOne } from "typeorm";
-import { Stock } from "./stock";
+import {
+  Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToOne
+} from 'typeorm'
+import { Stock } from './stock'
 
-@Entity({ name: 'product' })
+@Entity( { name: 'product' } )
 export class Product extends BaseEntity {
-
   @PrimaryGeneratedColumn()
-  id: number
+    id: number
 
-  @Column({ unique: true, })
-  sku: string;
+  @Column( { unique: true } )
+    sku: string
 
-  @Column({ unique: true })
-  name: string;
+  @Column( { unique: true } )
+    name: string
 
-  @Column({ nullable: true })
-  arrival_date: Date;
+  @Column( { nullable: true } )
+    arrival_date: Date
 
-  @OneToOne(() => Stock, stock => stock.product, { cascade: true })
-  stock: Stock
+  @OneToOne( () => Stock, stock => stock.product, { cascade: true } )
+    stock: Stock
 
   @CreateDateColumn()
-  created_at: Date;
+    created_at: Date
 
   @UpdateDateColumn()
-  updated_at: Date;
-
+    updated_at: Date
 }
