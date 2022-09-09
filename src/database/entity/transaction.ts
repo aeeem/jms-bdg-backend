@@ -38,6 +38,11 @@ export class Transaction extends BaseEntity {
   @Column( { nullable: true } )
     customer_id: number
 
+  @Column( {
+    type: 'timestamp', default: () => 'now()', nullable: true
+  } )
+    transaction_date?: Date
+
   @CreateDateColumn()
     created_at: Date
 

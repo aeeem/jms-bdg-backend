@@ -1,6 +1,6 @@
 import makeResponse from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import { TransactionRequestParameter } from './transaction.interface'
 import {
@@ -35,16 +35,16 @@ export class TransactionController extends Controller {
   
   @Put( '/{id}/' )
   @Security( 'api_key', ['update:transaction'] )
-  public async updateTransaction ( @Query( 'id' ) id: string, @Body() payload: TransactionRequestParameter ) {
+  public async updateTransaction ( @Path( 'id' ) id: string, @Body() payload: TransactionRequestParameter ) {
   }
 
   @Delete( '/{id}/' )
   @Security( 'api_key', ['delete:transaction'] )
-  public async deleteTransaction ( @Query( 'id' ) id: string ) {
+  public async deleteTransaction ( @Path( 'id' ) id: string ) {
     return await deleteTransactionService( id )
   }
 
-  @Get( '/search/:query' )
+  @Get( '/search/' )
   @Security( 'api_key', ['read:transaction'] )
   public async searchTransaction ( @Query( 'query' ) query: string ) {
     return await searchTransactionService( query )

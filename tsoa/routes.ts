@@ -128,6 +128,7 @@ const models: TsoaRoute.Models = {
             "customer_id": {"dataType":"double","required":true},
             "amount_paid": {"dataType":"double","required":true},
             "deposit": {"dataType":"double"},
+            "transaction_date": {"dataType":"datetime"},
             "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},
         },
         "additionalProperties": false,
@@ -805,7 +806,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function TransactionController_updateTransaction(request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
                     payload: {"in":"body","name":"payload","required":true,"ref":"TransactionRequestParameter"},
             };
 
@@ -830,7 +831,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function TransactionController_deleteTransaction(request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"query","name":"id","required":true,"dataType":"string"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -849,7 +850,7 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/transaction/search/:query',
+        app.get('/api/transaction/search',
             authenticateMiddleware([{"api_key":["read:transaction"]}]),
 
             function TransactionController_searchTransaction(request: any, response: any, next: any) {
