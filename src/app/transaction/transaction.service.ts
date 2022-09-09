@@ -45,7 +45,12 @@ export const getAllTransactionService = async () => {
               name    : detail.product.name,
               vendorId: detail.product.stock.vendor.id,
               sku     : detail.product.sku,
-              stock   : { ...detail.product.stock }
+              stock   : {
+                id         : detail.product.stock.id,
+                total_stock: detail.product.stock.total_stock,
+                sell_price : detail.product.stock.sell_price,
+                buy_price  : detail.product.stock.buy_price
+              }
             },
             sub_total: detail.sub_total
 
