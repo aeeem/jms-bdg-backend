@@ -46,6 +46,7 @@ export const loginService = async ( payload: LoginRequestParameter ) => {
       stat_msg : SUCCESS_MESSAGE.LOGIN_SUCCESS
     } )
   } catch ( e: any ) {
+    console.log( e )
     throw new Errors( e )
   }
 }
