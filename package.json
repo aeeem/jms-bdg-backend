@@ -12,7 +12,7 @@
     "build": "tsc",
     "tsoa:generate_": "nodemon -w src -w prisma -e ts _generate-tsoa.ts",
     "tsoa:generate": "ts-node _generate-tsoa.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "wait-on http://localhost:3000/ping && jest",
     "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "build:dev": "yarn build && scp -r ./dist/* devjms@jmsbdg.com:/home/devjms/jms-bdg-backend",
     "start:service": "pm2 start npm --name 'dev-jms' -- run 'start'",
@@ -21,7 +21,7 @@
   "moduleDirectories": [
     "node_modules",
     "src"
-],
+  ],
   "_moduleAliases": {
     "@database": "./build/src/database/index.js",
     "@entity": "./build/src/database/entity/"
@@ -61,7 +61,8 @@
     "ts-node": "^10.8.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "*",
-    "typescript-bundle": "^1.0.18"
+    "typescript-bundle": "^1.0.18",
+    "wait-on": "^6.0.1"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

@@ -34,6 +34,9 @@ if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'producti
   app.use( helmet() )
 }
 
+app.get( '/ping', ( req, res ) => {
+  res.send( {msg:'pong'} ).status( 200 )
+} )
 /************************************************************************************
  *                               Register all routes
  ***********************************************************************************/
