@@ -15,7 +15,7 @@ export class TransactionDetail extends BaseEntity {
   @Column()
     sub_total: number
 
-  @Column()
+  @Column( { nullable: true } )
     final_price: number
 
   @ManyToOne( () => Transaction, ( transaction: Transaction ) => transaction.id, { onDelete: 'CASCADE' } )

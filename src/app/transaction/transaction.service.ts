@@ -28,10 +28,11 @@ export const getAllTransactionService = async () => {
         amount_paid         : transaction.amount_paid,
         change              : transaction.change,
         outstanding_amount  : transaction.outstanding_amount,
+        transaction_date    : transaction.transaction_date,
         customer            : {
-          id   : transaction.customer.id,
-          name : transaction.customer.name,
-          phone: transaction.customer.contact_number
+          id            : transaction.customer.id,
+          name          : transaction.customer.name,
+          contact_number: transaction.customer.contact_number
         },
         items: transaction.transactionDetails.map( detail => {
           return {
@@ -39,9 +40,11 @@ export const getAllTransactionService = async () => {
             amount     : detail.amount,
             final_price: detail.final_price,
             product    : {
-              id    : detail.product.id,
-              name  : detail.product.name,
-              vendor: detail.product.stock.vendor.name
+              id      : detail.product.id,
+              name    : detail.product.name,
+              vendorId: detail.product.stock.vendor.id,
+              sku     : detail.product.sku,
+              stock   : { ...detail.product.stock }
             },
             sub_total: detail.sub_total
 
@@ -95,6 +98,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     transaction.transactionDetails = transactionDetails
     transaction.expected_total_price = expected_total_price
     transaction.actual_total_price = payload.actual_total_price
+    transaction.transaction_date = payload.transaction_date
     transaction.amount_paid = payload.amount_paid
     if ( payload.amount_paid < actual_total_price ) {
       transaction.status = TRANSACTION_STATUS.PENDING
@@ -127,6 +131,7 @@ export const searchTransactionService = async ( query: string ) => {
     if ( _.isEmpty( transaction ) ) return { message: 'Transaction is not found!' }
     return transaction
   } catch ( error: any ) {
+    console.log( error )
     return await Promise.reject( new Errors( error ) )
   }
 }

@@ -218,6 +218,14 @@
 						"type": "number",
 						"format": "double"
 					},
+					"deposit": {
+						"type": "number",
+						"format": "double"
+					},
+					"transaction_date": {
+						"type": "string",
+						"format": "date-time"
+					},
 					"detail": {
 						"items": {
 							"properties": {
@@ -229,10 +237,6 @@
 									"type": "number",
 									"format": "double"
 								},
-								"final_price": {
-									"type": "number",
-									"format": "double"
-								},
 								"amount": {
 									"type": "number",
 									"format": "double"
@@ -241,7 +245,6 @@
 							"required": [
 								"sub_total",
 								"productId",
-								"final_price",
 								"amount"
 							],
 							"type": "object"
@@ -1238,7 +1241,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -1291,7 +1294,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -1301,7 +1304,7 @@
 				]
 			}
 		},
-		"/api/transaction/search/{query}": {
+		"/api/transaction/search": {
 			"get": {
 				"operationId": "SearchTransaction",
 				"responses": {
