@@ -262,6 +262,66 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"TransactionUpdateRequestParameter": {
+				"properties": {
+					"expected_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"actual_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount_paid": {
+						"type": "number",
+						"format": "double"
+					},
+					"deposit": {
+						"type": "number",
+						"format": "double"
+					},
+					"transaction_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"detail": {
+						"items": {
+							"properties": {
+								"sub_total": {
+									"type": "number",
+									"format": "double"
+								},
+								"productId": {
+									"type": "number",
+									"format": "double"
+								},
+								"amount": {
+									"type": "number",
+									"format": "double"
+								},
+								"id": {
+									"type": "number",
+									"format": "double"
+								}
+							},
+							"required": [
+								"id"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"detail"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"VendorRequestParameter": {
 				"properties": {
 					"name": {
@@ -1222,11 +1282,49 @@
 			}
 		},
 		"/api/transaction/{id}": {
+			"get": {
+				"operationId": "GetTransactionById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:transaction"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
 			"put": {
 				"operationId": "UpdateTransaction",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
 					}
 				},
 				"tags": [
@@ -1254,7 +1352,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/TransactionRequestParameter"
+								"$ref": "#/components/schemas/TransactionUpdateRequestParameter"
 							}
 						}
 					}
@@ -1267,17 +1365,7 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {
-									"properties": {
-										"message": {
-											"type": "string"
-										}
-									},
-									"required": [
-										"message"
-									],
-									"type": "object"
-								}
+								"schema": {}
 							}
 						}
 					}
@@ -1331,9 +1419,18 @@
 					{
 						"in": "query",
 						"name": "query",
-						"required": true,
+						"required": false,
 						"schema": {
 							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "id",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]

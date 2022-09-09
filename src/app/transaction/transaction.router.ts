@@ -2,9 +2,9 @@ import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { TransactionRequestParameter } from './transaction.interface'
+import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
 import {
-  createTransactionService, deleteTransactionService, getAllTransactionService, searchTransactionService
+  createTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updateTransactionService
 } from './transaction.service'
 
 @Tags( 'Transaction' )
@@ -22,6 +22,17 @@ export class TransactionController extends Controller {
     }
   }
 
+  @Get( '/{id}' )
+  @Security( 'api_key', ['read:transaction'] )
+  public async getTransactionById ( @Path( 'id' ) id: string ) {
+    try {
+      const transaction = await getTransactionByIdService( id )
+      return makeResponse.success( { data: transaction } )
+    } catch ( error ) {
+      return error
+    }
+  }
+  
   @Post( '/' )
   @Security( 'api_key', ['create:transaction'] )
   public async createTransaction ( @Body() payload: TransactionRequestParameter ) {
@@ -35,18 +46,28 @@ export class TransactionController extends Controller {
   
   @Put( '/{id}/' )
   @Security( 'api_key', ['update:transaction'] )
-  public async updateTransaction ( @Path( 'id' ) id: string, @Body() payload: TransactionRequestParameter ) {
+  public async updateTransaction ( @Path( 'id' ) id: string, @Body() payload: TransactionUpdateRequestParameter ) {
+    try {
+      const updatedTransaction = await updateTransactionService( id, payload )
+      return makeResponse.success( { data: updatedTransaction } )
+    } catch ( error ) {
+      return error
+    }
   }
 
   @Delete( '/{id}/' )
   @Security( 'api_key', ['delete:transaction'] )
   public async deleteTransaction ( @Path( 'id' ) id: string ) {
-    return await deleteTransactionService( id )
+    try {
+      return await deleteTransactionService( id )
+    } catch ( error ) {
+      return error
+    }
   }
 
   @Get( '/search/' )
   @Security( 'api_key', ['read:transaction'] )
-  public async searchTransaction ( @Query( 'query' ) query: string ) {
-    return await searchTransactionService( query )
+  public async searchTransaction ( @Query() query?: string, @Query() id?: number ) {
+    return await searchTransactionService( query, id )
   }
 }

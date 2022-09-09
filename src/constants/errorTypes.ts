@@ -1,6 +1,7 @@
 import { HTTP_CODE } from 'src/constants/enums'
 
 export const E_ERROR = {
+  TRANSACTION_NOT_FOUND         : { message: 'Transaksi tidak ditemukan.', status: HTTP_CODE.NO_CONTENT },
   FORBIDDEN_ROLE_INPUT          : { message: 'Pembuatan user dengan role super admin tidak diperbolehkan', status: HTTP_CODE.FORBIDDEN },
   ROLE_NOT_FOUND                : { message: 'Role tidak ditemukan', status: HTTP_CODE.NO_CONTENT },
   EMPLOYEE_NOT_FOUND            : { message: 'Pegawai tidak ditemukan', status: HTTP_CODE.NO_CONTENT },

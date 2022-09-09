@@ -134,6 +134,20 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TransactionUpdateRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "expected_total_price": {"dataType":"double"},
+            "actual_total_price": {"dataType":"double"},
+            "customer_id": {"dataType":"double"},
+            "amount_paid": {"dataType":"double"},
+            "deposit": {"dataType":"double"},
+            "transaction_date": {"dataType":"datetime"},
+            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double"},"productId":{"dataType":"double"},"amount":{"dataType":"double"},"id":{"dataType":"double","required":true}}},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "VendorRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -777,6 +791,30 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/transaction/:id',
+            authenticateMiddleware([{"api_key":["read:transaction"]}]),
+
+            function TransactionController_getTransactionById(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new TransactionController();
+
+
+              const promise = controller.getTransactionById.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/transaction',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
 
@@ -807,7 +845,7 @@ export function RegisterRoutes(app: express.Router) {
             function TransactionController_updateTransaction(request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    payload: {"in":"body","name":"payload","required":true,"ref":"TransactionRequestParameter"},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"TransactionUpdateRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -855,7 +893,8 @@ export function RegisterRoutes(app: express.Router) {
 
             function TransactionController_searchTransaction(request: any, response: any, next: any) {
             const args = {
-                    query: {"in":"query","name":"query","required":true,"dataType":"string"},
+                    query: {"in":"query","name":"query","dataType":"string"},
+                    id: {"in":"query","name":"id","dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

@@ -9,7 +9,7 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
-import { TransactionRequestParameter } from './transaction.interface'
+import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
 
 export const getAllTransactionService = async () => {
   try {
@@ -140,32 +140,85 @@ export const createTransactionService = async ( payload: TransactionRequestParam
   }
 }
 
-export const searchTransactionService = async ( query: string ) => {
+export const searchTransactionService = async ( query?: string, id?: number ) => {
   try {
-    const transaction = await Transaction.createQueryBuilder()
-      .leftJoinAndMapMany( 'detail', 'TransactionDetail', 'detail.id = transaction.id' )
-      .leftJoinAndMapMany( 'customer', 'Customer', 'customer.id = transaction.customer_id' )
-      .where( 'transaction.id LIKE :query OR customer.name LIKE :query', { query } )
-      .getMany()
-      
-    if ( _.isEmpty( transaction ) ) return { message: 'Transaction is not found!' }
-    return transaction
+    const transactions = await Transaction.find( { relations: ['transactionDetails', 'customer'] } )
+    
+    const trans = transactions.filter( transaction => {
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      if ( ( query && transaction.customer.name.toLowerCase().includes( query ) ) ||
+        ( id && transaction.id === id )
+      ) return true
+      return false
+    } )
+
+    if ( _.isEmpty( trans ) ) return { message: 'Transaction is not found!' }
+    return trans
   } catch ( error: any ) {
     console.log( error )
     return await Promise.reject( new Errors( error ) )
   }
 }
 
-export const updateTransactionService = async ( id: string, payload: TransactionRequestParameter ) => {
+export const updateTransactionService = async ( id: string, payload: TransactionUpdateRequestParameter ) => {
+  const queryRunner = db.queryRunner()
   try {
-    const transaction = await Transaction.findOneOrFail( { where: { id } } )
-    const customer = await Customer.findOneOrFail( { where: { id: payload.customer_id } } )
-    transaction.expected_total_price = payload.expected_total_price
-    transaction.actual_total_price = payload.actual_total_price
-    transaction.customer = customer
-    await transaction.save()
+    await queryRunner.startTransaction()
+    const transaction = await Transaction.findOne( { where: { id } } )
+    const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
+    if ( !transaction ) throw E_ERROR.TRANSACTION_NOT_FOUND
+    if ( !customer ) throw E_ERROR.CUSTOMER_NOT_FOUND
+
+    let actual_total_price = 0
+
+    transaction.transactionDetails.map( detail => {
+      const pd = payload.detail.find( detailPayload => detailPayload.id === detail.id )
+      if ( pd ) {
+        detail.amount = pd.amount ?? detail.amount
+        detail.product_id = pd.productId ?? detail.product_id
+        detail.sub_total = pd.sub_total ?? detail.sub_total
+        actual_total_price += detail.sub_total
+        return detail
+      }
+
+      return detail
+    } )
+
+    if ( payload.amount_paid && payload.amount_paid < actual_total_price ) {
+      transaction.status = TRANSACTION_STATUS.PENDING
+      transaction.outstanding_amount = actual_total_price - payload.amount_paid
+
+      // TODO : NEED TO CHECK MONETARY LOGIC
+      const customerMonet = new CustomerMonetary()
+      customerMonet.customer = customer
+      customerMonet.amount = transaction.outstanding_amount
+      customerMonet.type = E_Recievables.DEBT
+      await queryRunner.manager.save( customerMonet )
+    } else {
+      transaction.status = TRANSACTION_STATUS.PAID
+      transaction.change = payload.amount_paid ? payload.amount_paid - actual_total_price : transaction.change
+    }
+
+    transaction.expected_total_price = payload.expected_total_price ?? transaction.expected_total_price
+    transaction.actual_total_price = payload.actual_total_price ?? transaction.actual_total_price
+    transaction.transaction_date = payload.transaction_date ?? transaction.transaction_date
+    transaction.amount_paid = payload.amount_paid ?? transaction.amount_paid
     
+    await queryRunner.manager.save( transaction )
+    await queryRunner.commitTransaction()
     return await Transaction.findOne( { where: { id } } )
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  } finally {
+    await queryRunner.release()
+  }
+}
+
+export const getTransactionByIdService = async ( id: string ) => {
+  try {
+    const transaction = await Transaction.findOne( { where: { id }, relations: ['customer', 'transactionDetails'] } )
+    if ( !transaction ) throw E_ERROR.TRANSACTION_NOT_FOUND
+    return transaction
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
