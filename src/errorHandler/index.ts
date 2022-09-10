@@ -1,22 +1,21 @@
 import {
-  CustomErrorMessage, ErrorMessages, ErrorTypes, E_ERROR
+  CustomErrorMessage, ErrorKeys, ErrorMessages, ErrorTypes, E_ERROR
 } from 'src/constants/errorTypes'
 import { ErrorResponseType } from 'src/helper/response'
 
 export class Errors extends Error {
-  private readonly err: any
   public type: string
   public status: number
   public response: ErrorResponseType<any>
   constructor ( err: ErrorTypes ) {
     super()
-    this.err = err
     // this.errorTypeParser()
-    this.errorParser()
+    this.errorParser( err )
   }
 
-  isHandledError = ( code: string ): code is ErrorMessages => {
-    return code as ErrorMessages in E_ERROR
+  isHandledError = ( code: ErrorMessages ) => {
+    const keys = Object.keys( E_ERROR ) as ErrorKeys[]
+    return keys.some( key => E_ERROR[key] === code )
   }
 
   isErrorInstance = ( err: Error ): err is Error => {
@@ -27,37 +26,47 @@ export class Errors extends Error {
     return err !== undefined
   }
 
-  errorParser = () => {
-    if ( this.isHandledError( this.err as string ) ) {
-      const code = this.err as keyof typeof E_ERROR
-      const error = E_ERROR[code]
+  getErrorType = ( code: ErrorMessages ) => {
+    const keys = Object.keys( E_ERROR ) as ErrorKeys[]
+    const errType = keys.find( key => E_ERROR[key] === code )
+    return errType
+  }
+
+  unhandledError = () => {
+    this.response = {
+      type     : 'E_UnhandledError',
+      stat_msg : 'Something went wrong',
+      stat_code: 500
+    }
+  }
+
+  errorParser = ( err: any ) => {
+    if ( this.isHandledError( err ) ) {
+      const type = this.getErrorType( err )
+      const error = err as ErrorMessages
       this.response =
         {
-          type     : code,
+          type,
           stat_msg : error.message,
           stat_code: error.status
         }
-    } else if ( this.isErrorInstance( this.err as Error ) ) {
-      const error = this.err as Error
+    } else if ( this.isErrorInstance( err as Error ) ) {
+      const error = err as Error
       this.response = {
         type     : 'E_NativeError',
         stat_msg : error.message,
         stat_code: 500,
         stack    : error.stack ?? 'no stack defined'
       }
-    } else if ( this.isCustomError( this.err as CustomErrorMessage ) ) {
-      const error = this.err as CustomErrorMessage
+    } else if ( this.isCustomError( err as CustomErrorMessage ) ) {
+      const error = err as CustomErrorMessage
       this.response = {
         type     : 'E_CustomError',
         stat_msg : error.message,
         stat_code: error.status
       }
     } else {
-      this.response = {
-        type     : 'E_UnhandledError',
-        stat_msg : 'Something went wrong',
-        stat_code: 500
-      }
+      // this.unhandledError()
     }
 
     // getEnumKeyByEnumValue<

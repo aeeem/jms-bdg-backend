@@ -4,7 +4,8 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
 import { ValidateError } from 'tsoa'
 
-const errorResponder = ( err: Error, req: express.Request, res: express.Response, next: express.NextFunction ) => {
+const errorResponder = ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
+  console.log( 'here' )
   if ( err instanceof ValidateError ) {
     // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
     return res.status( 422 ).json( {
@@ -20,7 +21,10 @@ const errorResponder = ( err: Error, req: express.Request, res: express.Response
     } )
   }
   if ( err instanceof Error ) {
+    console.log( 'here' )
+
     return res.status( 500 ).json( {
+      
       errorName: err.name,
       message  : err.message,
       stack    : err.stack ?? 'no stack defined'

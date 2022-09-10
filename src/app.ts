@@ -5,7 +5,8 @@ import cors from 'cors'
 import swaggerUi from 'swagger-ui-express'
 import { RegisterRoutes } from '../tsoa/routes'
 import Database from '@database'
-import errorResponder from './middleware/errorResponder'
+import { ValidateError } from 'tsoa'
+import { E_ERROR } from './constants/errorTypes'
 
 const app: Express = express()
 
@@ -15,7 +16,12 @@ const app: Express = express()
 export const db = new Database()
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on( 'ready', async () => {
-  await db.connectToDB()
+  if ( process.env.NODE_ENV === 'test' ) {
+    await db.connectToDBTest()
+  }
+  if ( process.env.NODE_ENV === 'development' ) {
+    await db.connectToDB()
+  }
 } )
 
 app.set( 'json spaces', 2 )
@@ -33,6 +39,9 @@ if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'producti
   app.use( helmet() )
 }
 
+app.get( '/ping', ( req, res ) => {
+  res.send( { msg: 'pong' } ).status( 200 )
+} )
 /************************************************************************************
  *                               Register all routes
  ***********************************************************************************/
@@ -47,7 +56,18 @@ app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Re
  *                               Express Error Handling
  ***********************************************************************************/
 
-app.use( errorResponder )
+app.use( ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
+  if ( err instanceof ValidateError ) {
+    // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
+    return res.status( 422 ).json( {
+      type   : E_ERROR.VALIDATION_ERROR,
+      message: 'Validation Failed',
+      details: err?.fields
+    } )
+  }
+ 
+  next()
+} )
 
 app.emit( 'ready' )
 app.use( function notFoundHandler ( _req, res: express.Response ) {

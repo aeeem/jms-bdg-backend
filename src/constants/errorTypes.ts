@@ -1,7 +1,9 @@
 import { HTTP_CODE } from 'src/constants/enums'
 
 export const E_ERROR = {
-  TRANSACTION_NOT_FOUND         : { message: 'Transaksi tidak ditemukan.', status: HTTP_CODE.NO_CONTENT },
+  REGISTER_INVALID_PAYLOAD      : { message: 'Nip, password, nama tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
+  NO_TOKEN_PROVIDED             : { message: 'No token provided', status: HTTP_CODE.UNAUTHORIZED },
+  NIP_AND_PASSWORD_REQUIRED     : { message: 'Nip dan password tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
   FORBIDDEN_ROLE_INPUT          : { message: 'Pembuatan user dengan role super admin tidak diperbolehkan', status: HTTP_CODE.FORBIDDEN },
   ROLE_NOT_FOUND                : { message: 'Role tidak ditemukan', status: HTTP_CODE.NO_CONTENT },
   EMPLOYEE_NOT_FOUND            : { message: 'Pegawai tidak ditemukan', status: HTTP_CODE.NO_CONTENT },
@@ -26,9 +28,10 @@ export const E_ERROR = {
   USER_NOT_FOUND                : { message: 'User not found', status: HTTP_CODE.NO_CONTENT },
   USER_IS_NOT_AUTHORIZED        : { message: 'User is not authorized', status: HTTP_CODE.UNAUTHORIZED },
   TOKEN_EXPIRED                 : { message: 'Token expired', status: HTTP_CODE.UNAUTHORIZED }
-}
+} as const
 
-export type ErrorMessages = keyof typeof E_ERROR
+export type ErrorKeys = keyof typeof E_ERROR
+export type ErrorMessages = typeof E_ERROR[keyof typeof E_ERROR]
 
 export interface CustomErrorMessage {
   message: string
