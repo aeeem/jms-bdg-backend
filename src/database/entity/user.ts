@@ -9,7 +9,7 @@ export class User extends BaseEntity {
     id: number
 
   @Column( { unique: true, nullable: true } )
-    email: string
+    email?: string
 
   @Column( { unique: true } )
     noInduk: string
@@ -18,7 +18,7 @@ export class User extends BaseEntity {
     name: string
 
   @Column( { nullable: true } )
-    birth_date: Date
+    birth_date?: Date
 
   @Column( { nullable: true } )
     phone_number: string

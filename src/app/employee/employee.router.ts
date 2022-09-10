@@ -1,10 +1,10 @@
 import makeResponse from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Patch, Path, Post, Put, Route, Security, Tags
+  Body, Controller, Delete, Get, Patch, Path, Post, Put, Route, Security, Tags, Query
 } from 'tsoa'
 import { ChangeEmployeeRole, CreateEmployeeRequest } from './employee.interface'
 import {
-  changeEmployeeRoleService, createEmployeeService, deleteEmployeeService, getAllEmployeeService, updateEmployeeService
+  changeEmployeeRoleService, createEmployeeService, deleteEmployeeService, getAllEmployeeService, updateEmployeeService, searchEmployeeService
 } from './employee.service'
 
 @Tags( 'Pegawai' )
@@ -38,6 +38,16 @@ export class employeeController extends Controller {
       const updatedEmployee = await updateEmployeeService( id, body )
       return makeResponse.success( { data: updatedEmployee } )
     } catch ( error ) {
+      return error
+    }
+  }
+
+  @Get( '/search/' )
+  @Security( 'api_key', ['read:customer'] )
+  public async searchEmployee ( @Query( 'query' ) query: string ) {
+    try {
+      return await searchEmployeeService( query )
+    } catch ( error: any ) {
       return error
     }
   }

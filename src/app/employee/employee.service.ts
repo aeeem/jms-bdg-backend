@@ -1,11 +1,27 @@
 import { Role } from '@entity/role'
 import { User } from '@entity/user'
+import _ from 'lodash'
 import { CreateEmployeeRequest, RoleLists } from 'src/app/employee/employee.interface'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
 import { createHashPassword } from 'src/helper/bcrypt'
 import makeResponse from 'src/helper/response'
 import { Not } from 'typeorm'
+
+const formatResponse = ( employees: User[] ) => {
+  return employees.map( employee => {
+    return {
+      id          : employee.id,
+      name        : employee.name,
+      email       : employee.email,
+      noInduk     : employee.noInduk,
+      role        : employee.role,
+      roleName    : employee.role.role,
+      phone_number: employee.phone_number,
+      birth_date  : employee.birth_date
+    }
+  } )
+}
 
 export const getAllEmployeeService = async () => {
   try {
@@ -14,22 +30,27 @@ export const getAllEmployeeService = async () => {
       relations: ['role']
     } )
 
-    const formatResponse = employees.map( employee => {
-      return {
-        id         : employee.id,
-        name       : employee.name,
-        email      : employee.email,
-        noInduk    : employee.noInduk,
-        role       : employee.role,
-        roleName   : employee.role.role,
-        phoneNumber: employee.phone_number,
-        birth_date : employee.birth_date
-      }
-    } )
-
-    return makeResponse.success( { data: formatResponse, stat_msg: 'SUCCESS' } )
+    const formatEmployee = formatResponse( employees )
+    return makeResponse.success( { data: formatEmployee, stat_msg: 'SUCCESS' } )
   } catch ( error: any ) {
+    console.log( error )
     return new Errors( error )
+  }
+}
+
+export const searchEmployeeService = async ( query: string ) => {
+  try {
+    // TODO based on https://github.com/mochaazul/jms-bdg-backend/pull/15#discussion_r960374243
+    const employees = await User.createQueryBuilder( 'user' )
+      .where( 'user.name LIKE :query', { query: `%${query}%` } )
+      .leftJoinAndSelect( 'user.role', 'role' )
+      .orderBy( 'user.id', 'ASC' )
+      .getMany()
+    if ( _.isEmpty( employees ) ) makeResponse.success<User[]>( { data: employees, stat_msg: E_ERROR.USER_NOT_FOUND.message } )
+    const formatEmployee = formatResponse( employees )
+    return makeResponse.success( { data: formatEmployee, stat_msg: 'SUCCESS' } )
+  } catch ( error: any ) {
+    throw new Errors( error )
   }
 }
 
@@ -43,9 +64,7 @@ export const createEmployeeService = async ( payload: CreateEmployeeRequest ) =>
     if ( defaultPassword instanceof Error ) throw defaultPassword.message
 
     employee.name = payload.name
-    employee.email = payload.email
     employee.noInduk = payload.noInduk
-    employee.birth_date = payload.birth_date
     employee.phone_number = payload.phone_number
     employee.role_id = payload.role_id
     employee.role = role
