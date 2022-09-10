@@ -16,10 +16,9 @@ export async function expressAuthentication (
       if ( ( headerToken != null ) ) {
         token = String( headerToken )
       }
-      if ( token.length === 0 ) throw 'No token provided'
+      if ( token.length === 0 ) throw E_ERROR.NO_TOKEN_PROVIDED
       const decoded: any = await verifyToken( token )
       if ( decoded instanceof Error ) throw E_ERROR.TOKEN_EXPIRED
-      
       const user = await User.findOne( {
         where    : { id: decoded.id },
         relations: ['role', 'role.scopes']

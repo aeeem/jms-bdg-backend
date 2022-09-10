@@ -46,8 +46,7 @@ export const loginService = async ( payload: LoginRequestParameter ) => {
       stat_msg : SUCCESS_MESSAGE.LOGIN_SUCCESS
     } )
   } catch ( e: any ) {
-    console.log( e )
-    throw new Errors( e )
+    return await Promise.reject( new Errors( e ) )
   }
 }
 
@@ -64,7 +63,7 @@ export const registerUserService = async ( payload: RegisterRequestParameter ) =
 
     const hashedPassword = await createHashPassword( payload.password )
 
-    if ( hashedPassword instanceof Error ) throw hashedPassword.message
+    if ( hashedPassword instanceof Error ) throw hashedPassword
 
     const newUser = new User()
     newUser.noInduk = payload.noInduk
@@ -73,12 +72,12 @@ export const registerUserService = async ( payload: RegisterRequestParameter ) =
 
     await newUser.save()
 
-    return makeResponse.success( {
+    return makeResponse.success<User>( {
       data     : newUser,
       stat_code: HTTP_CODE.OK,
       stat_msg : SUCCESS_MESSAGE.REGISTER_SUCCESS
     } )
   } catch ( e: any ) {
-    throw new Errors( e )
+    return await Promise.reject( new Errors( e ) )
   }
 }
