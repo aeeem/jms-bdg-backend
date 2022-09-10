@@ -50,7 +50,7 @@ describe( 'Auth module negative tests', () => {
     } )
   } )
 
-  describe( 'register user', () => {
+  describe( 'Register user', () => {
     describe( '[-] Negative Test', () => {
       it( 'POST /register with empty payload', async () => {
         await makeRequest.post( '/auth/register' )
