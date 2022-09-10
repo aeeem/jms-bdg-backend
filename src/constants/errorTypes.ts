@@ -1,6 +1,7 @@
 import { HTTP_CODE } from 'src/constants/enums'
 
 export const E_ERROR = {
+  REGISTER_INVALID_PAYLOAD      : { message: 'Nip, password, nama tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
   NO_TOKEN_PROVIDED             : { message: 'No token provided', status: HTTP_CODE.UNAUTHORIZED },
   NIP_AND_PASSWORD_REQUIRED     : { message: 'Nip dan password tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
   FORBIDDEN_ROLE_INPUT          : { message: 'Pembuatan user dengan role super admin tidak diperbolehkan', status: HTTP_CODE.FORBIDDEN },

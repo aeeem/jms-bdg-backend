@@ -3,7 +3,7 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { SUCCESS_MESSAGE } from 'src/constants/languageEnums'
 import { shouldHaveError } from 'src/testHelper'
 import { makeRequest } from '../../../helper/testHelper'
-import { LoginPayloadMock } from './_auth.mock'
+import { LoginPayloadMock, RegisterPayloadMock } from './_auth.mock'
 
 describe( 'Auth module negative tests', () => {
   describe( 'Login Endpoint', () => {
@@ -51,7 +51,38 @@ describe( 'Auth module negative tests', () => {
   } )
 
   describe( 'register user', () => {
-    describe( '[-] Negative Test', () => {} )
-    describe( '[+] Positive Test', () => {} )
+    describe( '[-] Negative Test', () => {
+      it( 'POST /register with empty payload', async () => {
+        await makeRequest.post( '/auth/register' )
+          .send( RegisterPayloadMock.emptyStringsValidation )
+          .expect( 200 )
+          .then( res => {
+            shouldHaveError( res.body.response, E_ERROR.REGISTER_INVALID_PAYLOAD )
+          } )
+      } )
+      it( 'POST /register with Existing user (super admin)', async () => {
+        await makeRequest.post( '/auth/register' )
+          .send( RegisterPayloadMock.existingUser )
+          .expect( 200 )
+          .then( res => {
+            shouldHaveError( res.body.response, E_ERROR.USER_EXISTS )
+          } )
+      } )
+    } )
+    describe( '[+] Positive Test', () => {
+      it( 'POST /register with new user', async () => {
+        await makeRequest.post( '/auth/register' )
+          .send( RegisterPayloadMock.newRandomUser )
+          .expect( 200 )
+          .then( ( { body } ) => {
+            expect( body ).toHaveProperty( 'stat_code', 200 )
+            expect( body ).toHaveProperty( 'stat_msg', SUCCESS_MESSAGE.REGISTER_SUCCESS )
+            // check payload
+            expect( body.data ).toHaveProperty( 'noInduk', RegisterPayloadMock.newRandomUser.noInduk )
+            expect( body.data ).toHaveProperty( 'name', RegisterPayloadMock.newRandomUser.name )
+            expect( body.data ).toHaveProperty( 'role_id', null )
+          } )
+      } )
+    } )
   } )
 } )

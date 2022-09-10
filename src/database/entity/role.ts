@@ -13,8 +13,11 @@ export class Role extends BaseEntity {
     role: string
 
   @OneToOne( () => Scope )
-  @JoinColumn()
+  @JoinColumn( { name: 'scopesId' } )
     scopes: Scope
+
+  @Column()
+    scopesId: number
 
   @OneToOne( () => User )
     user: User

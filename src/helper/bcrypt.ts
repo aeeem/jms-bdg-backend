@@ -5,7 +5,7 @@ export const compareHash = async ( payload: string, encrypted: string ) => {
     const isMatch = await bcrypt.compare( payload, encrypted )
     return isMatch
   } catch ( err: any ) {
-    return new Error( err.message )
+    return await Promise.reject( err.message )
   }
 }
 
@@ -15,6 +15,6 @@ export const createHashPassword = async ( payload: string ) => {
     const hash = await bcrypt.hash( payload, salt )
     return hash
   } catch ( err: any ) {
-    return new Error( err.message )
+    return err
   }
 }

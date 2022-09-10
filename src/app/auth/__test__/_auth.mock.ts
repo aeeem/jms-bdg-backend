@@ -25,3 +25,22 @@ export const LoginPayloadMock = {
     password: ''
   }
 }
+
+export const RegisterPayloadMock = {
+  emptyStringsValidation: {
+    noInduk : '',
+    password: '',
+    name    : ''
+  },
+  existingUser: {
+    noInduk : '123',
+    password: '123123',
+    name    : 'Super Admin'
+  },
+  newRandomUser: {
+    noInduk : '9988776655',
+    password: 'user123',
+    name    : 'Test User'
+  }
+  
+}

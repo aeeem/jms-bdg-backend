@@ -16,7 +16,12 @@ const app: Express = express()
 export const db = new Database()
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.on( 'ready', async () => {
-  await db.connectToDB()
+  if ( process.env.NODE_ENV === 'test' ) {
+    await db.connectToDBTest()
+  }
+  if ( process.env.NODE_ENV === 'development' ) {
+    await db.connectToDB()
+  }
 } )
 
 app.set( 'json spaces', 2 )
@@ -35,7 +40,7 @@ if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'producti
 }
 
 app.get( '/ping', ( req, res ) => {
-  res.send( {msg:'pong'} ).status( 200 )
+  res.send( { msg: 'pong' } ).status( 200 )
 } )
 /************************************************************************************
  *                               Register all routes

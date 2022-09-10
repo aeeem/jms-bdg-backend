@@ -6,6 +6,7 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "node -r ./tspaths.js ./dist/src/index.js",
+    "start:test" : "NODE_ENV=test yarn dev",
     "start:dev": "nodemon -w src -e ts -r tsconfig-paths/register --exec ts-node ./src/index.ts",
     "dev": "concurrently \"npm run tsoa:generate_\" \"npm run start:dev\"",
     "prebuild": "rimraf ./build && npm run tsoa:generate",
@@ -32,6 +33,7 @@
   ],
   "devDependencies": {
     "@faker-js/faker": "^7.3.0",
+    "@ngneat/falso": "^6.1.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import { Connection, createConnection } from 'typeorm'
 import dotenv from 'dotenv'
+import doSeeding from './seeds'
 
 dotenv.config( {} )
 export default class Database {
@@ -37,11 +38,20 @@ export default class Database {
       dropSchema : true,
       synchronize: true,
       logging    : false
-    } ).then( _con => {
+    } ).then( async _con => {
       this.connection = _con
       console.log( 'Connected to db!!' )
+      await this.reseedTestData()
     } )
       .catch( console.error )
+  }
+
+  async reseedTestData () {
+    try {
+      await doSeeding()
+    } catch ( error ) {
+      console.error( error )
+    }
   }
 
   public getConnection (): Connection {
