@@ -6,8 +6,8 @@
   "scripts": {
     "prestart": "npm run build",
     "start": "node -r ./tspaths.js ./dist/src/index.js",
-    "start:test": "NODE_ENV=test yarn dev",
     "start:dev": "nodemon -w src -e ts -r tsconfig-paths/register --exec ts-node ./src/index.ts",
+    "start:test-server": "nodemon --exitcrash -w src -e ts -r tsconfig-paths/register --exec ts-node ./src/index.ts",
     "dev": "concurrently \"npm run tsoa:generate_\" \"npm run start:dev\"",
     "prebuild": "rimraf ./build && npm run tsoa:generate",
     "build": "tsc",

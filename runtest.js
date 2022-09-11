@@ -2,7 +2,7 @@ const concurrently = require( 'concurrently' )
 
 concurrently( [
   'yarn tsoa:generate_',
-  'yarn start:dev',
+  'yarn start:test-server',
   'yarn wait-on tcp:8080 && yarn jest'
 ], {
   prefix      : 'name',
