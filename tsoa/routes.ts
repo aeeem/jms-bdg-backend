@@ -74,8 +74,16 @@ const models: TsoaRoute.Models = {
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateEmployeeRequest": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime"},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string"},"name":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "email": {"dataType":"string"},
+            "noInduk": {"dataType":"string","required":true},
+            "birth_date": {"dataType":"datetime"},
+            "phone_number": {"dataType":"string","required":true},
+            "role_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ChangeEmployeeRole": {
@@ -807,6 +815,31 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/transaction/search',
+            authenticateMiddleware([{"api_key":["read:transaction"]}]),
+
+            function TransactionController_searchTransaction(request: any, response: any, next: any) {
+            const args = {
+                    query: {"in":"query","name":"query","dataType":"string"},
+                    id: {"in":"query","name":"id","dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new TransactionController();
+
+
+              const promise = controller.searchTransaction.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction/:id',
             authenticateMiddleware([{"api_key":["read:transaction"]}]),
 
@@ -898,31 +931,6 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.deleteTransaction.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/transaction/search',
-            authenticateMiddleware([{"api_key":["read:transaction"]}]),
-
-            function TransactionController_searchTransaction(request: any, response: any, next: any) {
-            const args = {
-                    query: {"in":"query","name":"query","dataType":"string"},
-                    id: {"in":"query","name":"id","dataType":"double"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new TransactionController();
-
-
-              const promise = controller.searchTransaction.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

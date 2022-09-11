@@ -11,6 +11,48 @@ import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
 import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
 
+const formatTransaction = ( transactions: Transaction[] ) => {
+  return transactions.map( transaction => {
+    return {
+      id                  : transaction.id,
+      expected_total_price: transaction.expected_total_price,
+      actual_total_price  : transaction.actual_total_price,
+      amount_paid         : transaction.amount_paid,
+      change              : transaction.change,
+      outstanding_amount  : transaction.outstanding_amount,
+      transaction_date    : transaction.transaction_date,
+      customer            : {
+        id            : transaction.customer.id,
+        name          : transaction.customer.name,
+        contact_number: transaction.customer.contact_number
+      },
+      items: transaction.transactionDetails.map( detail => {
+        return {
+          id     : detail.id,
+          amount : detail.amount,
+          product: {
+            id      : detail.product.id,
+            name    : detail.product.name,
+            vendorId: detail.product.stock.vendor.id,
+            sku     : detail.product.sku,
+            stock   : {
+              id         : detail.product.stock.id,
+              total_stock: detail.product.stock.total_stock,
+              sell_price : detail.product.stock.sell_price,
+              buy_price  : detail.product.stock.buy_price
+            }
+          },
+          sub_total: detail.sub_total
+
+        }
+      } ),
+      status    : transaction.status,
+      created_at: transaction.created_at,
+      updated_at: transaction.updated_at
+    }
+  } )
+}
+
 export const getAllTransactionService = async () => {
   try {
     const transactions = await Transaction.find( {
@@ -22,45 +64,7 @@ export const getAllTransactionService = async () => {
         'transactionDetails.product.stock.vendor'
       ]
     } )
-    return transactions.map( transaction => {
-      return {
-        id                  : transaction.id,
-        expected_total_price: transaction.expected_total_price,
-        actual_total_price  : transaction.actual_total_price,
-        amount_paid         : transaction.amount_paid,
-        change              : transaction.change,
-        outstanding_amount  : transaction.outstanding_amount,
-        transaction_date    : transaction.transaction_date,
-        customer            : {
-          id            : transaction.customer.id,
-          name          : transaction.customer.name,
-          contact_number: transaction.customer.contact_number
-        },
-        items: transaction.transactionDetails.map( detail => {
-          return {
-            id     : detail.id,
-            amount : detail.amount,
-            product: {
-              id      : detail.product.id,
-              name    : detail.product.name,
-              vendorId: detail.product.stock.vendor.id,
-              sku     : detail.product.sku,
-              stock   : {
-                id         : detail.product.stock.id,
-                total_stock: detail.product.stock.total_stock,
-                sell_price : detail.product.stock.sell_price,
-                buy_price  : detail.product.stock.buy_price
-              }
-            },
-            sub_total: detail.sub_total
-
-          }
-        } ),
-        status    : transaction.status,
-        created_at: transaction.created_at,
-        updated_at: transaction.updated_at
-      }
-    } )
+    return formatTransaction( transactions )
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
@@ -140,20 +144,20 @@ export const createTransactionService = async ( payload: TransactionRequestParam
   }
 }
 
-export const searchTransactionService = async ( query?: string, id?: number ) => {
+export const searchTransactionService = async ( query?: string, id?: string ) => {
   try {
-    const transactions = await Transaction.find( { relations: ['transactionDetails', 'customer'] } )
-    
-    const trans = transactions.filter( transaction => {
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-      if ( ( query && transaction.customer.name.toLowerCase().includes( query ) ) ||
-        ( id && transaction.id === id )
-      ) return true
-      return false
+    const transactions = await await Transaction.find( {
+      relations: [
+        'customer',
+        'transactionDetails',
+        'transactionDetails.product',
+        'transactionDetails.product.stock',
+        'transactionDetails.product.stock.vendor'
+      ],
+      where: id ? { id } : {}
     } )
-
-    if ( _.isEmpty( trans ) ) return { message: 'Transaction is not found!' }
-    return trans
+    if ( _.isEmpty( transactions ) ) throw E_ERROR.TRANSACTION_NOT_FOUND
+    return transactions
   } catch ( error: any ) {
     console.log( error )
     return await Promise.reject( new Errors( error ) )
