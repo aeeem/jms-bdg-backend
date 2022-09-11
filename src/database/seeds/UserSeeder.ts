@@ -7,7 +7,7 @@ const userSeeds = async () => {
     // eslint-disable-next-line no-console
     console.info( 'Seeding User data' )
 
-    const pass: any = await createHashPassword( '123123' )
+    const pass: boolean = await createHashPassword( '123123' )
     const Users =
       {
         name    : 'Super Admin',
