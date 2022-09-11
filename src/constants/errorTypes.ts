@@ -1,6 +1,7 @@
 import { HTTP_CODE } from 'src/constants/enums'
 
 export const E_ERROR = {
+  TRANSACTION_NOT_FOUND         : { message: 'Transaksi tidak ditemukan.', status: HTTP_CODE.NOT_FOUND },
   REGISTER_INVALID_PAYLOAD      : { message: 'Nip, password, nama tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
   NO_TOKEN_PROVIDED             : { message: 'No token provided', status: HTTP_CODE.UNAUTHORIZED },
   NIP_AND_PASSWORD_REQUIRED     : { message: 'Nip dan password tidak boleh kosong', status: HTTP_CODE.BAD_REQUEST },
