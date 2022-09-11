@@ -110,7 +110,8 @@
 					}
 				},
 				"required": [
-					"role_id",
+					"name",
+					"noInduk",
 					"phone_number",
 					"role_id"
 				],

@@ -74,8 +74,16 @@ const models: TsoaRoute.Models = {
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateEmployeeRequest": {
-        "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"role_id":{"dataType":"double","required":true},"phone_number":{"dataType":"string","required":true},"birth_date":{"dataType":"datetime"},"noInduk":{"dataType":"string","required":true},"email":{"dataType":"string"},"name":{"dataType":"string","required":true}},"validators":{}},
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "email": {"dataType":"string"},
+            "noInduk": {"dataType":"string","required":true},
+            "birth_date": {"dataType":"datetime"},
+            "phone_number": {"dataType":"string","required":true},
+            "role_id": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ChangeEmployeeRole": {
