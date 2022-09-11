@@ -6,7 +6,6 @@ import {
 } from './customer.service'
 import { CustomerRequestParameter, CustomerUpdateRequestParameter } from './customer.interface'
 import makeResponse from 'src/helper/response'
-import { Errors } from 'src/errorHandler'
 
 @Tags( 'Customer' )
 @Route( '/api/customer' )
@@ -19,7 +18,7 @@ export class CustomerController extends Controller {
       const customer = await getAllCustomerService()
       return makeResponse.success( { data: customer } )
     } catch ( error: any ) {
-      return new Errors( error )
+      return error
     }
   }
 
@@ -48,7 +47,12 @@ export class CustomerController extends Controller {
   @Post( '/' )
   @Security( 'api_key', ['create:customer'] )
   public async createCustomer ( @Body() payload: CustomerRequestParameter ) {
-    return await createCustomerService( payload )
+    try {
+      const customer = await createCustomerService( payload )
+      return makeResponse.success( { data: customer } )
+    } catch ( error ) {
+      return error
+    }
   }
 
   @Put( '/{id}/' )

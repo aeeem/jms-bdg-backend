@@ -10,8 +10,8 @@ import { CustomerRequestParameter, CustomerUpdateRequestParameter } from './cust
 export const getAllCustomerService = async () => {
   try {
     return await Customer.find( { relations: ['transactions', 'monetary'] } )
-  } catch ( error ) {
-    return error
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
   }
 }
 
@@ -39,7 +39,7 @@ export const searchCustomerService = async ( query: string ) => {
     if ( _.isEmpty( customer ) ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer
   } catch ( error: any ) {
-    throw new Errors( error )
+    return await Promise.reject( new Errors( error ) )
   }
 }
 
@@ -65,10 +65,11 @@ export const createCustomerService = async ( payload: CustomerRequestParameter )
       await queryRunner.manager.save( _customerMonet )
     }
     await queryRunner.commitTransaction()
-    return await Customer.findOne( { where: { id: _newCustomer.id } } )
-  } catch ( error ) {
+    const customer = await Customer.findOne( { where: { id: _newCustomer.id } } )
+    return customer
+  } catch ( error: any ) {
     await queryRunner.rollbackTransaction()
-    return error
+    return await Promise.reject( new Errors( error ) )
   } finally {
     await queryRunner.release()
   }
@@ -84,7 +85,7 @@ export const updateCustomerService = async ( id: string, payload: CustomerUpdate
     } else throw E_ERROR.CUSTOMER_NOT_FOUND
     return await Customer.findOne( { where: { id } } )
   } catch ( error: any ) {
-    throw new Errors( error )
+    return await Promise.reject( new Errors( error ) )
   }
 }
 
@@ -95,6 +96,6 @@ export const deleteCustomerService = async ( id: string ) => {
       await customer.remove()
     } else throw E_ERROR.CUSTOMER_NOT_FOUND
   } catch ( error: any ) {
-    throw new Errors( error )
+    return await Promise.reject( new Errors( error ) )
   }
 }

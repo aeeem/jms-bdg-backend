@@ -7,6 +7,7 @@ import { RegisterRoutes } from '../tsoa/routes'
 import Database from '@database'
 import { ValidateError } from 'tsoa'
 import { E_ERROR } from './constants/errorTypes'
+import { Errors } from './errorHandler'
 
 const app: Express = express()
 
@@ -65,7 +66,10 @@ app.use( ( err: unknown, req: express.Request, res: express.Response, next: expr
       details: err?.fields
     } )
   }
- 
+
+  if ( err instanceof Errors ) {
+    return res.status( err.response.stat_code ?? 500 ).json( err.response )
+  }
   next()
 } )
 

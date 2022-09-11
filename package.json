@@ -18,7 +18,8 @@
     "build:dev": "yarn build && scp -r ./dist/* devjms@jmsbdg.com:/home/devjms/jms-bdg-backend",
     "start:service": "pm2 start npm --name 'dev-jms' -- run 'start'",
     "eslint": "eslint --ext .ts --fix ./src -c .eslintrc.js",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "watch:test" : "yarn jest --watch"
   },
   "husky":{
     "hooks":{

@@ -5,7 +5,7 @@ import { shouldHaveError } from 'src/testHelper'
 import { makeRequest } from '../../../helper/testHelper'
 import { LoginPayloadMock, RegisterPayloadMock } from './_auth.mock'
 
-describe( 'Auth module negative tests', () => {
+describe( 'Auth modul tests', () => {
   describe( 'Login Endpoint', () => {
     describe( '[-] Negative Test', () => {
       it( 'POST /login with empty payload', async () => {
