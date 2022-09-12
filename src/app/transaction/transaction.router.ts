@@ -22,6 +22,18 @@ export class TransactionController extends Controller {
     }
   }
 
+  @Get( '/search/' )
+  @Security( 'api_key', ['read:transaction'] )
+  public async searchTransaction ( @Query( 'query' ) query?: string, @Query( 'id' ) id?: string ) {
+    try {
+      const transactions = await searchTransactionService( query, id )
+      return makeResponse.success( { data: transactions } )
+    } catch ( error ) {
+      console.log( error )
+      return error
+    }
+  }
+
   @Get( '/{id}' )
   @Security( 'api_key', ['read:transaction'] )
   public async getTransactionById ( @Path( 'id' ) id: string ) {
@@ -63,11 +75,5 @@ export class TransactionController extends Controller {
     } catch ( error ) {
       return error
     }
-  }
-
-  @Get( '/search/' )
-  @Security( 'api_key', ['read:transaction'] )
-  public async searchTransaction ( @Query() query?: string, @Query() id?: number ) {
-    return await searchTransactionService( query, id )
   }
 }

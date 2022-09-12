@@ -1314,6 +1314,49 @@
 				}
 			}
 		},
+		"/api/transaction/search": {
+			"get": {
+				"operationId": "SearchTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:transaction"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "query",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "id",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/api/transaction/{id}": {
 			"get": {
 				"operationId": "GetTransactionById",
@@ -1420,50 +1463,6 @@
 						"required": true,
 						"schema": {
 							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/api/transaction/search": {
-			"get": {
-				"operationId": "SearchTransaction",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Transaction"
-				],
-				"security": [
-					{
-						"api_key": [
-							"read:transaction"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "query",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "query",
-						"name": "id",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
 						}
 					}
 				]
