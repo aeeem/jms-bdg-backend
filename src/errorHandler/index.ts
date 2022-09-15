@@ -8,11 +8,16 @@ export class Errors extends Error {
   public type: string
   public status: number
   public response: ErrorResponseType<any>
+  public stat_msg: string
+  public stat_code: number
   constructor ( err: ErrorTypes ) {
     super()
     this.err = err
     // this.errorTypeParser()
-    this.errorParser()
+    const error = this.errorParser()
+    this.type = error.type
+    this.stat_msg = error.stat_msg as string
+    this.stat_code = error.stat_code as number
   }
 
   isHandledError = ( code: string ): code is ErrorMessages => {
@@ -59,6 +64,8 @@ export class Errors extends Error {
         stat_code: 500
       }
     }
+
+    return this.response
 
     // getEnumKeyByEnumValue<
     //   TEnumKey extends string,
