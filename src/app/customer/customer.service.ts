@@ -1,6 +1,5 @@
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
-import _ from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
@@ -31,12 +30,11 @@ export const getCustomerByIdService = async ( id: string ) => {
 export const searchCustomerService = async ( query: string ) => {
   try {
     const customer = await Customer.createQueryBuilder( 'customer' )
-      .where( 'customer.name LIKE :query', { query: `%${query}%` } )
+      .where( 'UPPER(customer.name) LIKE UPPER(:query)', { query: `%${query}%` } )
       .leftJoinAndSelect( 'customer.monetary', 'monetary' )
       .leftJoinAndSelect( 'customer.transactions', 'transactions' )
       .orderBy( 'customer.id', 'ASC' )
       .getMany()
-    if ( _.isEmpty( customer ) ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
