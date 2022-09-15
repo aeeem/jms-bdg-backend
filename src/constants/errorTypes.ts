@@ -28,8 +28,7 @@ export const E_ERROR = {
   VALIDATION_ERROR              : { message: 'E_VALIDATION_ERROR', status: HTTP_CODE.BAD_REQUEST },
   USER_NOT_FOUND                : { message: 'User not found', status: HTTP_CODE.NO_CONTENT },
   USER_IS_NOT_AUTHORIZED        : { message: 'User is not authorized', status: HTTP_CODE.UNAUTHORIZED },
-  TOKEN_EXPIRED                 : { message: 'Token expired', status: HTTP_CODE.UNAUTHORIZED },
-  TRANSACTION_NOT_FOUND         : { message: 'Transaksi tidak ditemukan', status: HTTP_CODE.NOT_FOUND }
+  TOKEN_EXPIRED                 : { message: 'Token expired', status: HTTP_CODE.UNAUTHORIZED }
 } as const
 
 export type ErrorKeys = keyof typeof E_ERROR
