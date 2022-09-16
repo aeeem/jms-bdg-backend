@@ -9,6 +9,7 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
+import { E_CODE_KEY } from 'src/interface/AccountCode'
 import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
 
 const formatTransaction = ( transactions: Transaction[] ) => {
@@ -118,6 +119,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       customerMonet.customer = customer
       customerMonet.amount = transaction.outstanding_amount
       customerMonet.type = E_Recievables.DEBT
+      customerMonet.source = E_CODE_KEY.DEBT_ADD_INSUFFICIENT_FUND
       await queryRunner.manager.save( customerMonet )
     } else {
       transaction.status = TRANSACTION_STATUS.PAID
@@ -129,6 +131,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       customerMonet.amount = payload.deposit
       customerMonet.customer = customer
       customerMonet.type = E_Recievables.DEPOSIT
+      customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
       await queryRunner.manager.save( customerMonet )
     }
 
