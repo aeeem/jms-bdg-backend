@@ -2,9 +2,12 @@ import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import {
-  createCustomerService, deleteCustomerService, getAllCustomerService, getCustomerByIdService, searchCustomerService, updateCustomerService
+  addDepositService,
+  createCustomerService, deleteCustomerService, getAllCustomerService, getCustomerByIdService, getCustomerDebtService, getCustomerDepositService, searchCustomerService, updateCustomerService
 } from './customer.service'
-import { CustomerRequestParameter, CustomerUpdateRequestParameter } from './customer.interface'
+import {
+  AddDepositRequestParameter, CustomerRequestParameter, CustomerUpdateRequestParameter
+} from './customer.interface'
 import makeResponse from 'src/helper/response'
 
 @Tags( 'Customer' )
@@ -40,6 +43,39 @@ export class CustomerController extends Controller {
       const customer = await searchCustomerService( query )
       return makeResponse.success( { data: customer } )
     } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Get( '/deposit/{id}/' )
+  @Security( 'api_key', ['read:customer'] )
+  public async getDeposit ( @Path() id: string ) {
+    try {
+      const customer = await getCustomerDepositService( id )
+      return makeResponse.success( { data: customer } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Post( '/deposit/' )
+  @Security( 'api_key', ['read:customer'] )
+  public async addDeposit ( @Body() payload: AddDepositRequestParameter ) {
+    try {
+      const customer = await addDepositService( payload )
+      return makeResponse.success( { data: customer } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Get( '/debt/{id}/' )
+  @Security( 'api_key', ['read:customer'] )
+  public async getDebt ( @Path() id: string ) {
+    try {
+      const customerDebt = await getCustomerDebtService( id )
+      return makeResponse.success( { data: customerDebt } )
+    } catch ( error ) {
       return error
     }
   }

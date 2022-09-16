@@ -128,7 +128,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       const customerMonet = new CustomerMonetary()
       customerMonet.amount = payload.deposit
       customerMonet.customer = customer
-      customerMonet.type = E_Recievables.RECIEVABLE
+      customerMonet.type = E_Recievables.DEPOSIT
       await queryRunner.manager.save( customerMonet )
     }
 

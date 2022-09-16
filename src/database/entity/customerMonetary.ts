@@ -1,8 +1,10 @@
+import { E_CODE_KEY } from 'src/interface/AccountCode'
 import {
   BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
-import { E_Recievables, E_Recievables_Source } from '../enum/hutangPiutang'
+import { E_Recievables } from '../enum/hutangPiutang'
 import { Customer } from './customer'
+import { Transaction } from './transaction'
 
 @Entity( 'customer_monetary' )
 export class CustomerMonetary extends BaseEntity {
@@ -10,25 +12,33 @@ export class CustomerMonetary extends BaseEntity {
     id: number
 
   @Column( {
-    type    : 'enum',
-    enum    : E_Recievables,
-    nullable: false
+    type: 'enum',
+    enum: E_Recievables
   } )
     type: E_Recievables
 
   @Column()
     amount: number
+  
+  @Column( {
+    type: 'enum',
+    enum: E_CODE_KEY
+  } )
+    source: E_CODE_KEY
 
-  @ManyToOne( () => Customer, ( transaction: Customer ) => transaction.monetary, { onDelete: 'CASCADE' } )
-  @JoinColumn( { name: 'cusotmer_id' } )
+  @Column( { nullable: true } )
+    transaction_id: number
+
+  @Column()
+    customer_id: number
+
+  @ManyToOne( () => Customer, ( customer: Customer ) => customer.monetary, { onDelete: 'CASCADE' } )
+  @JoinColumn( { name: 'customer_id' } )
     customer: Customer
 
-  @Column( {
-    nullable: true,
-    type    : 'enum',
-    enum    : E_Recievables_Source
-  } )
-    source: E_Recievables_Source
+  @ManyToOne( () => Transaction, ( transaction: Transaction ) => transaction.customerMonetary, { onDelete: 'CASCADE' } )
+  @JoinColumn( { name: 'transaction_id' } )
+    transaction: Transaction
 
   @CreateDateColumn()
     created_at: Date

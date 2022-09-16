@@ -42,6 +42,24 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"AddDepositRequestParameter": {
+				"properties": {
+					"customer_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"customer_id",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CustomerRequestParameter": {
 				"properties": {
 					"name": {
@@ -550,6 +568,112 @@
 					{
 						"in": "query",
 						"name": "query",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/customer/deposit/{id}": {
+			"get": {
+				"operationId": "GetDeposit",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/customer/deposit": {
+			"post": {
+				"operationId": "AddDeposit",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddDepositRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/customer/debt/{id}": {
+			"get": {
+				"operationId": "GetDebt",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:customer"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
 						"required": true,
 						"schema": {
 							"type": "string"

@@ -11,3 +11,8 @@ export interface CustomerUpdateRequestParameter {
   hutang?: number
   piutang?: number
 }
+
+export interface AddDepositRequestParameter{
+  customer_id: number
+  amount: number
+}

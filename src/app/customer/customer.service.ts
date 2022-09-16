@@ -4,7 +4,11 @@ import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
-import { CustomerRequestParameter, CustomerUpdateRequestParameter } from './customer.interface'
+import { CalculateTotalBalance } from 'src/helper/monetaryHelper'
+import { E_CODE_KEY as E_MONET_SOURCE } from 'src/interface/AccountCode'
+import {
+  AddDepositRequestParameter, CustomerRequestParameter, CustomerUpdateRequestParameter
+} from './customer.interface'
 
 export const getAllCustomerService = async () => {
   try {
@@ -22,6 +26,48 @@ export const getCustomerByIdService = async ( id: string ) => {
     } )
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  }
+}
+
+export const getCustomerDepositService = async ( id: string ) => {
+  try {
+    const customer_deposit = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEPOSIT } } )
+    const total_deposit = CalculateTotalBalance( customer_deposit )
+    return {
+      total_deposit,
+      deposits: customer_deposit
+    }
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  }
+}
+
+export const getCustomerDebtService = async ( id: string ) => {
+  try {
+    const customer_debt = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEBT } } )
+    const total_debt = CalculateTotalBalance( customer_debt )
+    return {
+      total_debt,
+      debts: customer_debt
+    }
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  }
+}
+
+export const addDepositService = async ( { amount, customer_id }: AddDepositRequestParameter ) => {
+  try {
+    const customer = await Customer.findOne( { where: { id: customer_id } } )
+    if ( !customer ) throw E_ERROR.CUSTOMER_NOT_FOUND
+    const customerMonetary = new CustomerMonetary()
+    customerMonetary.customer_id = customer.id
+    customerMonetary.amount = amount
+    customerMonetary.type = E_Recievables.DEPOSIT
+    customerMonetary.source = E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT
+    await customerMonetary.save()
+    return customerMonetary
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
@@ -57,7 +103,7 @@ export const createCustomerService = async ( payload: CustomerRequestParameter )
       _customerMonet.type = E_Recievables.DEBT
     } else if ( payload.piutang ) {
       _customerMonet.amount = payload.piutang
-      _customerMonet.type = E_Recievables.RECIEVABLE
+      _customerMonet.type = E_Recievables.DEPOSIT
     }
     if ( payload.hutang ?? payload.piutang ) {
       await queryRunner.manager.save( _customerMonet )

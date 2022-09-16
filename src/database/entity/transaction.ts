@@ -2,6 +2,7 @@ import {
   BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import { Customer } from './customer'
+import { CustomerMonetary } from './customerMonetary'
 import { TransactionDetail } from './transactionDetail'
 
 @Entity( { name: 'transaction' } )
@@ -44,6 +45,10 @@ export class Transaction extends BaseEntity {
     type: 'timestamp', default: () => 'now()', nullable: true
   } )
     transaction_date?: Date
+
+  @OneToMany( () => CustomerMonetary, ( customerMonetary: CustomerMonetary ) => customerMonetary.transaction, { onDelete: 'CASCADE' } )
+  @JoinColumn()
+    customerMonetary: CustomerMonetary[]
 
   @CreateDateColumn()
     created_at: Date
