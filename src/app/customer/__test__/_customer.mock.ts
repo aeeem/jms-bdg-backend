@@ -1,4 +1,3 @@
-
 export const customerData = [
   {
     id            : 2,
@@ -22,3 +21,8 @@ export const customerData = [
     monetary      : []
   }
 ]
+
+export const newCustomerMock = {
+  contact_number: 182391247,
+  name          : 'Customer dari test'
+}

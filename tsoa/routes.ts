@@ -65,8 +65,6 @@ const models: TsoaRoute.Models = {
         "properties": {
             "name": {"dataType":"string","required":true},
             "contact_number": {"dataType":"string","required":true},
-            "hutang": {"dataType":"double"},
-            "piutang": {"dataType":"double"},
         },
         "additionalProperties": false,
     },

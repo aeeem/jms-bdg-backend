@@ -98,16 +98,16 @@ export const createCustomerService = async ( payload: CustomerRequestParameter )
 
     const _customerMonet = new CustomerMonetary()
     _customerMonet.customer = _newCustomer
-    if ( payload.hutang ) {
-      _customerMonet.amount = payload.hutang
-      _customerMonet.type = E_Recievables.DEBT
-    } else if ( payload.piutang ) {
-      _customerMonet.amount = payload.piutang
-      _customerMonet.type = E_Recievables.DEPOSIT
-    }
-    if ( payload.hutang ?? payload.piutang ) {
-      await queryRunner.manager.save( _customerMonet )
-    }
+    // if ( payload.hutang ) {
+    //   _customerMonet.amount = payload.hutang
+    //   _customerMonet.type = E_Recievables.DEBT
+    // } else if ( payload.piutang ) {
+    //   _customerMonet.amount = payload.piutang
+    //   _customerMonet.type = E_Recievables.DEPOSIT
+    // }
+    // if ( payload.hutang ?? payload.piutang ) {
+    //   await queryRunner.manager.save( _customerMonet )
+    // }
     await queryRunner.commitTransaction()
     const customer = await Customer.findOne( { where: { id: _newCustomer.id } } )
     return customer

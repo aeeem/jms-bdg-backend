@@ -67,14 +67,6 @@
 					},
 					"contact_number": {
 						"type": "string"
-					},
-					"hutang": {
-						"type": "number",
-						"format": "double"
-					},
-					"piutang": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [

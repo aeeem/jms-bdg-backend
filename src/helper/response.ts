@@ -9,6 +9,7 @@ export interface ResponseType<T> extends ResponseStatus {
 export interface ErrorResponseType<T> extends ResponseStatus {
   type?: T
   stack?: string
+  details?: unknown
   // pagination: Pagination;
 }
 

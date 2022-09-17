@@ -6,7 +6,6 @@ import swaggerUi from 'swagger-ui-express'
 import { RegisterRoutes } from '../tsoa/routes'
 import Database from '@database'
 import { ValidateError } from 'tsoa'
-import { E_ERROR } from './constants/errorTypes'
 import { Errors } from './errorHandler'
 
 const app: Express = express()
@@ -60,11 +59,8 @@ app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Re
 app.use( ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
   if ( err instanceof ValidateError ) {
     // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
-    return res.status( 422 ).json( {
-      type   : E_ERROR.VALIDATION_ERROR,
-      message: 'Validation Failed',
-      details: err?.fields
-    } )
+    const error = new Errors( err )
+    return res.status( 422 ).send( error.response )
   }
 
   if ( err instanceof Errors ) {

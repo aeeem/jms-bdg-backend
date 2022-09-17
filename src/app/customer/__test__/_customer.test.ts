@@ -1,7 +1,7 @@
 import { E_ERROR } from 'src/constants/errorTypes'
 import { makeRequest } from 'src/helper/testHelper'
 import { loginWithAdmin, shouldHaveError } from 'src/testHelper'
-import { customerData as customerMockData } from './_customer.mock'
+import { customerData as customerMockData, newCustomerMock } from './_customer.mock'
 
 let token = ''
 
@@ -54,5 +54,21 @@ describe( 'Customer module Tests', () => {
         expect( res.body.stat_code ).toBe( 200 )
       } )
     } )
+  } )
+
+  describe( ' Create Customer Endpoint ', () => {
+    describe( '[-] Negative Test', () => {
+      it( 'POST /customer with invalid payload', async () => {
+        await makeRequest.post( '/customer' )
+          .set( { authorization: token } )
+          .send( newCustomerMock )
+          .expect( 200 )
+          .then( res => {
+            shouldHaveError( res.body.response, E_ERROR.VALIDATION_ERROR )
+            expect( res.body.response.details ).toHaveProperty( 'payload.contact_number', 'Contact number is required' )
+          } )
+      } )
+    } )
+    describe( '[+] Positive Test', () => {} )
   } )
 } )
