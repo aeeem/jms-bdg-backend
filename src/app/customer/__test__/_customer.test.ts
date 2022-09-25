@@ -1,7 +1,9 @@
 import { E_ERROR } from 'src/constants/errorTypes'
 import { makeRequest } from 'src/helper/testHelper'
 import { loginWithAdmin, shouldHaveError } from 'src/testHelper'
-import { customerData as customerMockData, newCustomerMock } from './_customer.mock'
+import {
+  customerData as customerMockData, newCustomerMock, validCustomerMock
+} from './_customer.mock'
 
 let token = ''
 
@@ -62,13 +64,58 @@ describe( 'Customer module Tests', () => {
         await makeRequest.post( '/customer' )
           .set( { authorization: token } )
           .send( newCustomerMock )
-          .expect( 200 )
+          .expect( 422 )
           .then( res => {
-            shouldHaveError( res.body.response, E_ERROR.VALIDATION_ERROR )
-            expect( res.body.response.details ).toHaveProperty( 'payload.contact_number', 'Contact number is required' )
+            expect( res.body ).toHaveProperty( 'type', 'VALIDATION_ERROR' )
+            expect( res.body ).toHaveProperty( 'stat_msg', 'Validation Failed' )
+            expect( res.body ).toHaveProperty( 'stat_code', 422 )
+            expect( res.body ).toHaveProperty( 'details' )
+            expect( res.body.details['payload.contact_number'] ).toHaveProperty( 'message', 'invalid string value' )
           } )
       } )
     } )
+    describe( '[+] Positive Test', () => {
+      it( 'POST /customer with valid payload', async () => {
+        const res = await makeRequest.post( '/customer' )
+          .set( { authorization: token } )
+          .send( validCustomerMock )
+        const data: any = res.body.data
+        expect( data ).toHaveProperty( 'id' )
+        expect( data ).toHaveProperty( 'name', validCustomerMock.name )
+        expect( data ).toHaveProperty( 'contact_number', validCustomerMock.contact_number )
+        expect( data ).toHaveProperty( 'created_at' )
+        expect( data ).toHaveProperty( 'updated_at' )
+        expect( res.body.stat_code ).toBe( 200 )
+      } )
+    } )
+  } )
+
+  describe( ' Get customer by ID Endpoint ', () => {
+    describe( '[-] Negative Test', () => {
+      it( 'GET /customer/detail/:id with invalid id', async () => {
+        await makeRequest.get( '/customer/detail/100' )
+          .set( { authorization: token } )
+          .expect( 200 )
+          .then( res => {
+            shouldHaveError( res.body.response, E_ERROR.CUSTOMER_NOT_FOUND )
+          } )
+      } )
+    } )
+    describe( '[+] Positive Test', () => {} )
+  } )
+
+  describe( ' Search customer by name', () => {
+    describe( '[-] Negative Test', () => {} )
+    describe( '[+] Positive Test', () => {} )
+  } )
+
+  describe( ' Update Customer Endpoint ', () => {
+    describe( '[-] Negative Test', () => {} )
+    describe( '[+] Positive Test', () => {} )
+  } )
+
+  describe( ' Delete Customer Endpoint ', () => {
+    describe( '[-] Negative Test', () => {} )
     describe( '[+] Positive Test', () => {} )
   } )
 } )

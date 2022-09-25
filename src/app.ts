@@ -62,9 +62,8 @@ app.use( ( err: unknown, req: express.Request, res: express.Response, next: expr
     const error = new Errors( err )
     return res.status( 422 ).send( error.response )
   }
-
   if ( err instanceof Errors ) {
-    return res.status( err.response.stat_code ?? 500 ).json( err.response )
+    return res.status( err.response.stat_code ?? 500 ).json( { ...err.response } )
   }
   next()
 } )

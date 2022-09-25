@@ -234,6 +234,9 @@
 						"type": "string",
 						"format": "date-time"
 					},
+					"use_deposit": {
+						"type": "boolean"
+					},
 					"detail": {
 						"items": {
 							"properties": {

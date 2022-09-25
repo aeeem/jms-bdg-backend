@@ -18,7 +18,7 @@ export const getAllCustomerService = async () => {
   }
 }
 
-export const getCustomerByIdService = async ( id: string ) => {
+export const getCustomerByIdService = async ( id: number ) => {
   try {
     const customer = await Customer.findOne( {
       where    : { id },
@@ -31,7 +31,7 @@ export const getCustomerByIdService = async ( id: string ) => {
   }
 }
 
-export const getCustomerDepositService = async ( id: string ) => {
+export const getCustomerDepositService = async ( id: number ) => {
   try {
     const customer_deposit = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEPOSIT } } )
     const total_deposit = CalculateTotalBalance( customer_deposit )
@@ -44,7 +44,7 @@ export const getCustomerDepositService = async ( id: string ) => {
   }
 }
 
-export const getCustomerDebtService = async ( id: string ) => {
+export const getCustomerDebtService = async ( id: number ) => {
   try {
     const customer_debt = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEBT } } )
     const total_debt = CalculateTotalBalance( customer_debt )

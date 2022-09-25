@@ -9,50 +9,9 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
-import { E_CODE_KEY } from 'src/interface/AccountCode'
+import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
+import { formatTransaction, TransactionProcessor } from './transaction.helper'
 import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
-
-const formatTransaction = ( transactions: Transaction[] ) => {
-  return transactions.map( transaction => {
-    return {
-      id                  : transaction.id,
-      expected_total_price: transaction.expected_total_price,
-      actual_total_price  : transaction.actual_total_price,
-      amount_paid         : transaction.amount_paid,
-      change              : transaction.change,
-      outstanding_amount  : transaction.outstanding_amount,
-      transaction_date    : transaction.transaction_date,
-      customer            : {
-        id            : transaction.customer.id,
-        name          : transaction.customer.name,
-        contact_number: transaction.customer.contact_number
-      },
-      items: transaction.transactionDetails.map( detail => {
-        return {
-          id     : detail.id,
-          amount : detail.amount,
-          product: {
-            id      : detail.product.id,
-            name    : detail.product.name,
-            vendorId: detail.product.stock.vendor.id,
-            sku     : detail.product.sku,
-            stock   : {
-              id         : detail.product.stock.id,
-              total_stock: detail.product.stock.total_stock,
-              sell_price : detail.product.stock.sell_price,
-              buy_price  : detail.product.stock.buy_price
-            }
-          },
-          sub_total: detail.sub_total
-
-        }
-      } ),
-      status    : transaction.status,
-      created_at: transaction.created_at,
-      updated_at: transaction.updated_at
-    }
-  } )
-}
 
 export const getAllTransactionService = async () => {
   try {
@@ -77,18 +36,17 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     await queryRunner.startTransaction()
     const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
+    const customerDeposit = await getCustomerDepositService( customer.id )
 
     const products = await Product.find( { relations: ['stock'] } )
 
     let expected_total_price = 0
-    let actual_total_price = 0
 
     const transactionDetails = await Promise.all( payload.detail.map( async transactionDetail => {
       const product = products.find( product => product.id === transactionDetail.productId )
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
       expected_total_price += product.stock.sell_price * transactionDetail.amount
-      actual_total_price += transactionDetail.sub_total
 
       product.stock.total_stock -= transactionDetail.amount
       await queryRunner.manager.save( product )
@@ -100,45 +58,21 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
       return detail
     } ) )
+    const transactionProcess = new TransactionProcessor(
+      payload, customer, transactionDetails, expected_total_price, customerDeposit.total_deposit
+    )
 
-    // safety check in-case someone try to alter the payload incorrectly
-    if ( expected_total_price !== payload.expected_total_price ) throw E_ERROR.EXPECTED_TOTAL_PRICE_NOT_MATCH
-
-    const transaction = new Transaction()
-    transaction.customer = customer
-    transaction.transactionDetails = transactionDetails
-    transaction.expected_total_price = expected_total_price
-    transaction.actual_total_price = payload.actual_total_price
-    transaction.transaction_date = payload.transaction_date
-    transaction.amount_paid = payload.amount_paid
-
-    if ( payload.amount_paid < actual_total_price ) {
-      transaction.status = TRANSACTION_STATUS.PENDING
-      transaction.outstanding_amount = actual_total_price - payload.amount_paid
-      const customerMonet = new CustomerMonetary()
-      customerMonet.customer = customer
-      customerMonet.amount = transaction.outstanding_amount
-      customerMonet.type = E_Recievables.DEBT
-      customerMonet.source = E_CODE_KEY.DEBT_ADD_INSUFFICIENT_FUND
-      await queryRunner.manager.save( customerMonet )
-    } else {
-      transaction.status = TRANSACTION_STATUS.PAID
-      transaction.change = payload.amount_paid - actual_total_price
-    }
-
-    if ( payload.deposit ) {
-      const customerMonet = new CustomerMonetary()
-      customerMonet.amount = payload.deposit
-      customerMonet.customer = customer
-      customerMonet.type = E_Recievables.DEPOSIT
-      customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
-      await queryRunner.manager.save( customerMonet )
-    }
-
-    await queryRunner.manager.save( transaction )
+    await transactionProcess.start()
     await queryRunner.commitTransaction()
 
-    return transaction
+    return {
+      ...transactionProcess.transaction,
+      customer: {
+        ...transactionProcess.transaction.customer,
+        deposit_balance: ( await getCustomerDepositService( transactionProcess.transaction.customer.id ) ).total_deposit,
+        debt_balance   : ( await getCustomerDebtService( transactionProcess.transaction.customer.id ) ).total_debt
+      }
+    }
   } catch ( error: any ) {
     await queryRunner.rollbackTransaction()
     return await Promise.reject( new Errors( error ) )
@@ -162,7 +96,6 @@ export const searchTransactionService = async ( query?: string, id?: string ) =>
     if ( _.isEmpty( transactions ) ) throw E_ERROR.TRANSACTION_NOT_FOUND
     return transactions
   } catch ( error: any ) {
-    console.log( error )
     return await Promise.reject( new Errors( error ) )
   }
 }

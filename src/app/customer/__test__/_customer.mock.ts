@@ -26,3 +26,8 @@ export const newCustomerMock = {
   contact_number: 182391247,
   name          : 'Customer dari test'
 }
+
+export const validCustomerMock = {
+  contact_number: '012345',
+  name          : 'customer dari test runner'
+}

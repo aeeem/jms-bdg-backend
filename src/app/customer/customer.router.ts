@@ -29,7 +29,7 @@ export class CustomerController extends Controller {
   @Security( 'api_key', ['read:customer'] )
   public async findCustomerById ( @Path() id: string ) {
     try {
-      const customer = await getCustomerByIdService( id )
+      const customer = await getCustomerByIdService( + id )
       return makeResponse.success( { data: customer } )
     } catch ( error: any ) {
       return error
@@ -51,7 +51,7 @@ export class CustomerController extends Controller {
   @Security( 'api_key', ['read:customer'] )
   public async getDeposit ( @Path() id: string ) {
     try {
-      const customer = await getCustomerDepositService( id )
+      const customer = await getCustomerDepositService( + id )
       return makeResponse.success( { data: customer } )
     } catch ( error: any ) {
       return error
@@ -73,7 +73,7 @@ export class CustomerController extends Controller {
   @Security( 'api_key', ['read:customer'] )
   public async getDebt ( @Path() id: string ) {
     try {
-      const customerDebt = await getCustomerDebtService( id )
+      const customerDebt = await getCustomerDebtService( + id )
       return makeResponse.success( { data: customerDebt } )
     } catch ( error ) {
       return error

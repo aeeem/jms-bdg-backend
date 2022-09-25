@@ -22,12 +22,6 @@ export class Customer extends BaseEntity {
   @JoinTable()
     transactions: Transaction[]
 
-  @Column( { nullable: true } )
-    deposit_balance: number
-
-  @Column( { nullable: true } )
-    debt_balance: number
-
   @CreateDateColumn()
     created_at: Date
 

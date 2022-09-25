@@ -7,6 +7,7 @@ export interface TransactionRequestParameter {
   amount_paid: number
   deposit?: number
   transaction_date?: Date
+  use_deposit?: boolean
   detail: Array<{
     amount: number
     productId: number
