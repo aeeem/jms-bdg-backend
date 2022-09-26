@@ -19,7 +19,7 @@ void ( async () => {
       // },
       api_key: {
         type  : 'apiKey',
-        name  : 'access_token',
+        name  : 'authorization',
         in    : 'header',
         flow  : 'implicit',
         scopes: {
