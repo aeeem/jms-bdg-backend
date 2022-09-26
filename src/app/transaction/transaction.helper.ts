@@ -61,6 +61,7 @@ export class TransactionProcessor {
     6 use_deposit = false -> customer bayar dengan cash
     7 use_deposit = false && amount_paid >= actual_price -> customer bayar dengan cash dan ada kembalian
     8 use_deposit = false && amount_paid <= actual_price -> customer bayar dengan cash namun dana tidak cukup
+
   */
 
   public payload: TransactionRequestParameter
@@ -85,103 +86,107 @@ export class TransactionProcessor {
     this.transaction_details = transactionDetails
     this.expected_total_price = expected_total_price
     this.total_deposit = total_deposit
+    this.transaction = new Transaction()
   }
 
-  public async start () {
+  public async start ():Promise<void> {
     try {
+      await this.processTransaction()
       if ( this.payload.use_deposit ) {
         if ( !this.total_deposit ) throw E_ERROR.CUSTOMER_NO_DEPOSIT
-        await this.payWithDeposit()
-        await this.processTransaction()
+        return await this.payWithDeposit()
       } else {
-        await this.payWithCash()
-        await this.processTransaction()
+        return await this.payWithCash()
       }
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  payWithCash = async () => {
+  payWithCash = async ():Promise<void> => {
     try {
       // process transaction
-      await this.processTransaction()
       const hasChange = this.payload.amount_paid >= this.payload.actual_total_price
       this.change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
-      if ( hasChange && this.payload.deposit ) return await this.makeDeposit( this.change )
+      if ( hasChange && this.payload.deposit ){
+        return await this.makeDeposit( this.change )
+      }
       // [8] customer bayar dengan cash namun dana tidak cukup
       if ( this.payload.amount_paid <= this.payload.actual_total_price ) {
         return await this.makeDebt(
           this.payload.actual_total_price - this.payload.amount_paid
         )
+        
       }
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  payWithDeposit = async ( ) => {
+  payWithDeposit = async ():Promise<void> => {
     try {
       if ( this.payload.amount_paid ) {
-        await this.payWithDepositAndCash()
+        return await this.payWithDepositAndCash()
+        
       }
     
       // [2] customer bayar dengan deposit dan deposit cukup untuk membayar
       if ( this.total_deposit >= this.payload.actual_total_price ) {
-        await this.subDeposit( this.payload.actual_total_price )
+        return await this.subDeposit( this.payload.actual_total_price )
+        
       }
     
       // [5] customer bayar dengan deposit namun dana tidak cukup dan sisa bayar jadi hutang
       if ( this.total_deposit <= this.payload.actual_total_price ) {
         await this.subDeposit( this.total_deposit )
-        await this.makeDebt(
+        return await this.makeDebt(
           this.payload.actual_total_price - this.total_deposit
         )
+        
       }
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  payWithDepositAndCash = async ( ) => {
+  payWithDepositAndCash = async ( ):Promise<void> => {
     try {
       // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
       // jika ya check apakah customer ingin menjadikan deposit atau kembalian
-      if ( this.payload.amount_paid + this.total_deposit >= this.payload.actual_total_price ) {
-        return this.payload.deposit ? await this.makeDeposit( this.payload.deposit ) : await this.processTransaction()
+      if ( this.payload.amount_paid + this.total_deposit > this.payload.actual_total_price && this.payload.deposit ) {
+        return await this.makeDeposit( this.payload.deposit )  
       }
       // [4] amount_paid + total_deposit < actual_price ==> customer bayar dengan deposit dan uang tunai namun dana tidak cukup
-      if ( this.payload.amount_paid + this.total_deposit <= this.payload.actual_total_price ) {
+      if ( this.payload.amount_paid + this.total_deposit < this.payload.actual_total_price ) {
         const debtAmt = this.payload.actual_total_price - ( this.payload.amount_paid + this.total_deposit )
         await this.makeDebt( debtAmt )
-        await this.subDeposit( this.total_deposit )
-        return
+        return await this.subDeposit( this.total_deposit )
       }
+      return await this.subDeposit(this.total_deposit)
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  processTransaction = async ( ) => {
+  public processTransaction = async ( ):Promise<void> => {
     try {
-      const transaction = new Transaction()
-      transaction.customer = this.customer
-      transaction.transactionDetails = this.transaction_details
-      transaction.expected_total_price = this.expected_total_price
-      transaction.actual_total_price = this.payload.actual_total_price
-      transaction.transaction_date = this.payload.transaction_date
-      transaction.amount_paid = this.payload.amount_paid
-      transaction.status = E_TransactionStatus.FINISHED
-      transaction.change = this.change || 0
-      this.transaction = transaction
-      await this.queryRunner.manager.save( transaction )
+      this.transaction.customer = this.customer
+      this.transaction.transactionDetails = this.transaction_details
+      this.transaction.expected_total_price = this.expected_total_price
+      this.transaction.actual_total_price = this.payload.actual_total_price
+      this.transaction.transaction_date = this.payload.transaction_date
+      this.transaction.amount_paid = this.payload.amount_paid
+      this.transaction.status = E_TransactionStatus.FINISHED
+      this.transaction.change = this.change || 0
+      await this.queryRunner.manager.save( this.transaction )
+      return
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  makeDebt = async ( amount: number ) => {
+  makeDebt = async ( amount: number ):Promise<void> => {
     try {
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
@@ -196,7 +201,7 @@ export class TransactionProcessor {
     }
   }
 
-  makeDeposit = async ( amount: number ) => {
+  makeDeposit = async ( amount: number ):Promise<void> => {
     try {
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
@@ -211,7 +216,7 @@ export class TransactionProcessor {
     }
   }
 
-  subDeposit = async ( amount: number ) => {
+  subDeposit = async ( amount: number ):Promise<void> => {
     try {
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
