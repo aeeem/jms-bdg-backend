@@ -625,7 +625,43 @@
 				"security": [
 					{
 						"api_key": [
-							"read:customer"
+							"write:customer"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddDepositRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/customer/debt": {
+			"post": {
+				"operationId": "PayDebt",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Customer"
+				],
+				"security": [
+					{
+						"api_key": [
+							"write:customer"
 						]
 					}
 				],

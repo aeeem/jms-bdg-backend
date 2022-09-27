@@ -14,3 +14,8 @@ export interface AddDepositRequestParameter{
   customer_id: number
   amount: number
 }
+
+export interface AddDebtRequestParameter{
+  customer_id: number
+  amount: number
+}

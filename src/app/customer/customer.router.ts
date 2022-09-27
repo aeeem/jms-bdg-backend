@@ -2,6 +2,7 @@ import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import {
+  payDebtService,
   addDepositService,
   createCustomerService, deleteCustomerService, getAllCustomerService, getCustomerByIdService, getCustomerDebtService, getCustomerDepositService, searchCustomerService, updateCustomerService
 } from './customer.service'
@@ -59,10 +60,22 @@ export class CustomerController extends Controller {
   }
 
   @Post( '/deposit/' )
-  @Security( 'api_key', ['read:customer'] )
+  @Security( 'api_key', ['write:customer'] )
   public async addDeposit ( @Body() payload: AddDepositRequestParameter ) {
     try {
       const customer = await addDepositService( payload )
+      return makeResponse.success( { data: customer } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+
+  @Post( '/debt/' )
+  @Security( 'api_key', ['write:customer'] )
+  public async payDebt ( @Body() payload: AddDepositRequestParameter ) {
+    try {
+      const customer = await payDebtService( payload )
       return makeResponse.success( { data: customer } )
     } catch ( error: any ) {
       return error

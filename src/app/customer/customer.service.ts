@@ -7,6 +7,7 @@ import { Errors } from 'src/errorHandler'
 import { CalculateTotalBalance } from 'src/helper/monetaryHelper'
 import { E_CODE_KEY as E_MONET_SOURCE } from 'src/interface/AccountCode'
 import {
+  AddDebtRequestParameter,
   AddDepositRequestParameter, CustomerRequestParameter, CustomerUpdateRequestParameter
 } from './customer.interface'
 
@@ -69,6 +70,22 @@ export const addDepositService = async ( { amount, customer_id }: AddDepositRequ
     await customerMonetary.save()
     return customerMonetary
   } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  }
+}
+
+export const payDebtService = async ( { amount, customer_id }: AddDebtRequestParameter ) => {
+  try {
+    const customer = await Customer.findOne( { where: { id: customer_id } } )
+    if ( !customer ) throw E_ERROR.CUSTOMER_NOT_FOUND
+    const customerMonetary = new CustomerMonetary()
+    customerMonetary.customer_id = customer.id
+    customerMonetary.amount = amount
+    customerMonetary.type = E_Recievables.DEBT
+    customerMonetary.source = E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
+    await customerMonetary.save()
+    return customerMonetary
+  } catch (error:any) {
     return await Promise.reject( new Errors( error ) )
   }
 }
