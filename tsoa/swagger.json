@@ -625,7 +625,7 @@
 				"security": [
 					{
 						"api_key": [
-							"write:customer"
+							"create:customer"
 						]
 					}
 				],
@@ -661,7 +661,7 @@
 				"security": [
 					{
 						"api_key": [
-							"write:customer"
+							"create:customer"
 						]
 					}
 				],

@@ -321,7 +321,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer/deposit',
-            authenticateMiddleware([{"api_key":["write:customer"]}]),
+            authenticateMiddleware([{"api_key":["create:customer"]}]),
 
             function CustomerController_addDeposit(request: any, response: any, next: any) {
             const args = {
@@ -345,7 +345,7 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer/debt/pay',
-            authenticateMiddleware([{"api_key":["write:customer"]}]),
+            authenticateMiddleware([{"api_key":["create:customer"]}]),
 
             function CustomerController_payDebt(request: any, response: any, next: any) {
             const args = {
