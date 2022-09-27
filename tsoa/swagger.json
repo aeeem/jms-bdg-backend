@@ -642,7 +642,7 @@
 				}
 			}
 		},
-		"/api/customer/debt": {
+		"/api/customer/debt/pay": {
 			"post": {
 				"operationId": "PayDebt",
 				"responses": {
