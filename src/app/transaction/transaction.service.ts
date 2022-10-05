@@ -40,15 +40,15 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     const products = await Product.find( { relations: ['stock'] } )
 
-    let expected_total_price = 0
+    const expected_total_price = 0
 
     const transactionDetails = await Promise.all( payload.detail.map( async transactionDetail => {
       const product = products.find( product => product.id === transactionDetail.productId )
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
-      expected_total_price += product.stock.sell_price * transactionDetail.amount
+      // expected_total_price += product.stock.sell_price * transactionDetail.amount
 
-      product.stock.total_stock -= transactionDetail.amount
+      // product.stock.total_stock -= transactionDetail.amount
       await queryRunner.manager.save( product )
 
       const detail = new TransactionDetail()

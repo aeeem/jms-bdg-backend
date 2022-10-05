@@ -30,7 +30,6 @@ export const createProductService = async ( payload: ProductRequestParameter ) =
     newProduct.sku = payload.sku
     newProduct.name = payload.name
     newProduct.arrival_date = payload.tanggalMasuk
-    newProduct.stock = stock
     await newProduct.save()
 
     return newProduct
@@ -67,7 +66,6 @@ export const updateProductService = async ( id: number, payload: ProductRequestP
     _updatedProduct.name = payload.name
     _updatedProduct.sku = payload.sku
     _updatedProduct.arrival_date = payload.tanggalMasuk
-    _updatedProduct.stock = _updatedStock
   
     await _updatedProduct.save()
     return await Product.findOne( { where: { id } } )
