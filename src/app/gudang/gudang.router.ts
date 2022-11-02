@@ -1,7 +1,7 @@
 import makeResponse from 'src/helper/response'
 import {
   Body,
-  Controller, Get, Post, Put, Route, Security, Tags
+  Controller, Get, Post, Route, Security, Tags
 } from 'tsoa'
 import { PindahStockGudangRequestParameter, TambahStockGudangRequestParameter } from './gudang.interface'
 import { getStockGudangService, pindahStockGudangService } from './gudang.service'
@@ -36,8 +36,8 @@ export class GudangController extends Controller {
   @Security( 'api_key', ['create:gudang'] )
   public async tambahStockGudang ( @Body() payload: TambahStockGudangRequestParameter ) {
     try {
-      const stocks = await tambahStockGudangService( payload )
-      return makeResponse.success( { data: stocks } )
+      // const stocks = await tambahStockGudangService( payload )
+      // return makeResponse.success( { data: stocks } )
     } catch ( error ) {
       return error
     }

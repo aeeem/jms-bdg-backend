@@ -103,6 +103,26 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PindahStockGudangRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "stock_ids": {"dataType":"array","array":{"dataType":"double"},"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TambahStockGudangRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "product_id": {"dataType":"double","required":true},
+            "vendor_id": {"dataType":"double","required":true},
+            "buy_price": {"dataType":"double","required":true},
+            "sell_price": {"dataType":"double","required":true},
+            "box_amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -635,12 +655,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/api/gudang/:id',
+        app.post('/api/gudang/pindah-stok',
             authenticateMiddleware([{"api_key":["update:gudang"]}]),
 
             function GudangController_pindahStockGudang(request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"PindahStockGudangRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -664,7 +684,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function GudangController_tambahStockGudang(request: any, response: any, next: any) {
             const args = {
-                    payload: {"in":"body","name":"payload","required":true,"dataType":"any"},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"TambahStockGudangRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

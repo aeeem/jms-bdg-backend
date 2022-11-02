@@ -141,6 +141,55 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PindahStockGudangRequestParameter": {
+				"properties": {
+					"stock_ids": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stock_ids"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TambahStockGudangRequestParameter": {
+				"properties": {
+					"product_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"vendor_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"buy_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"sell_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"box_amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"product_id",
+					"vendor_id",
+					"buy_price",
+					"sell_price",
+					"box_amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ProductRequestParameter": {
 				"properties": {
 					"sku": {
@@ -1038,8 +1087,13 @@
 			"post": {
 				"operationId": "TambahStockGudang",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
 					}
 				},
 				"tags": [
@@ -1057,18 +1111,25 @@
 					"required": true,
 					"content": {
 						"application/json": {
-							"schema": {}
+							"schema": {
+								"$ref": "#/components/schemas/TambahStockGudangRequestParameter"
+							}
 						}
 					}
 				}
 			}
 		},
-		"/api/gudang/{id}": {
-			"put": {
+		"/api/gudang/pindah-stok": {
+			"post": {
 				"operationId": "PindahStockGudang",
 				"responses": {
-					"204": {
-						"description": "No content"
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
 					}
 				},
 				"tags": [
@@ -1081,17 +1142,17 @@
 						]
 					}
 				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+							}
 						}
 					}
-				]
+				}
 			}
 		},
 		"/api/products": {
