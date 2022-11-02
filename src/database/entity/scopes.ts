@@ -124,6 +124,19 @@ export class Scope extends BaseEntity {
   @Column( { default: false } )
     delete_pegawai: boolean
 
+  // CRUD GUDANG
+  @Column( { default: false } )
+    create_gudang: boolean
+  
+  @Column( { default: false } )
+    read_gudang: boolean
+
+  @Column( { default: false } )
+    update_gudang: boolean
+
+  @Column( { default: false } )
+    delete_gudang: boolean
+
   @CreateDateColumn()
     created_at: Date
 

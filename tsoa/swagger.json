@@ -1010,6 +1010,90 @@
 				]
 			}
 		},
+		"/api/gudang": {
+			"get": {
+				"operationId": "GetStockGudang",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Gudang"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:gudang"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "TambahStockGudang",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Gudang"
+				],
+				"security": [
+					{
+						"api_key": [
+							"create:gudang"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		},
+		"/api/gudang/{id}": {
+			"put": {
+				"operationId": "PindahStockGudang",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"Gudang"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:gudang"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
 		"/api/products": {
 			"get": {
 				"operationId": "GetAllProducts",
