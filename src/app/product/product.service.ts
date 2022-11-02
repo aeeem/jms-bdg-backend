@@ -8,7 +8,7 @@ import { ProductRequestParameter } from './product.interfaces'
 
 export const getAllProductsService = async () => {
   try {
-    const products = await Product.find( { relations: ['stock', 'stock.vendor'] } )
+    const products = await Product.find( { relations: ['stocks', 'vendor'] } )
     return makeResponse.success<Product[]>( { data: products, stat_msg: 'SUCCESS' } )
   } catch ( e: any ) {
     throw new Errors( e )
@@ -23,14 +23,14 @@ export const createProductService = async ( payload: ProductRequestParameter ) =
     const stock = new Stock()
     stock.buy_price = payload.hargaModal
     stock.sell_price = payload.hargaJual
-    stock.total_stock = payload.stok
-    stock.vendorId = payload.vendorId
+    stock.stock_gudang = payload.stok
 
     const newProduct = new Product()
     newProduct.sku = payload.sku
     newProduct.name = payload.name
     newProduct.arrival_date = payload.tanggalMasuk
-    newProduct.stock = stock
+    // TODO : NEED TO ADJUST TO REAL ARRAY OF STOCKS
+    newProduct.stocks = [stock]
     await newProduct.save()
 
     return newProduct
@@ -60,14 +60,13 @@ export const updateProductService = async ( id: number, payload: ProductRequestP
     if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
     _updatedStock.buy_price = payload.hargaModal
     _updatedStock.sell_price = payload.hargaJual
-    _updatedStock.total_stock = payload.stok
-    _updatedStock.vendorId = payload.vendorId
+    _updatedStock.stock_toko = payload.stok
 
     if ( _updatedProduct == null ) { throw E_ERROR.PRODUCT_NOT_FOUND }
     _updatedProduct.name = payload.name
     _updatedProduct.sku = payload.sku
     _updatedProduct.arrival_date = payload.tanggalMasuk
-    _updatedProduct.stock = _updatedStock
+    _updatedProduct.stocks = [_updatedStock]
   
     await _updatedProduct.save()
     return await Product.findOne( { where: { id } } )

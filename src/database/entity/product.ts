@@ -1,7 +1,8 @@
 import {
-  Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToOne
+  Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn
 } from 'typeorm'
 import { Stock } from './stock'
+import { Vendor } from './vendor'
 
 @Entity( { name: 'product' } )
 export class Product extends BaseEntity {
@@ -17,8 +18,15 @@ export class Product extends BaseEntity {
   @Column( { nullable: true } )
     arrival_date: Date
 
-  @OneToOne( () => Stock, stock => stock.product, { cascade: true } )
-    stock: Stock
+  @OneToMany( () => Stock, stock => stock.product, { cascade: true } )
+    stocks: Stock[]
+
+  @ManyToOne( () => Vendor, vendor => vendor.id, { onDelete: 'CASCADE' } )
+  @JoinColumn( { name: 'vendorId' } )
+    vendor: Vendor
+
+  @Column( { nullable: true } )
+    vendorId: number
 
   @CreateDateColumn()
     created_at: Date

@@ -46,9 +46,10 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       const product = products.find( product => product.id === transactionDetail.productId )
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
-      expected_total_price += product.stock.sell_price * transactionDetail.amount
+      expected_total_price += product.stocks[0].sell_price * transactionDetail.amount
 
-      product.stock.total_stock -= transactionDetail.amount
+      // TODO : NEED TO ADJUST TO REAL ARRAY OF STOCKS
+      product.stocks[0].stock_gudang -= transactionDetail.amount
       await queryRunner.manager.save( product )
 
       const detail = new TransactionDetail()

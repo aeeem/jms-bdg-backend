@@ -42,7 +42,7 @@ export const updateExistingStockService = async ( { id, body }: {id: string, bod
   try {
     const stock = await Stock.findOneOrFail( { where: { id } } )
     stock.buy_price = body.buy_price ? body.buy_price : stock.buy_price
-    stock.total_stock = body.total_stock ? body.total_stock : stock.total_stock
+    stock.stock_gudang = body.total_stock ? body.total_stock : stock.stock_gudang
     await stock.save()
     
     return await Stock.findOne( { where: { id } } )
@@ -55,10 +55,9 @@ export const updateStockService = async ( body: StockRequestParameter, id: strin
   try {
     const existingStock = await Stock.findOne( { where: { id } } )
     if ( existingStock != null ) {
-      existingStock.vendorId = body.vendorId ? body.vendorId : existingStock.vendorId
       existingStock.productId = body.productId ? body.productId : existingStock.productId
       existingStock.buy_price = body.buy_price ? body.buy_price : existingStock.buy_price
-      existingStock.total_stock = body.total_stock ? body.total_stock : existingStock.total_stock
+      existingStock.stock_gudang = body.total_stock ? body.total_stock : existingStock.stock_gudang
       existingStock.sell_price = body.sell_price ? body.sell_price : existingStock.sell_price
       await existingStock.save()
       const stock = await Stock.findOne( { where: { id: existingStock.id } } )

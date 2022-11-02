@@ -1,36 +1,31 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import { Product } from './product'
-import { Vendor } from './vendor'
 
 @Entity( { name: 'stock' } )
 export class Stock extends BaseEntity {
   @PrimaryGeneratedColumn()
     id: number
 
-  @Column()
-    total_stock!: number
+  @Column( { nullable: true } )
+    stock_toko!: number
 
-  @Column()
+  @Column( { nullable: true } )
+    stock_gudang!: number
+
+  @Column( { nullable: true } )
     buy_price: number
 
   @Column( { nullable: true } )
     sell_price: number
 
-  @OneToOne( () => Product, { onDelete: 'CASCADE' } )
+  @ManyToOne( () => Product, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'productId' } )
     product: Product
 
-  @Column()
+  @Column( { nullable: true } )
     productId: number
-
-  @ManyToOne( () => Vendor, vendor => vendor.stocks, { onDelete: 'CASCADE' } )
-  @JoinColumn( { name: 'vendorId' } )
-    vendor: Vendor
-
-  @Column()
-    vendorId: number
 
   @CreateDateColumn()
     created_at: Date

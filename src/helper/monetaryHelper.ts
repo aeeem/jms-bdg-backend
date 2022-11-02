@@ -5,6 +5,10 @@ const isAddition = ( source: E_CODE_KEY ) => {
   return source.includes( '_ADD_' )
 }
 
+export const isSubtraction = ( source: E_CODE_KEY ) => {
+  return source.includes( '_SUB_' )
+}
+
 export const CalculateTotalBalance = ( monet: CustomerMonetary[] ): number => {
   const total = monet.reduce( ( acc, cur ) => {
     if ( isAddition( cur.source ) ) return acc + cur.amount

@@ -85,7 +85,7 @@ export const payDebtService = async ( { amount, customer_id }: AddDebtRequestPar
     customerMonetary.source = E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
     await customerMonetary.save()
     return customerMonetary
-  } catch (error:any) {
+  } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
 }
