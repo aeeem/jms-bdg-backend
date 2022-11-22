@@ -10,3 +10,8 @@ export interface ProductRequestParameter {
 export interface SearchProductRequestParameter {
   query: string
 }
+
+export interface MixedProductRequestParameter{
+  sku: string
+  amount: number
+}

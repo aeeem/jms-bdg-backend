@@ -1,8 +1,10 @@
+import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { ProductRequestParameter } from './product.interfaces'
+import { MixedProductRequestParameter, ProductRequestParameter } from './product.interfaces'
 import {
+  addMixedProductService,
   createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService
 } from './product.service'
 
@@ -38,5 +40,16 @@ export class ProductsController extends Controller {
   @Security( 'api_key', ['read:product'] )
   public async searchProduct ( @Query( 'query' ) query: string ) {
     return await searchProductService( { query } )
+  }
+
+  @Post( '/add-campur' )
+  @Security( 'api_key', ['create:product'] )
+  public async createMixedProduct ( @Body() payload: MixedProductRequestParameter[] ) {
+    try {
+      const addCampur = await addMixedProductService( payload )
+      return makeResponse.success( { data: addCampur, stat_code: 200 } )
+    } catch ( error ) {
+      return error
+    }
   }
 }

@@ -1,10 +1,13 @@
 import { Product } from '@entity/product'
 import { Stock } from '@entity/stock'
+import { StockToko } from '@entity/stockToko'
 import { Vendor } from '@entity/vendor'
+import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import makeResponse from 'src/helper/response'
+import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { Errors } from '../../errorHandler'
-import { ProductRequestParameter } from './product.interfaces'
+import { MixedProductRequestParameter, ProductRequestParameter } from './product.interfaces'
 
 export const getAllProductsService = async () => {
   try {
@@ -87,5 +90,28 @@ export const deleteProductService = async ( { id }: { id: number } ) => {
     return { message: 'Product is deleted!' }
   } catch ( e: any ) {
     throw new Errors( e )
+  }
+}
+
+export const addMixedProductService = async ( payload: MixedProductRequestParameter[] ) => {
+  const queryRunner = db.queryRunner()
+  try {
+    await queryRunner.startTransaction()
+    const stocks = Promise.all( payload.map( async item => {
+      const isProductExist = await Stock.findOne( { where: { sku: item.sku }, relations: ['stock'] } )
+      if ( isProductExist ) {
+        const stock_toko = new StockToko()
+        stock_toko.amount = item.amount
+        stock_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
+        return stock_toko
+      }
+    } ) )
+    await queryRunner.manager.save( stocks )
+    await queryRunner.commitTransaction()
+    return await stocks
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
+  } finally {
+    await queryRunner.release()
   }
 }

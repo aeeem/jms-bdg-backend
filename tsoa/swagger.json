@@ -231,6 +231,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"MixedProductRequestParameter": {
+				"properties": {
+					"sku": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"sku",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StockRequestParameter": {
 				"properties": {
 					"total_stock": {
@@ -1187,7 +1204,10 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {
+									"items": {},
+									"type": "array"
+								}
 							}
 						}
 					}
@@ -1208,7 +1228,10 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ProductRequestParameter"
+								"items": {
+									"$ref": "#/components/schemas/ProductRequestParameter"
+								},
+								"type": "array"
 							}
 						}
 					}
@@ -1336,6 +1359,45 @@
 				]
 			}
 		},
+		"/api/products/add-campur": {
+			"post": {
+				"operationId": "CreateMixedProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [
+					{
+						"api_key": [
+							"create:product"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/MixedProductRequestParameter"
+								},
+								"type": "array"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/roles": {
 			"get": {
 				"operationId": "GetAllRoles",
@@ -1380,6 +1442,32 @@
 		"/api/stock": {
 			"get": {
 				"operationId": "GetAllStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:stock"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/stock/toko": {
+			"get": {
+				"operationId": "GetStockToko",
 				"responses": {
 					"200": {
 						"description": "Ok",
