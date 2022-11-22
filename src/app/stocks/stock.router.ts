@@ -1,9 +1,10 @@
+import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Patch, Path, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import { StockRequestParameter } from './stock.interfaces'
 import {
-  findStockService, getAllStocksService, updateStockService
+  findStockService, getAllStocksService, getStockTokoService, updateStockService
 } from './stock.service'
 
 @Tags( 'Stock' )
@@ -14,6 +15,17 @@ export class StockController extends Controller {
   @Security( 'api_key', ['read:stock'] )
   public async getAllStock () {
     return await getAllStocksService()
+  }
+
+  @Get( '/toko' )
+  @Security( 'api_key', ['read:stock'] )
+  public async getStockToko () {
+    try {
+      const stocks = await getStockTokoService()
+      return makeResponse.success( { data: stocks } )
+    } catch ( error ) {
+      return error
+    }
   }
 
   @Put( '/{id}' )

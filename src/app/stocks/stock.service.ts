@@ -4,6 +4,7 @@ import _ from 'lodash'
 import makeResponse from 'src/helper/response'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
+import { StockToko } from '@entity/stockToko'
 
 export const getAllStocksService = async () => {
   try {
@@ -71,6 +72,21 @@ export const updateStockService = async ( body: StockRequestParameter, id: strin
     throw E_ERROR.PRODUCT_OR_VENDOR_NOT_FOUND
   } catch ( error: any ) {
     return new Errors( error )
+  }
+}
+
+export const getStockTokoService = async () => {
+  try {
+    const stocks = await StockToko.find( {
+      relations: [
+        'stock',
+        'stock.product',
+        'stock.product.vendor'
+      ]
+    } )
+    return stocks
+  } catch ( error: any ) {
+    return await Promise.reject( new Errors( error ) )
   }
 }
 

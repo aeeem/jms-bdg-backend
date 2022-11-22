@@ -15,25 +15,29 @@ export const getAllProductsService = async () => {
   }
 }
 
-export const createProductService = async ( payload: ProductRequestParameter ) => {
+export const createProductService = async ( payload: ProductRequestParameter[] ) => {
   try {
-    const vendor = await Vendor.findOne( { where: { id: payload.vendorId } } )
+    const new_products = await Promise.all( payload.map( async product => {
+      const vendor = await Vendor.findOne( { where: { id: product.vendorId } } )
 
-    if ( vendor == null ) throw E_ERROR.NOT_FOUND
-    const stock = new Stock()
-    stock.buy_price = payload.hargaModal
-    stock.sell_price = payload.hargaJual
-    stock.stock_gudang = payload.stok
+      if ( vendor == null ) throw E_ERROR.NOT_FOUND
+      const stock = new Stock()
+      stock.buy_price = product.hargaModal
+      stock.sell_price = product.hargaJual
+      stock.stock_gudang = product.stok
+  
+      const newProduct = new Product()
+      newProduct.sku = product.sku
+      newProduct.name = product.name
+      newProduct.arrival_date = product.tanggalMasuk
+      newProduct.stocks = [stock]
 
-    const newProduct = new Product()
-    newProduct.sku = payload.sku
-    newProduct.name = payload.name
-    newProduct.arrival_date = payload.tanggalMasuk
-    // TODO : NEED TO ADJUST TO REAL ARRAY OF STOCKS
-    newProduct.stocks = [stock]
-    await newProduct.save()
+      return newProduct
+    } ) )
 
-    return newProduct
+    await Product.save( new_products )
+
+    return new_products
   } catch ( e: any ) {
     throw new Errors( e )
   }

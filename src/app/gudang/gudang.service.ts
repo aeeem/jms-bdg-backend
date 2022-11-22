@@ -23,21 +23,6 @@ export const getStockGudangService = async () => {
   }
 }
 
-export const getStockTokoService = async () => {
-  try {
-    const stocks = await StockToko.find( {
-      relations: [
-        'stock',
-        'stock.product',
-        'stock.product.vendor'
-      ]
-    } )
-    return stocks
-  } catch ( error: any ) {
-    return await Promise.reject( new Errors( error ) )
-  }
-}
-
 export const pindahStockGudangService = async ( payload: PindahStockGudangRequestParameter ) => {
   const queryRunner = db.queryRunner()
   try {
