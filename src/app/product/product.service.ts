@@ -20,44 +20,58 @@ export const getAllProductsService = async () => {
 }
 
 export const createProductService = async ( payload: ProductRequestParameter[] ) => {
+  const queryRunner = db.queryRunner()
+
   try {
+    await queryRunner.startTransaction()
+
     const new_products = await Promise.all( payload.map( async product => {
       const vendor = await Vendor.findOne( { where: { id: product.vendorId } } )
 
-      if ( vendor == null ) throw E_ERROR.NOT_FOUND
+      if ( vendor == null ) throw E_ERROR.VENDOR_NOT_FOUND
 
-      const stockGudang: StockGudang[] = []
-      const stock: Stock[] = []
-      product.stok.forEach( item => {
-        const newStockGudang = new StockGudang()
+      const stocks = product.stok.map( item => {
         const newStock = new Stock()
         newStock.buy_price = product.hargaModal
         newStock.sell_price = product.hargaJual
         newStock.weight = item.berat
-        newStockGudang.amount = item.jumlahBox
-        newStockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_MASUK
-        newStockGudang.stock = newStock
-        
-        stock.push( newStock )
-        stockGudang.push( newStockGudang )
+        return newStock
       } )
+
+      const insertedStocks = await queryRunner.manager.save( stocks )
+
+      const stockGudang = await Promise.all( insertedStocks.map( async ( stock, index ) => {
+        const newStockGudang = new StockGudang()
+        newStockGudang.amount = product.stok[index].jumlahBox
+        newStockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_MASUK
+        newStockGudang.stock_id = stock.id
+
+        stock.stock_gudang += product.stok[index].jumlahBox
+
+        await queryRunner.manager.save( stock )
+
+        return newStockGudang
+      } ) )
       
       const newProduct = new Product()
       newProduct.sku = product.sku
       newProduct.name = product.name
       newProduct.arrival_date = product.tanggalMasuk
-      newProduct.stocks = stock
-
-      await db.connection.manager.save( stockGudang )
+      newProduct.stocks = stocks
+      
+      await queryRunner.manager.save( stockGudang )
 
       return newProduct
     } ) )
-
-    await Product.save( new_products )
+    await queryRunner.manager.save( new_products )
+    await queryRunner.commitTransaction()
 
     return new_products
   } catch ( e: any ) {
-    throw new Errors( e )
+    await queryRunner.rollbackTransaction()
+    return await Promise.reject( new Errors( e ) )
+  } finally {
+    await queryRunner.release()
   }
 }
 

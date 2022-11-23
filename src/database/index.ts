@@ -40,7 +40,9 @@ export default class Database {
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       dropSchema : true,
       synchronize: true,
-      logging    : false
+      logging    : false,
+      subscribers: [StockGudangSubscriber, StockTokoSubscriber]
+
     } ).then( async _con => {
       this.connection = _con
       console.log( 'Connected to db!!' )
