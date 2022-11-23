@@ -48,6 +48,8 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
       newProduct.arrival_date = product.tanggalMasuk
       newProduct.stocks = stock
 
+      await db.connection.manager.save( stockGudang )
+
       return newProduct
     } ) )
 
