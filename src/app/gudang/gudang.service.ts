@@ -23,25 +23,32 @@ export const getStockGudangService = async () => {
   }
 }
 
-export const pindahStockGudangService = async ( payload: PindahStockGudangRequestParameter ) => {
+export const pindahStockGudangService = async ( payload: PindahStockGudangRequestParameter[] ) => {
   const queryRunner = db.queryRunner()
   try {
     await queryRunner.startTransaction()
-    const stocks_gudang = payload.stock_ids.map( stock_id => {
-      const item_gudang = new StockGudang()
-      item_gudang.amount = 1
-      item_gudang.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_PIN_TOKO
-      item_gudang.stock_id = stock_id
-      return item_gudang
+    const stocks_gudang = payload.map( item => {
+      const stock = new StockGudang()
+      stock.amount = item.amount
+      stock.stock_id = item.stock_id
+      stock.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_PIN_TOKO
+      return stock
     } )
 
-    const stocks_toko = payload.stock_ids.map( stock_id => {
-      const item_toko = new StockToko()
-      item_toko.amount = 1
-      item_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
-      item_toko.stock_id = stock_id
-      return item_toko
-    } )
+    const stocks_toko = await Promise.all( payload.map( async item => {
+      try {
+        const stock = await Stock.findOne( item.stock_id )
+        if ( stock ) {
+          const item_toko = new StockToko()
+          item_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
+          item_toko.stock_id = item.stock_id
+          item_toko.amount = stock?.weight * stock?.stock_gudang
+          return item_toko
+        }
+      } catch ( error ) {
+        throw E_ERROR.STOCK_NOT_FOUND
+      }
+    } ) )
     
     await queryRunner.manager.save( stocks_gudang )
     await queryRunner.manager.save( stocks_toko )

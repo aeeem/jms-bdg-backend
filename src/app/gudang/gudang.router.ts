@@ -23,7 +23,7 @@ export class GudangController extends Controller {
   
   @Post( '/pindah-stok' )
   @Security( 'api_key', ['update:gudang'] )
-  public async pindahStockGudang ( @Body() payload: PindahStockGudangRequestParameter ) {
+  public async pindahStockGudang ( @Body() payload: PindahStockGudangRequestParameter[] ) {
     try {
       const stocks = await pindahStockGudangService( payload )
       return makeResponse.success( { data: stocks } )

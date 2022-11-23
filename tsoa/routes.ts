@@ -106,7 +106,8 @@ const models: TsoaRoute.Models = {
     "PindahStockGudangRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "stock_ids": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "stock_id": {"dataType":"double","required":true},
+            "amount": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -669,7 +670,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function GudangController_pindahStockGudang(request: any, response: any, next: any) {
             const args = {
-                    payload: {"in":"body","name":"payload","required":true,"ref":"PindahStockGudangRequestParameter"},
+                    payload: {"in":"body","name":"payload","required":true,"dataType":"array","array":{"dataType":"refObject","ref":"PindahStockGudangRequestParameter"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

@@ -7,5 +7,6 @@ export interface TambahStockGudangRequestParameter {
 }
 
 export interface PindahStockGudangRequestParameter {
-  stock_ids: number[]
+  stock_id: number
+  amount: number
 }

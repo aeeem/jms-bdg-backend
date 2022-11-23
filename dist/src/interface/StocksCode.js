@@ -1,0 +1,18 @@
+"use strict";
+/* eslint-disable no-multi-spaces */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.E_TOKO_CODE_KEY = exports.E_GUDANG_CODE_KEY = void 0;
+var E_GUDANG_CODE_KEY;
+(function (E_GUDANG_CODE_KEY) {
+    E_GUDANG_CODE_KEY["GUD_ADD_BRG_MASUK"] = "GUD_ADD_BRG_MASUK";
+    E_GUDANG_CODE_KEY["GUD_ADD_BRG_RETUR"] = "GUD_ADD_BRG_RETUR";
+    E_GUDANG_CODE_KEY["GUD_SUB_BRG_KELUAR"] = "GUD_SUB_BRG_KELUAR";
+    E_GUDANG_CODE_KEY["GUD_SUB_BRG_PIN_TOKO"] = "GUD_SUB_BRG_PIN_TOKO";
+    E_GUDANG_CODE_KEY["GUD_SUB_BRG_HAPUS"] = "GUD_SUB_BRG_HAPUS";
+})(E_GUDANG_CODE_KEY = exports.E_GUDANG_CODE_KEY || (exports.E_GUDANG_CODE_KEY = {}));
+var E_TOKO_CODE_KEY;
+(function (E_TOKO_CODE_KEY) {
+    E_TOKO_CODE_KEY["TOK_ADD_BRG_MASUK"] = "TOK_ADD_BRG_MASUK";
+    E_TOKO_CODE_KEY["TOK_SUB_TRANSAKSI"] = "TOK_SUB_TRANSAKSI";
+    E_TOKO_CODE_KEY["TOK_SUB_BRG_RETUR"] = "TOK_SUB_BRG_RETUR";
+})(E_TOKO_CODE_KEY = exports.E_TOKO_CODE_KEY || (exports.E_TOKO_CODE_KEY = {}));

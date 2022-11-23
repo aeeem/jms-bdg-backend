@@ -143,16 +143,18 @@
 			},
 			"PindahStockGudangRequestParameter": {
 				"properties": {
-					"stock_ids": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array"
+					"stock_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
-					"stock_ids"
+					"stock_id",
+					"amount"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1165,7 +1167,10 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+								"items": {
+									"$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+								},
+								"type": "array"
 							}
 						}
 					}
