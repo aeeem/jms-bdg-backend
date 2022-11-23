@@ -5,7 +5,13 @@ export interface ProductRequestParameter {
   tanggalMasuk: Date
   hargaModal: number
   hargaJual: number
-  stok: number
+  stok: StockPayload[]
+}
+
+interface StockPayload {
+  sku: string
+  jumlahBox: number
+  berat: number
 }
 export interface SearchProductRequestParameter {
   query: string

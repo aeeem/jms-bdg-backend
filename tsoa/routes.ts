@@ -124,6 +124,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StockPayload": {
+        "dataType": "refObject",
+        "properties": {
+            "sku": {"dataType":"string","required":true},
+            "jumlahBox": {"dataType":"double","required":true},
+            "berat": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -133,7 +143,7 @@ const models: TsoaRoute.Models = {
             "tanggalMasuk": {"dataType":"datetime","required":true},
             "hargaModal": {"dataType":"double","required":true},
             "hargaJual": {"dataType":"double","required":true},
-            "stok": {"dataType":"double","required":true},
+            "stok": {"dataType":"array","array":{"dataType":"refObject","ref":"StockPayload"},"required":true},
         },
         "additionalProperties": false,
     },

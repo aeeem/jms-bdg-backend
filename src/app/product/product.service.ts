@@ -1,11 +1,12 @@
 import { Product } from '@entity/product'
 import { Stock } from '@entity/stock'
 import { StockToko } from '@entity/stockToko'
+import { StockGudang } from '@entity/stockGudang'
 import { Vendor } from '@entity/vendor'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import makeResponse from 'src/helper/response'
-import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
+import { E_TOKO_CODE_KEY, E_GUDANG_CODE_KEY } from 'src/interface/StocksCode'
 import { Errors } from '../../errorHandler'
 import { MixedProductRequestParameter, ProductRequestParameter } from './product.interfaces'
 
@@ -24,16 +25,28 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
       const vendor = await Vendor.findOne( { where: { id: product.vendorId } } )
 
       if ( vendor == null ) throw E_ERROR.NOT_FOUND
-      const stock = new Stock()
-      stock.buy_price = product.hargaModal
-      stock.sell_price = product.hargaJual
-      stock.stock_gudang = product.stok
-  
+
+      const stockGudang: StockGudang[] = []
+      const stock: Stock[] = []
+      product.stok.forEach( item => {
+        const newStockGudang = new StockGudang()
+        const newStock = new Stock()
+        newStock.buy_price = product.hargaModal
+        newStock.sell_price = product.hargaJual
+        newStock.weight = item.berat
+        newStockGudang.amount = item.jumlahBox
+        newStockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_MASUK
+        newStockGudang.stock = newStock
+        
+        stock.push( newStock )
+        stockGudang.push( newStockGudang )
+      } )
+      
       const newProduct = new Product()
       newProduct.sku = product.sku
       newProduct.name = product.name
       newProduct.arrival_date = product.tanggalMasuk
-      newProduct.stocks = [stock]
+      newProduct.stocks = stock
 
       return newProduct
     } ) )
@@ -67,7 +80,6 @@ export const updateProductService = async ( id: number, payload: ProductRequestP
     if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
     _updatedStock.buy_price = payload.hargaModal
     _updatedStock.sell_price = payload.hargaJual
-    _updatedStock.stock_toko = payload.stok
 
     if ( _updatedProduct == null ) { throw E_ERROR.PRODUCT_NOT_FOUND }
     _updatedProduct.name = payload.name

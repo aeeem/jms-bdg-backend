@@ -3,6 +3,8 @@
 import { Connection, createConnection } from 'typeorm'
 import dotenv from 'dotenv'
 import doSeeding from './seeds'
+import { StockGudangSubscriber } from './subscriber/stockGudang'
+import { StockTokoSubscriber } from './subscriber/stockToko'
 
 dotenv.config( {} )
 export default class Database {
@@ -18,7 +20,8 @@ export default class Database {
       database   : process.env.DEV_DATABASE_NAME,
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       logging    : false,
-      synchronize: true
+      synchronize: true,
+      subscribers: [StockGudangSubscriber, StockTokoSubscriber]
     } ).then( _con => {
       this.connection = _con
       console.log( 'Connected to db!!' )

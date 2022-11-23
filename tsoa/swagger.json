@@ -192,6 +192,28 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"StockPayload": {
+				"properties": {
+					"sku": {
+						"type": "string"
+					},
+					"jumlahBox": {
+						"type": "number",
+						"format": "double"
+					},
+					"berat": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"sku",
+					"jumlahBox",
+					"berat"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ProductRequestParameter": {
 				"properties": {
 					"sku": {
@@ -217,8 +239,10 @@
 						"format": "double"
 					},
 					"stok": {
-						"type": "number",
-						"format": "double"
+						"items": {
+							"$ref": "#/components/schemas/StockPayload"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
