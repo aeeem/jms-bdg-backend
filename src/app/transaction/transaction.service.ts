@@ -38,7 +38,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     const customerDeposit = await getCustomerDepositService( customer.id )
 
-    const products = await Product.find( { relations: ['stock'] } )
+    const products = await Product.find( { relations: ['stocks'] } )
 
     const expected_total_price = 0
 
