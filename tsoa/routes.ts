@@ -127,7 +127,6 @@ const models: TsoaRoute.Models = {
     "StockPayload": {
         "dataType": "refObject",
         "properties": {
-            "sku": {"dataType":"string","required":true},
             "jumlahBox": {"dataType":"double","required":true},
             "berat": {"dataType":"double","required":true},
         },

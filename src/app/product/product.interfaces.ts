@@ -9,7 +9,6 @@ export interface ProductRequestParameter {
 }
 
 interface StockPayload {
-  sku: string
   jumlahBox: number
   berat: number
 }

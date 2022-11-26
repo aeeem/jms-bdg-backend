@@ -194,9 +194,6 @@
 			},
 			"StockPayload": {
 				"properties": {
-					"sku": {
-						"type": "string"
-					},
 					"jumlahBox": {
 						"type": "number",
 						"format": "double"
@@ -207,7 +204,6 @@
 					}
 				},
 				"required": [
-					"sku",
 					"jumlahBox",
 					"berat"
 				],
