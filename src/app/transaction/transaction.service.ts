@@ -20,8 +20,8 @@ export const getAllTransactionService = async () => {
         'customer',
         'transactionDetails',
         'transactionDetails.product',
-        'transactionDetails.product.stock',
-        'transactionDetails.product.stock.vendor'
+        'transactionDetails.product.stocks',
+        'transactionDetails.product.vendor'
       ]
     } )
     return formatTransaction( transactions )

@@ -58,6 +58,7 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
       newProduct.name = product.name
       newProduct.arrival_date = product.tanggalMasuk
       newProduct.stocks = stocks
+      newProduct.vendorId = product.vendorId
       
       await queryRunner.manager.save( stockGudang )
 
