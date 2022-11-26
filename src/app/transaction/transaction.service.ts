@@ -43,7 +43,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     const expected_total_price = 0
 
     const transactionDetails = await Promise.all( payload.detail.map( async transactionDetail => {
-      const product = products.find( product => product.id === transactionDetail.productId )
+      const product = products.find( product => product.id === transactionDetail.stock_id )
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
       // expected_total_price += product.stock.sell_price * transactionDetail.amount
@@ -54,7 +54,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
       detail.sub_total = transactionDetail.sub_total
-      detail.product_id = transactionDetail.productId
+      detail.product_id = transactionDetail.stock_id
 
       return detail
     } ) )

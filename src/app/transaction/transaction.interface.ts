@@ -10,7 +10,7 @@ export interface TransactionRequestParameter {
   use_deposit?: boolean
   detail: Array<{
     amount: number
-    productId: number
+    stock_id: number
     sub_total: number
   }>
 }
