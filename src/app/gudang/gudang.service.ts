@@ -5,6 +5,7 @@ import { StockToko } from '@entity/stockToko'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
+import { CalculateTotalStock } from 'src/helper/stockHelper'
 import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { PindahStockGudangRequestParameter, TambahStockGudangRequestParameter } from './gudang.interface'
 
@@ -36,22 +37,35 @@ export const pindahStockGudangService = async ( payload: PindahStockGudangReques
     } )
 
     const stocks_toko = await Promise.all( payload.map( async item => {
-      try {
-        const stock = await Stock.findOne( item.stock_id )
-        if ( stock ) {
-          const item_toko = new StockToko()
-          item_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
-          item_toko.stock_id = item.stock_id
-          item_toko.amount = stock?.weight * stock?.stock_gudang
-          return item_toko
-        }
-      } catch ( error ) {
-        throw E_ERROR.STOCK_NOT_FOUND
-      }
+      const stock = await Stock.findOneOrFail( item.stock_id )
+      const item_toko = new StockToko()
+      item_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
+      item_toko.stock_id = item.stock_id
+      item_toko.amount = stock?.weight * item.amount
+      return item_toko
     } ) )
-    
+
+    // const updateStockGudangOnStockTable = await Promise.all( payload.map( async stock => {
+    //   // append dari stock gudang yg di database, dan yang baru di add dari payload
+    //   const stockGudang = [...await StockGudang.find( { where: { stock_id: stock.stock_id } } ), ...stocks_gudang]
+    //   const stockData = await Stock.findOneOrFail( stock.stock_id )
+    //   stockData.stock_gudang = CalculateTotalStock( stockGudang )
+    //   return stockData
+    // } ) )
+
+    const updateStockValue = await Promise.all( payload.map( async item => {
+      const stockGudang = [...await StockGudang.find( { where: { stock_id: item.stock_id } } ), ...stocks_gudang]
+      const stockToko = [...await StockToko.find( { where: { stock_id: item.stock_id } } ), ...stocks_toko]
+      const stockData = await Stock.findOneOrFail( item.stock_id )
+      stockData.stock_gudang = CalculateTotalStock( stockGudang )
+      stockData.stock_toko = CalculateTotalStock( stockToko )
+      return stockData
+    } ) )
+
     await queryRunner.manager.save( stocks_gudang )
     await queryRunner.manager.save( stocks_toko )
+    await queryRunner.manager.save( updateStockValue )
+
     await queryRunner.commitTransaction()
     return stocks_gudang
   } catch ( error: any ) {
