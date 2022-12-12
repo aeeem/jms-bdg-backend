@@ -332,7 +332,7 @@
 									"type": "number",
 									"format": "double"
 								},
-								"productId": {
+								"stock_id": {
 									"type": "number",
 									"format": "double"
 								},
@@ -343,7 +343,7 @@
 							},
 							"required": [
 								"sub_total",
-								"productId",
+								"stock_id",
 								"amount"
 							],
 							"type": "object"

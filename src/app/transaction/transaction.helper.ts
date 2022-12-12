@@ -29,15 +29,15 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           id     : detail.id,
           amount : detail.amount,
           product: {
-            id      : detail.product.id,
-            name    : detail.product.name,
-            vendorId: detail.product.vendorId,
-            sku     : detail.product.sku,
+            id      : detail.stock.product.id,
+            name    : detail.stock.product.name,
+            vendorId: detail.stock.product.vendorId,
+            sku     : detail.stock.product.sku,
             stock   : {
-              id         : detail.product.stocks[0].id,
-              total_stock: detail.product.stocks[0].stock_gudang,
-              sell_price : detail.product.stocks[0].sell_price,
-              buy_price  : detail.product.stocks[0].buy_price
+              id         : detail.stock.id,
+              total_stock: detail.stock.stock_gudang,
+              sell_price : detail.stock.sell_price,
+              buy_price  : detail.stock.buy_price
             }
           },
           sub_total: detail.sub_total

@@ -178,7 +178,7 @@ const models: TsoaRoute.Models = {
             "deposit": {"dataType":"double"},
             "transaction_date": {"dataType":"datetime"},
             "use_deposit": {"dataType":"boolean"},
-            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"productId":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},
+            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"stock_id":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},
         },
         "additionalProperties": false,
     },

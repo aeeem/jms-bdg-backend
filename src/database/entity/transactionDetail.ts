@@ -1,7 +1,7 @@
 import {
   BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
-import { Product } from './product'
+import { Stock } from './stock'
 import { Transaction } from './transaction'
 
 @Entity( { name: 'transaction_detail' } )
@@ -19,12 +19,12 @@ export class TransactionDetail extends BaseEntity {
   @JoinColumn()
     transaction: Transaction
 
-  @ManyToOne( () => Product, ( product: Product ) => product.id, { onDelete: 'CASCADE' } )
-  @JoinColumn( { name: 'product_id' } )
-    product: Product
+  @ManyToOne( () => Stock, ( stock: Stock ) => stock.id )
+  @JoinColumn( { name: 'stock_id' } )
+    stock: Stock
 
   @Column()
-    product_id: number
+    stock_id: number
 
   @CreateDateColumn()
     created_at: Date

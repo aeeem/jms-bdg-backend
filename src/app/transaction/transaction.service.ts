@@ -1,6 +1,8 @@
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
 import { Product } from '@entity/product'
+import { Stock } from '@entity/stock'
+import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
 import _ from 'lodash'
@@ -9,6 +11,7 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
+import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
 import { formatTransaction, TransactionProcessor } from './transaction.helper'
 import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
@@ -19,9 +22,9 @@ export const getAllTransactionService = async () => {
       relations: [
         'customer',
         'transactionDetails',
-        'transactionDetails.product',
-        'transactionDetails.product.stocks',
-        'transactionDetails.product.vendor'
+        'transactionDetails.stocks',
+        'transactionDetails.stocks.product',
+        'transactionDetails.stocks.product.vendor'
       ]
     } )
     return formatTransaction( transactions )
@@ -46,23 +49,38 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       const product = products.find( product => product.id === transactionDetail.stock_id )
       if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
-      // expected_total_price += product.stock.sell_price * transactionDetail.amount
-
-      // product.stock.total_stock -= transactionDetail.amount
-      await queryRunner.manager.save( product )
-
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
       detail.sub_total = transactionDetail.sub_total
-      detail.product_id = transactionDetail.stock_id
+      detail.stock_id = transactionDetail.stock_id
 
       return detail
     } ) )
+
+    const stockSync = await Promise.all( payload.detail.map( async detail => {
+      const stock = await Stock.findOneOrFail( detail.stock_id )
+      if ( stock.stock_toko < detail.amount ) throw E_ERROR.INSUFFICIENT_STOCK
+      stock.stock_toko -= detail.amount
+      
+      // Add deduction record into stock_toko
+      const stock_toko = new StockToko()
+      stock_toko.amount = detail.amount
+      stock_toko.code = E_TOKO_CODE_KEY.TOK_SUB_TRANSAKSI
+      stock_toko.stock_id = detail.stock_id
+
+      await queryRunner.manager.save( stock_toko )
+
+      return stock
+    } ) )
+
     const transactionProcess = new TransactionProcessor(
       payload, customer, transactionDetails, expected_total_price, customerDeposit.total_deposit
     )
 
+    await queryRunner.manager.save( stockSync )
+
     await transactionProcess.start()
+
     await queryRunner.commitTransaction()
 
     return {
@@ -115,7 +133,7 @@ export const updateTransactionService = async ( id: string, payload: Transaction
       const pd = payload.detail.find( detailPayload => detailPayload.id === detail.id )
       if ( pd ) {
         detail.amount = pd.amount ?? detail.amount
-        detail.product_id = pd.productId ?? detail.product_id
+        // detail.product_id = pd.productId ?? detail.product_id
         detail.sub_total = pd.sub_total ?? detail.sub_total
         actual_total_price += detail.sub_total
         return detail
