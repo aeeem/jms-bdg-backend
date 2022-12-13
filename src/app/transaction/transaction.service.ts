@@ -1,6 +1,5 @@
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
-import { Product } from '@entity/product'
 import { Stock } from '@entity/stock'
 import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
@@ -22,9 +21,9 @@ export const getAllTransactionService = async () => {
       relations: [
         'customer',
         'transactionDetails',
-        'transactionDetails.stocks',
-        'transactionDetails.stocks.product',
-        'transactionDetails.stocks.product.vendor'
+        'transactionDetails.stock',
+        'transactionDetails.stock.product',
+        'transactionDetails.stock.product.vendor'
       ]
     } )
     return formatTransaction( transactions )
@@ -41,13 +40,13 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     const customerDeposit = await getCustomerDepositService( customer.id )
 
-    const products = await Product.find( { relations: ['stocks'] } )
+    const stocks = await Stock.find( )
 
     const expected_total_price = 0
 
     const transactionDetails = await Promise.all( payload.detail.map( async transactionDetail => {
-      const product = products.find( product => product.id === transactionDetail.stock_id )
-      if ( product == null ) throw E_ERROR.PRODUCT_NOT_FOUND
+      const stock = stocks.find( product => product.id === transactionDetail.stock_id )
+      if ( stock == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
@@ -59,7 +58,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     const stockSync = await Promise.all( payload.detail.map( async detail => {
       const stock = await Stock.findOneOrFail( detail.stock_id )
-      if ( stock.stock_toko < detail.amount ) throw E_ERROR.INSUFFICIENT_STOCK
+      if ( stock.stock_toko - detail.amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
       stock.stock_toko -= detail.amount
       
       // Add deduction record into stock_toko
