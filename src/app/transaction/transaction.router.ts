@@ -29,7 +29,6 @@ export class TransactionController extends Controller {
       const transactions = await searchTransactionService( query, id )
       return makeResponse.success( { data: transactions } )
     } catch ( error ) {
-      console.log( error )
       return error
     }
   }
@@ -52,7 +51,6 @@ export class TransactionController extends Controller {
       const createdTransaction = await createTransactionService( payload )
       return makeResponse.success( { data: createdTransaction } )
     } catch ( error: any ) {
-      console.log( error )
       return error
     }
   }
