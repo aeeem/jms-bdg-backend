@@ -171,11 +171,14 @@ export class TransactionProcessor {
       this.transaction.customer = this.customer
       this.transaction.transactionDetails = this.transaction_details
       this.transaction.expected_total_price = this.expected_total_price
-      this.transaction.actual_total_price = this.payload.actual_total_price
+      this.transaction.actual_total_price = this.payload.optional_discount ? this.payload.actual_total_price - this.payload.optional_discount : this.payload.actual_total_price
       this.transaction.transaction_date = this.payload.transaction_date
       this.transaction.amount_paid = this.payload.amount_paid
       this.transaction.status = E_TransactionStatus.FINISHED
       this.transaction.change = this.change || 0
+      this.transaction.description = this.payload.description
+      this.transaction.optional_discount = this.payload.optional_discount
+
       await this.queryRunner.manager.save( this.transaction )
       return
     } catch ( error ) {
@@ -187,7 +190,7 @@ export class TransactionProcessor {
     try {
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
-      customerMonet.amount = amount
+      customerMonet.amount = this.payload.optional_discount ? amount - this.payload.optional_discount : amount
       customerMonet.type = E_Recievables.DEBT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEBT_ADD_INSUFFICIENT_FUND

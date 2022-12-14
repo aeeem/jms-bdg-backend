@@ -25,6 +25,12 @@ export class Transaction extends BaseEntity {
   @Column( { nullable: true } )
     outstanding_amount: number
 
+  @Column( { nullable: true } )
+    optional_discount?: number
+
+  @Column( { nullable: true } )
+    description?: string
+
   @ManyToOne( () => Customer, ( customer: Customer ) => customer.id, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'customer_id' } )
     customer: Customer

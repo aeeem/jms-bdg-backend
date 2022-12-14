@@ -325,6 +325,13 @@
 					"use_deposit": {
 						"type": "boolean"
 					},
+					"optional_discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
 					"detail": {
 						"items": {
 							"properties": {
@@ -354,7 +361,6 @@
 				"required": [
 					"expected_total_price",
 					"actual_total_price",
-					"customer_id",
 					"amount_paid",
 					"detail"
 				],
