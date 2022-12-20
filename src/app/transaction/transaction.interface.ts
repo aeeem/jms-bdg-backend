@@ -1,5 +1,10 @@
 import { Transaction } from '@entity/transaction'
 
+export interface DeleteTransactionItemRequestParameter {
+  transaction_id: number
+  stock_id: number
+}
+
 export interface TransactionRequestParameter {
   expected_total_price: number
   actual_total_price: number

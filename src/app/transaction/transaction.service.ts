@@ -13,7 +13,9 @@ import { Errors } from 'src/errorHandler'
 import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
 import { formatTransaction, TransactionProcessor } from './transaction.helper'
-import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
+import {
+  DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
+} from './transaction.interface'
 
 export const getAllTransactionService = async () => {
   try {
@@ -32,13 +34,12 @@ export const getAllTransactionService = async () => {
   }
 }
 
-export const createTransactionService = async ( payload: TransactionRequestParameter ) => {
+export const createTransactionService = async ( payload: TransactionRequestParameter, isPending: boolean = false ) => {
   const queryRunner = db.queryRunner()
   try {
     await queryRunner.startTransaction()
     const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
-    if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
-    const customerDeposit = await getCustomerDepositService( customer.id )
+    const customerDeposit = customer ? ( await getCustomerDepositService( customer.id ) ).total_deposit : 0
 
     const stocks = await Stock.find( )
 
@@ -73,21 +74,19 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     } ) )
 
     const transactionProcess = new TransactionProcessor(
-      payload, customer, transactionDetails, expected_total_price, customerDeposit.total_deposit
+      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending
     )
 
     await queryRunner.manager.save( stockSync )
-
     await transactionProcess.start()
-
     await queryRunner.commitTransaction()
 
     return {
       ...transactionProcess.transaction,
       customer: {
         ...transactionProcess.transaction.customer,
-        deposit_balance: ( await getCustomerDepositService( transactionProcess.transaction.customer.id ) ).total_deposit,
-        debt_balance   : ( await getCustomerDebtService( transactionProcess.transaction.customer.id ) ).total_debt
+        deposit_balance: transactionProcess.transaction.customer ? ( await getCustomerDepositService( transactionProcess.transaction?.customer?.id ) ).total_deposit : 0,
+        debt_balance   : transactionProcess.transaction.customer ? ( await getCustomerDebtService( transactionProcess.transaction?.customer?.id ) ).total_debt : 0
       }
     }
   } catch ( error: any ) {
@@ -96,6 +95,22 @@ export const createTransactionService = async ( payload: TransactionRequestParam
   } finally {
     await queryRunner.release()
   }
+}
+
+export const deletePendingTransactionItemService = async ( payload: DeleteTransactionItemRequestParameter ) => {
+  const transactionItem = await TransactionDetail.findOneOrFail( payload.transaction_id )
+  const stockItem = await Stock.findOneOrFail( payload.stock_id )
+  stockItem.stock_toko += transactionItem.amount
+  
+  const stockToko = new StockToko()
+  stockToko.amount = transactionItem.amount
+  stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+  stockToko.stock_id = payload.stock_id
+
+  await transactionItem.softRemove()
+  await stockItem.save()
+  await stockToko.save()
+  return stockItem
 }
 
 export const searchTransactionService = async ( query?: string, id?: string ) => {

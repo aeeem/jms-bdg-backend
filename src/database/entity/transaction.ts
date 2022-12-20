@@ -31,9 +31,9 @@ export class Transaction extends BaseEntity {
   @Column( { nullable: true } )
     description?: string
 
-  @ManyToOne( () => Customer, ( customer: Customer ) => customer.id, { onDelete: 'CASCADE' } )
+  @ManyToOne( () => Customer, ( customer: Customer ) => customer.id, { onDelete: 'CASCADE', nullable: true } )
   @JoinColumn( { name: 'customer_id' } )
-    customer: Customer
+    customer?: Customer
 
   @OneToMany( () => TransactionDetail, ( transactionDetail: TransactionDetail ) => transactionDetail.transaction, {
     cascade: true, onDelete: 'CASCADE', eager: true

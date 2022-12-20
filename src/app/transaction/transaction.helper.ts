@@ -20,9 +20,9 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
       outstanding_amount  : transaction.outstanding_amount,
       transaction_date    : transaction.transaction_date,
       customer            : {
-        id            : transaction.customer.id,
-        name          : transaction.customer.name,
-        contact_number: transaction.customer.contact_number
+        id            : transaction.customer?.id,
+        name          : transaction.customer?.name,
+        contact_number: transaction.customer?.contact_number
       },
       items: transaction.transactionDetails.map( detail => {
         return {
@@ -65,7 +65,7 @@ export class TransactionProcessor {
   */
 
   public payload: TransactionRequestParameter
-  public customer: Customer
+  public customer: Customer | undefined
   public transaction_details: TransactionDetail[] = []
   public expected_total_price: number
   public queryRunner = db.queryRunner()
@@ -73,13 +73,15 @@ export class TransactionProcessor {
   private change: number
   public transaction: Transaction
   public transaction_status: E_TransactionStatus
+  public isPending: boolean
 
   constructor (
     payload: TransactionRequestParameter,
-    customer: Customer,
+    customer: Customer | undefined,
     transactionDetails: TransactionDetail[],
     expected_total_price: number,
-    total_deposit: number
+    total_deposit: number,
+    isPending: boolean
   ) {
     this.payload = payload
     this.customer = customer
@@ -87,12 +89,13 @@ export class TransactionProcessor {
     this.expected_total_price = expected_total_price
     this.total_deposit = total_deposit
     this.transaction = new Transaction()
+    this.isPending = isPending
   }
 
   public async start (): Promise<void> {
     try {
       await this.processTransaction()
-      if ( this.payload.use_deposit ) {
+      if ( this.payload.use_deposit && this.customer ) {
         if ( !this.total_deposit ) throw E_ERROR.CUSTOMER_NO_DEPOSIT
         return await this.payWithDeposit()
       } else {
@@ -174,7 +177,7 @@ export class TransactionProcessor {
       this.transaction.actual_total_price = this.payload.optional_discount ? this.payload.actual_total_price - this.payload.optional_discount : this.payload.actual_total_price
       this.transaction.transaction_date = this.payload.transaction_date
       this.transaction.amount_paid = this.payload.amount_paid
-      this.transaction.status = E_TransactionStatus.FINISHED
+      this.transaction.status = this.isPending ? E_TransactionStatus.PENDING : E_TransactionStatus.FINISHED
       this.transaction.change = this.change || 0
       this.transaction.description = this.payload.description
       this.transaction.optional_discount = this.payload.optional_discount

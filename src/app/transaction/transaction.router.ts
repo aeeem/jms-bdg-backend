@@ -2,9 +2,11 @@ import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { TransactionRequestParameter, TransactionUpdateRequestParameter } from './transaction.interface'
 import {
-  createTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updateTransactionService
+  DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
+} from './transaction.interface'
+import {
+  createTransactionService, deletePendingTransactionItemService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updateTransactionService
 } from './transaction.service'
 
 @Tags( 'Transaction' )
@@ -50,6 +52,28 @@ export class TransactionController extends Controller {
     try {
       const createdTransaction = await createTransactionService( payload )
       return makeResponse.success( { data: createdTransaction } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Post( '/pending' )
+  @Security( 'api_key', ['create:transaction'] )
+  public async createPendingTransaction ( @Body() payload: TransactionRequestParameter ) {
+    try {
+      const createdTransaction = await createTransactionService( payload, true )
+      return makeResponse.success( { data: createdTransaction } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Delete( '/pending/item' )
+  @Security( 'api_key', ['create:transaction'] )
+  public async deletePendingTransactionItem ( @Body() payload: DeleteTransactionItemRequestParameter ) {
+    try {
+      const deletedTransactionItem = await deletePendingTransactionItemService( payload )
+      return makeResponse.success( { data: deletedTransactionItem, stat_msg: `Stock pada transaksi id: ${payload.transaction_id}, sudah di hapus` } )
     } catch ( error: any ) {
       return error
     }
