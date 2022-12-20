@@ -29,10 +29,10 @@ export class CustomerMonetary extends BaseEntity {
   @Column( { nullable: true } )
     transaction_id: number
 
-  @Column()
-    customer_id: number
+  @Column( { nullable: true } )
+    customer_id?: number
 
-  @ManyToOne( () => Customer, ( customer: Customer ) => customer.monetary, { onDelete: 'CASCADE' } )
+  @ManyToOne( () => Customer, ( customer: Customer ) => customer.monetary, { onDelete: 'CASCADE', nullable: true } )
   @JoinColumn( { name: 'customer_id' } )
     customer?: Customer
 

@@ -1,5 +1,7 @@
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
+import { Stock } from '@entity/stock'
+import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
 import { db } from 'src/app'
@@ -7,7 +9,37 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { E_CODE_KEY } from 'src/interface/AccountCode'
+import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { TransactionRequestParameter } from './transaction.interface'
+
+export const restoreStocks = async ( items: TransactionDetail[] ) => {
+  const queryRunner = db.queryRunner()
+
+  try {
+    await queryRunner.startTransaction()
+
+    for ( const item of items ) {
+      const stockItem = await Stock.findOneOrFail( item.stock_id )
+      stockItem.stock_toko += item.amount
+      
+      const stockToko = new StockToko()
+      stockToko.amount = item.amount
+      stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+      stockToko.stock_id = item.stock_id
+
+      await queryRunner.manager.save( stockItem )
+      await queryRunner.manager.save( stockToko )
+      await queryRunner.manager.softRemove( item )
+    }
+
+    await queryRunner.commitTransaction()
+  } catch ( error ) {
+    await Promise.reject( error )
+    await queryRunner.rollbackTransaction()
+  } finally {
+    await queryRunner.release()
+  }
+}
 
 export const formatTransaction = ( transactions: Transaction[] ) => {
   return transactions.map( transaction => {
@@ -95,10 +127,10 @@ export class TransactionProcessor {
   public async start (): Promise<void> {
     try {
       await this.processTransaction()
-      if ( this.payload.use_deposit && this.customer ) {
+      if ( this.payload.use_deposit && this.customer && !this.isPending ) {
         if ( !this.total_deposit ) throw E_ERROR.CUSTOMER_NO_DEPOSIT
         return await this.payWithDeposit()
-      } else {
+      } else if ( !this.isPending ) {
         return await this.payWithCash()
       }
     } catch ( error ) {
@@ -191,6 +223,7 @@ export class TransactionProcessor {
 
   makeDebt = async ( amount: number ): Promise<void> => {
     try {
+      if ( !this.customer ) throw E_ERROR.CANT_MAKE_DEBT_FOR_UNREGISTERED_CUSTOMER
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
       customerMonet.amount = this.payload.optional_discount ? amount - this.payload.optional_discount : amount

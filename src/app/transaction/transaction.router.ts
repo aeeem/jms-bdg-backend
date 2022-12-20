@@ -1,12 +1,12 @@
 import makeResponse from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Patch, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import {
   DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
 import {
-  createTransactionService, deletePendingTransactionItemService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updateTransactionService
+  createTransactionService, deletePendingTransactionItemService, deletePendingTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updateTransactionService
 } from './transaction.service'
 
 @Tags( 'Transaction' )
@@ -46,7 +46,7 @@ export class TransactionController extends Controller {
     }
   }
   
-  @Post( '/' )
+  @Post( '/create' )
   @Security( 'api_key', ['create:transaction'] )
   public async createTransaction ( @Body() payload: TransactionRequestParameter ) {
     try {
@@ -68,7 +68,18 @@ export class TransactionController extends Controller {
     }
   }
 
-  @Delete( '/pending/item' )
+  @Delete( '/pending/{id}' )
+  @Security( 'api_key', ['create:transaction'] )
+  public async deletePendingTransaction ( @Query() id: string ) {
+    try {
+      const deletedTransaction = await deletePendingTransactionService( id )
+      return makeResponse.success( { data: deletedTransaction } )
+    } catch ( error: any ) {
+      return error
+    }
+  }
+
+  @Patch( '/pending/item' )
   @Security( 'api_key', ['create:transaction'] )
   public async deletePendingTransactionItem ( @Body() payload: DeleteTransactionItemRequestParameter ) {
     try {

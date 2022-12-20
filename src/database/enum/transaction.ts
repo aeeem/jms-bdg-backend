@@ -1,4 +1,5 @@
 export enum E_TransactionStatus{
   PENDING = 'PENDING',
-  FINISHED = 'FINISHED'
+  FINISHED = 'FINISHED',
+  VOID = 'VOID'
 }

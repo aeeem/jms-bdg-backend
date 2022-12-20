@@ -9,10 +9,13 @@ import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
+import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Errors } from 'src/errorHandler'
 import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
-import { formatTransaction, TransactionProcessor } from './transaction.helper'
+import {
+  formatTransaction, restoreStocks, TransactionProcessor
+} from './transaction.helper'
 import {
   DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
@@ -97,20 +100,34 @@ export const createTransactionService = async ( payload: TransactionRequestParam
   }
 }
 
-export const deletePendingTransactionItemService = async ( payload: DeleteTransactionItemRequestParameter ) => {
-  const transactionItem = await TransactionDetail.findOneOrFail( payload.transaction_id )
-  const stockItem = await Stock.findOneOrFail( payload.stock_id )
-  stockItem.stock_toko += transactionItem.amount
-  
-  const stockToko = new StockToko()
-  stockToko.amount = transactionItem.amount
-  stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
-  stockToko.stock_id = payload.stock_id
+export const deletePendingTransactionService = async ( id: string ) => {
+  const transaction = await Transaction.findOne( id )
+  if ( !transaction ) throw E_ERROR.TRANSACTION_NOT_FOUND
 
-  await transactionItem.softRemove()
-  await stockItem.save()
-  await stockToko.save()
-  return stockItem
+  const transactionItems = transaction.transactionDetails
+
+  if ( transactionItems.length > 0 ) {
+    await restoreStocks( transactionItems )
+  }
+
+  transaction.status = E_TransactionStatus.VOID
+  await transaction.save()
+  return transaction
+}
+
+export const deletePendingTransactionItemService = async ( payload: DeleteTransactionItemRequestParameter ) => {
+  const transactionItem = await TransactionDetail.findOne( {
+    where: {
+      transaction_id: payload.transaction_id,
+      stock_id      : payload.stock_id
+    }
+  } )
+
+  if ( !transactionItem ) throw E_ERROR.STOCK_NOT_FOUND
+
+  await restoreStocks( [transactionItem] )
+ 
+  return transactionItem
 }
 
 export const searchTransactionService = async ( query?: string, id?: string ) => {
