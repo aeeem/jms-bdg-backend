@@ -70,7 +70,7 @@ export class TransactionController extends Controller {
 
   @Delete( '/pending/{id}' )
   @Security( 'api_key', ['create:transaction'] )
-  public async deletePendingTransaction ( @Query() id: string ) {
+  public async deletePendingTransaction ( @Path() id: string ) {
     try {
       const deletedTransaction = await deletePendingTransactionService( id )
       return makeResponse.success( { data: deletedTransaction } )
