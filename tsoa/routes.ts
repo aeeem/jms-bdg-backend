@@ -168,6 +168,16 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TransactionDetailRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "amount": {"dataType":"double","required":true},
+            "stock_id": {"dataType":"double","required":true},
+            "sub_total": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -180,7 +190,7 @@ const models: TsoaRoute.Models = {
             "use_deposit": {"dataType":"boolean"},
             "optional_discount": {"dataType":"double"},
             "description": {"dataType":"string"},
-            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double","required":true},"stock_id":{"dataType":"double","required":true},"amount":{"dataType":"double","required":true}}},"required":true},
+            "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1204,6 +1214,31 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.deletePendingTransaction.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.put('/api/transaction/pending/:transaction_id',
+            authenticateMiddleware([{"api_key":["update:transaction"]}]),
+
+            function TransactionController_updatePendingTransaction(request: any, response: any, next: any) {
+            const args = {
+                    transaction_id: {"in":"path","name":"transaction_id","required":true,"dataType":"string"},
+                    payload: {"in":"body","name":"payload","required":true,"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new TransactionController();
+
+
+              const promise = controller.updatePendingTransaction.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

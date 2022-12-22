@@ -4,7 +4,7 @@ import { Stock } from '@entity/stock'
 import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
-import _ from 'lodash'
+import _, { update } from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
@@ -17,7 +17,7 @@ import {
   formatTransaction, restoreStocks, TransactionProcessor
 } from './transaction.helper'
 import {
-  DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
+  DeleteTransactionItemRequestParameter, TransactionDetailRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
 
 export const getAllTransactionService = async () => {
@@ -92,6 +92,87 @@ export const createTransactionService = async ( payload: TransactionRequestParam
         debt_balance   : transactionProcess.transaction.customer ? ( await getCustomerDebtService( transactionProcess.transaction?.customer?.id ) ).total_debt : 0
       }
     }
+  } catch ( error: any ) {
+    await queryRunner.rollbackTransaction()
+    return await Promise.reject( new Errors( error ) )
+  } finally {
+    await queryRunner.release()
+  }
+}
+
+export const updatePendingTransactionService = async ( transaction_id: string, items: TransactionDetailRequestParameter[] ) => {
+  const queryRunner = db.queryRunner()
+  try {
+    await queryRunner.startTransaction()
+
+    const transaction = await Transaction.findOne( { where: { id: transaction_id }, relations: ['transactionDetails', 'transactionDetails.stock'] } )
+    if ( !transaction ) throw E_ERROR.TRANSACTION_NOT_FOUND
+
+    const transactionDetailsIds = transaction.transactionDetails.map( detail => detail.stock_id )
+    const payloadStockIds = items.map( item => item.stock_id )
+    const insertData = await Promise.all( items.filter( item => !transactionDetailsIds.includes( item.stock_id ) ).map( async item => {
+      const transactionDetail = new TransactionDetail()
+      transactionDetail.amount = item.amount
+      transactionDetail.sub_total = item.sub_total
+      transactionDetail.stock_id = item.stock_id
+      const masterStock = await Stock.findOneOrFail( item.stock_id )
+      masterStock.stock_toko -= item.amount
+      const stockToko = new StockToko()
+      stockToko.amount = item.amount
+      stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
+      stockToko.stock_id = item.stock_id
+
+      await queryRunner.manager.save( stockToko )
+      await queryRunner.manager.save( masterStock )
+      return transactionDetail
+    } ) )
+
+    const deleteData = await Promise.all( transaction.transactionDetails.filter( detail => !payloadStockIds.includes( detail.stock_id ) ).map(
+      async transactionDetail => {
+        const masterStock = await Stock.findOneOrFail( transactionDetail.stock_id )
+        const payload = items.find( item => item.stock_id === transactionDetail.stock_id )
+        if ( !payload ) throw E_ERROR.STOCK_NOT_FOUND
+        masterStock.stock_toko += payload.amount
+        const stockToko = new StockToko()
+        stockToko.amount = payload.amount
+        stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+        stockToko.stock_id = payload.stock_id
+        await queryRunner.manager.save( stockToko )
+        await queryRunner.manager.save( masterStock )
+        return transactionDetail
+      }
+    ) )
+
+    const updateData = await Promise.all( transaction.transactionDetails.filter( detail => payloadStockIds.includes( detail.stock_id ) ).map(
+      async transactionDetail => {
+        const masterStock = await Stock.findOneOrFail( transactionDetail.stock_id )
+        const payload = items.find( item => item.stock_id === transactionDetail.stock_id )
+        const stockToko = new StockToko()
+        if ( !payload ) throw E_ERROR.STOCK_NOT_FOUND
+        transactionDetail.amount = payload.amount
+        transactionDetail.sub_total = payload.sub_total
+        stockToko.stock_id = payload.stock_id
+        if ( payload.amount > transactionDetail.amount ) {
+          masterStock.stock_toko -= payload.amount - transactionDetail.amount
+          stockToko.amount = payload.amount - transactionDetail.amount
+          stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
+        }
+        if ( payload.amount < transactionDetail.amount ) {
+          masterStock.stock_toko += transactionDetail.amount - payload.amount
+          stockToko.amount = transactionDetail.amount - payload.amount
+          stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+        }
+        await queryRunner.manager.save( stockToko )
+        await queryRunner.manager.save( masterStock )
+        return transactionDetail
+      }
+    ) )
+
+    await queryRunner.manager.save( insertData )
+    await queryRunner.manager.save( updateData )
+    await queryRunner.manager.remove( deleteData )
+
+    await queryRunner.commitTransaction()
   } catch ( error: any ) {
     await queryRunner.rollbackTransaction()
     return await Promise.reject( new Errors( error ) )

@@ -296,6 +296,29 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"TransactionDetailRequestParameter": {
+				"properties": {
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"stock_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"sub_total": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"amount",
+					"stock_id",
+					"sub_total"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"TransactionRequestParameter": {
 				"properties": {
 					"expected_total_price": {
@@ -334,26 +357,7 @@
 					},
 					"detail": {
 						"items": {
-							"properties": {
-								"sub_total": {
-									"type": "number",
-									"format": "double"
-								},
-								"stock_id": {
-									"type": "number",
-									"format": "double"
-								},
-								"amount": {
-									"type": "number",
-									"format": "double"
-								}
-							},
-							"required": [
-								"sub_total",
-								"stock_id",
-								"amount"
-							],
-							"type": "object"
+							"$ref": "#/components/schemas/TransactionDetailRequestParameter"
 						},
 						"type": "array"
 					}
@@ -1973,6 +1977,54 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/transaction/pending/{transaction_id}": {
+			"put": {
+				"operationId": "UpdatePendingTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:transaction"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "transaction_id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/TransactionDetailRequestParameter"
+								},
+								"type": "array"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/transaction/pending/item": {

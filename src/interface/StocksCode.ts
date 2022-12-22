@@ -13,4 +13,6 @@ export enum E_TOKO_CODE_KEY {
   'TOK_ADD_BRG_MASUK'    = 'TOK_ADD_BRG_MASUK', // Barang masuk dari gudang
   'TOK_SUB_TRANSAKSI'    = 'TOK_SUB_TRANSAKSI', // Barang digunakan untuk transaksi
   'TOK_SUB_BRG_RETUR'    = 'TOK_SUB_BRG_RETUR', // Barang retur ke gudang
+  'TOK_SUB_BRG_PENDING_TRANSAKSI' = 'TOK_SUB_BRG_PENDING_TRANSAKSI'
+  
 }

@@ -5,6 +5,12 @@ export interface DeleteTransactionItemRequestParameter {
   stock_id: number
 }
 
+export interface TransactionDetailRequestParameter{
+  amount: number
+  stock_id: number
+  sub_total: number
+}
+
 export interface TransactionRequestParameter {
   expected_total_price: number
   actual_total_price: number
@@ -15,11 +21,7 @@ export interface TransactionRequestParameter {
   use_deposit?: boolean
   optional_discount?: number
   description?: string
-  detail: Array<{
-    amount: number
-    stock_id: number
-    sub_total: number
-  }>
+  detail: TransactionDetailRequestParameter[]
 }
 export interface TransactionUpdateRequestParameter {
   expected_total_price?: number
