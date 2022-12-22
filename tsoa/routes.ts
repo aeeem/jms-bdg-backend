@@ -21,6 +21,8 @@ import { StockController } from './../src/app/stocks/stock.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TransactionController } from './../src/app/transaction/transaction.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { PendingTransactionController } from './../src/app/transaction/transaction.router';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserPermissionController } from './../src/app/user/user.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { VendorController } from './../src/app/vendor/vendor.router';
@@ -1226,7 +1228,7 @@ export function RegisterRoutes(app: express.Router) {
             function TransactionController_updatePendingTransaction(request: any, response: any, next: any) {
             const args = {
                     transaction_id: {"in":"path","name":"transaction_id","required":true,"dataType":"string"},
-                    payload: {"in":"body","name":"payload","required":true,"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"}},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"TransactionRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

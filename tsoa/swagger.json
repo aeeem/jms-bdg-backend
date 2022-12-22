@@ -2017,10 +2017,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"items": {
-									"$ref": "#/components/schemas/TransactionDetailRequestParameter"
-								},
-								"type": "array"
+								"$ref": "#/components/schemas/TransactionRequestParameter"
 							}
 						}
 					}
