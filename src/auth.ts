@@ -4,8 +4,12 @@ import { User } from '@entity/user'
 import { E_ERROR } from './constants/errorTypes'
 import { Errors } from './errorHandler'
 
+export interface RequestWithUser extends express.Request{
+  loggedInUser: User
+}
+
 export async function expressAuthentication (
-  request: express.Request,
+  request: RequestWithUser,
   securityName: string,
   scopes?: string[]
 ): Promise<any> {
@@ -26,6 +30,8 @@ export async function expressAuthentication (
       if ( user == null ) {
         throw E_ERROR.USER_NOT_FOUND
       }
+     
+      request.loggedInUser = user
       const userScopes: any = user.role.scopes
       const userScopeKeys = Object.keys( userScopes )
         .filter( key => ![

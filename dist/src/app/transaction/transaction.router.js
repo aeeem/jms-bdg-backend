@@ -24,7 +24,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TransactionController = void 0;
+exports.PendingTransactionController = exports.TransactionController = void 0;
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const transaction_service_1 = require("./transaction.service");
@@ -47,7 +47,6 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
                 return response_1.default.success({ data: transactions });
             }
             catch (error) {
-                console.log(error);
                 return error;
             }
         });
@@ -70,7 +69,50 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
                 return response_1.default.success({ data: createdTransaction });
             }
             catch (error) {
-                console.log(error);
+                return error;
+            }
+        });
+    }
+    createPendingTransaction(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const createdTransaction = yield (0, transaction_service_1.createTransactionService)(payload, true);
+                return response_1.default.success({ data: createdTransaction });
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    deletePendingTransaction(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const deletedTransaction = yield (0, transaction_service_1.deletePendingTransactionService)(id);
+                return response_1.default.success({ data: deletedTransaction });
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    updatePendingTransaction(transaction_id, payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const deletedTransaction = yield (0, transaction_service_1.updatePendingTransactionService)(transaction_id, payload.detail);
+                return response_1.default.success({ data: deletedTransaction });
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    deletePendingTransactionItem(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const deletedTransactionItem = yield (0, transaction_service_1.deletePendingTransactionItemService)(payload);
+                return response_1.default.success({ data: deletedTransactionItem, stat_msg: `Stock pada transaksi id: ${payload.transaction_id}, sudah di hapus` });
+            }
+            catch (error) {
                 return error;
             }
         });
@@ -122,13 +164,46 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "getTransactionById", null);
 __decorate([
-    (0, tsoa_1.Post)('/'),
+    (0, tsoa_1.Post)('/create'),
     (0, tsoa_1.Security)('api_key', ['create:transaction']),
     __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "createTransaction", null);
+__decorate([
+    (0, tsoa_1.Post)('/pending'),
+    (0, tsoa_1.Security)('api_key', ['create:transaction']),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TransactionController.prototype, "createPendingTransaction", null);
+__decorate([
+    (0, tsoa_1.Delete)('/pending/{id}'),
+    (0, tsoa_1.Security)('api_key', ['create:transaction']),
+    __param(0, (0, tsoa_1.Path)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TransactionController.prototype, "deletePendingTransaction", null);
+__decorate([
+    (0, tsoa_1.Put)('/pending/{transaction_id}'),
+    (0, tsoa_1.Security)('api_key', ['update:transaction']),
+    __param(0, (0, tsoa_1.Path)()),
+    __param(1, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], TransactionController.prototype, "updatePendingTransaction", null);
+__decorate([
+    (0, tsoa_1.Patch)('/pending/item'),
+    (0, tsoa_1.Security)('api_key', ['create:transaction']),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TransactionController.prototype, "deletePendingTransactionItem", null);
 __decorate([
     (0, tsoa_1.Put)('/{id}/'),
     (0, tsoa_1.Security)('api_key', ['update:transaction']),
@@ -152,3 +227,11 @@ TransactionController = __decorate([
     (0, tsoa_1.Security)('api_key')
 ], TransactionController);
 exports.TransactionController = TransactionController;
+let PendingTransactionController = class PendingTransactionController extends tsoa_1.Controller {
+};
+PendingTransactionController = __decorate([
+    (0, tsoa_1.Tags)('PendingTransaction'),
+    (0, tsoa_1.Route)('/api/pending-transaction'),
+    (0, tsoa_1.Security)('api_key')
+], PendingTransactionController);
+exports.PendingTransactionController = PendingTransactionController;

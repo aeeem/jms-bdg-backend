@@ -41,7 +41,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Transaction.prototype, "outstanding_amount", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => customer_1.Customer, (customer) => customer.id, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "optional_discount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Transaction.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => customer_1.Customer, (customer) => customer.id, { onDelete: 'CASCADE', nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'customer_id' }),
     __metadata("design:type", customer_1.Customer)
 ], Transaction.prototype, "customer", void 0);
@@ -52,6 +60,10 @@ __decorate([
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Array)
 ], Transaction.prototype, "transactionDetails", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "packaging_cost", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)

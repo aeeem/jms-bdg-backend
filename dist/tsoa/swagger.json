@@ -143,16 +143,18 @@
             },
             "PindahStockGudangRequestParameter": {
                 "properties": {
-                    "stock_ids": {
-                        "items": {
-                            "type": "number",
-                            "format": "double"
-                        },
-                        "type": "array"
+                    "stock_id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
                     }
                 },
                 "required": [
-                    "stock_ids"
+                    "stock_id",
+                    "amount"
                 ],
                 "type": "object",
                 "additionalProperties": false
@@ -190,6 +192,24 @@
                 "type": "object",
                 "additionalProperties": false
             },
+            "StockPayload": {
+                "properties": {
+                    "jumlahBox": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "berat": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "jumlahBox",
+                    "berat"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
             "ProductRequestParameter": {
                 "properties": {
                     "sku": {
@@ -215,8 +235,10 @@
                         "format": "double"
                     },
                     "stok": {
-                        "type": "number",
-                        "format": "double"
+                        "items": {
+                            "$ref": "#/components/schemas/StockPayload"
+                        },
+                        "type": "array"
                     }
                 },
                 "required": [
@@ -227,6 +249,23 @@
                     "hargaModal",
                     "hargaJual",
                     "stok"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "MixedProductRequestParameter": {
+                "properties": {
+                    "sku": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "sku",
+                    "amount"
                 ],
                 "type": "object",
                 "additionalProperties": false
@@ -254,6 +293,29 @@
                         "format": "double"
                     }
                 },
+                "type": "object",
+                "additionalProperties": false
+            },
+            "TransactionDetailRequestParameter": {
+                "properties": {
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "stock_id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "sub_total": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "amount",
+                    "stock_id",
+                    "sub_total"
+                ],
                 "type": "object",
                 "additionalProperties": false
             },
@@ -286,38 +348,47 @@
                     "use_deposit": {
                         "type": "boolean"
                     },
+                    "optional_discount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
                     "detail": {
                         "items": {
-                            "properties": {
-                                "sub_total": {
-                                    "type": "number",
-                                    "format": "double"
-                                },
-                                "productId": {
-                                    "type": "number",
-                                    "format": "double"
-                                },
-                                "amount": {
-                                    "type": "number",
-                                    "format": "double"
-                                }
-                            },
-                            "required": [
-                                "sub_total",
-                                "productId",
-                                "amount"
-                            ],
-                            "type": "object"
+                            "$ref": "#/components/schemas/TransactionDetailRequestParameter"
                         },
                         "type": "array"
+                    },
+                    "packaging_cost": {
+                        "type": "number",
+                        "format": "double"
                     }
                 },
                 "required": [
                     "expected_total_price",
                     "actual_total_price",
-                    "customer_id",
                     "amount_paid",
                     "detail"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "DeleteTransactionItemRequestParameter": {
+                "properties": {
+                    "transaction_id": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "stock_id": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "transaction_id",
+                    "stock_id"
                 ],
                 "type": "object",
                 "additionalProperties": false
@@ -1148,7 +1219,10 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+                                "items": {
+                                    "$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+                                },
+                                "type": "array"
                             }
                         }
                     }
@@ -1187,10 +1261,7 @@
                         "description": "Ok",
                         "content": {
                             "application/json": {
-                                "schema": {
-                                    "items": {},
-                                    "type": "array"
-                                }
+                                "schema": {}
                             }
                         }
                     }
@@ -1340,6 +1411,45 @@
                         }
                     }
                 ]
+            }
+        },
+        "/api/products/add-campur": {
+            "post": {
+                "operationId": "CreateMixedProduct",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Products"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:product"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "items": {
+                                    "$ref": "#/components/schemas/MixedProductRequestParameter"
+                                },
+                                "type": "array"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/roles": {
@@ -1610,40 +1720,6 @@
                     }
                 ],
                 "parameters": []
-            },
-            "post": {
-                "operationId": "CreateTransaction",
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Transaction"
-                ],
-                "security": [
-                    {
-                        "api_key": [
-                            "create:transaction"
-                        ]
-                    }
-                ],
-                "parameters": [],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TransactionRequestParameter"
-                            }
-                        }
-                    }
-                }
             }
         },
         "/api/transaction/search": {
@@ -1798,6 +1874,194 @@
                         }
                     }
                 ]
+            }
+        },
+        "/api/transaction/create": {
+            "post": {
+                "operationId": "CreateTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionRequestParameter"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction/pending": {
+            "post": {
+                "operationId": "CreatePendingTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionRequestParameter"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction/pending/{id}": {
+            "delete": {
+                "operationId": "DeletePendingTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/transaction/pending/{transaction_id}": {
+            "put": {
+                "operationId": "UpdatePendingTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "update:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "transaction_id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionRequestParameter"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/transaction/pending/item": {
+            "patch": {
+                "operationId": "DeletePendingTransactionItem",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeleteTransactionItemRequestParameter"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/user-permission/get-all": {

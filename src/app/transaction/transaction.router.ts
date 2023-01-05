@@ -1,6 +1,6 @@
 import makeResponse from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Patch, Path, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Patch, Path, Post, Put, Query, Request, Route, Security, Tags
 } from 'tsoa'
 import {
   DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
@@ -8,14 +8,14 @@ import {
 import {
   createTransactionService, deletePendingTransactionItemService, deletePendingTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updatePendingTransactionService, updateTransactionService
 } from './transaction.service'
-
+import { RequestWithUser } from 'src/auth'
 @Tags( 'Transaction' )
 @Route( '/api/transaction' )
 @Security( 'api_key' )
 export class TransactionController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:transaction'] )
-  public async getAllTransaction () {
+  public async getAllTransaction ( ) {
     try {
       const transactions = await getAllTransactionService()
       return makeResponse.success( { data: transactions } )
@@ -48,9 +48,10 @@ export class TransactionController extends Controller {
   
   @Post( '/create' )
   @Security( 'api_key', ['create:transaction'] )
-  public async createTransaction ( @Body() payload: TransactionRequestParameter ) {
+  public async createTransaction ( @Body() payload: TransactionRequestParameter, @Request() request: RequestWithUser ) {
     try {
-      const createdTransaction = await createTransactionService( payload )
+      const user = request.loggedInUser
+      const createdTransaction = await createTransactionService( payload, false, user )
       return makeResponse.success( { data: createdTransaction } )
     } catch ( error: any ) {
       return error

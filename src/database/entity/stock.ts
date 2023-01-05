@@ -1,7 +1,8 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import { Product } from './product'
+import { TransactionDetail } from './transactionDetail'
 
 @Entity( { name: 'stock' } )
 export class Stock extends BaseEntity {
@@ -29,6 +30,9 @@ export class Stock extends BaseEntity {
 
   @Column( { nullable: true } )
     productId: number
+
+  @OneToMany( () => TransactionDetail, transactionDetail => transactionDetail.stock )
+    transactionDetails: TransactionDetail[]
 
   @CreateDateColumn()
     created_at: Date

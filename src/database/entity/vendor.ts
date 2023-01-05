@@ -1,6 +1,7 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
+import { Product } from './product'
 
 @Entity( { name: 'vendor' } )
 export class Vendor extends BaseEntity {
@@ -24,6 +25,9 @@ export class Vendor extends BaseEntity {
 
   @Column( { nullable: true } )
     address?: string
+
+  @OneToMany( () => Product, product => product.vendor )
+    products: Product[]
 
   @CreateDateColumn()
     created_at: Date

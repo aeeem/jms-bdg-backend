@@ -115,7 +115,8 @@ const models = {
     "PindahStockGudangRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "stock_ids": { "dataType": "array", "array": { "dataType": "double" }, "required": true },
+            "stock_id": { "dataType": "double", "required": true },
+            "amount": { "dataType": "double", "required": true },
         },
         "additionalProperties": false,
     },
@@ -132,6 +133,15 @@ const models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StockPayload": {
+        "dataType": "refObject",
+        "properties": {
+            "jumlahBox": { "dataType": "double", "required": true },
+            "berat": { "dataType": "double", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ProductRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -141,7 +151,16 @@ const models = {
             "tanggalMasuk": { "dataType": "datetime", "required": true },
             "hargaModal": { "dataType": "double", "required": true },
             "hargaJual": { "dataType": "double", "required": true },
-            "stok": { "dataType": "double", "required": true },
+            "stok": { "dataType": "array", "array": { "dataType": "refObject", "ref": "StockPayload" }, "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "MixedProductRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "sku": { "dataType": "string", "required": true },
+            "amount": { "dataType": "double", "required": true },
         },
         "additionalProperties": false,
     },
@@ -158,17 +177,39 @@ const models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TransactionDetailRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "amount": { "dataType": "double", "required": true },
+            "stock_id": { "dataType": "double", "required": true },
+            "sub_total": { "dataType": "double", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TransactionRequestParameter": {
         "dataType": "refObject",
         "properties": {
             "expected_total_price": { "dataType": "double", "required": true },
             "actual_total_price": { "dataType": "double", "required": true },
-            "customer_id": { "dataType": "double", "required": true },
+            "customer_id": { "dataType": "double" },
             "amount_paid": { "dataType": "double", "required": true },
             "deposit": { "dataType": "double" },
             "transaction_date": { "dataType": "datetime" },
             "use_deposit": { "dataType": "boolean" },
-            "detail": { "dataType": "array", "array": { "dataType": "nestedObjectLiteral", "nestedProperties": { "sub_total": { "dataType": "double", "required": true }, "productId": { "dataType": "double", "required": true }, "amount": { "dataType": "double", "required": true } } }, "required": true },
+            "optional_discount": { "dataType": "double" },
+            "description": { "dataType": "string" },
+            "detail": { "dataType": "array", "array": { "dataType": "refObject", "ref": "TransactionDetailRequestParameter" }, "required": true },
+            "packaging_cost": { "dataType": "double" },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "DeleteTransactionItemRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "transaction_id": { "dataType": "double", "required": true },
+            "stock_id": { "dataType": "double", "required": true },
         },
         "additionalProperties": false,
     },
@@ -530,7 +571,7 @@ function RegisterRoutes(app) {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.post('/api/gudang/pindah-stok', authenticateMiddleware([{ "api_key": ["update:gudang"] }]), function GudangController_pindahStockGudang(request, response, next) {
         const args = {
-            payload: { "in": "body", "name": "payload", "required": true, "ref": "PindahStockGudangRequestParameter" },
+            payload: { "in": "body", "name": "payload", "required": true, "dataType": "array", "array": { "dataType": "refObject", "ref": "PindahStockGudangRequestParameter" } },
         };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];
@@ -639,6 +680,23 @@ function RegisterRoutes(app) {
             validatedArgs = getValidatedArgs(args, request, response);
             const controller = new product_router_1.ProductsController();
             const promise = controller.searchProduct.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/api/products/add-campur', authenticateMiddleware([{ "api_key": ["create:product"] }]), function ProductsController_createMixedProduct(request, response, next) {
+        const args = {
+            payload: { "in": "body", "name": "payload", "required": true, "dataType": "array", "array": { "dataType": "refObject", "ref": "MixedProductRequestParameter" } },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new product_router_1.ProductsController();
+            const promise = controller.createMixedProduct.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, undefined, next);
         }
         catch (err) {
@@ -826,7 +884,7 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.post('/api/transaction', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_createTransaction(request, response, next) {
+    app.post('/api/transaction/create', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_createTransaction(request, response, next) {
         const args = {
             payload: { "in": "body", "name": "payload", "required": true, "ref": "TransactionRequestParameter" },
         };
@@ -836,6 +894,75 @@ function RegisterRoutes(app) {
             validatedArgs = getValidatedArgs(args, request, response);
             const controller = new transaction_router_1.TransactionController();
             const promise = controller.createTransaction.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/api/transaction/pending', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_createPendingTransaction(request, response, next) {
+        const args = {
+            payload: { "in": "body", "name": "payload", "required": true, "ref": "TransactionRequestParameter" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new transaction_router_1.TransactionController();
+            const promise = controller.createPendingTransaction.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.delete('/api/transaction/pending/:id', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_deletePendingTransaction(request, response, next) {
+        const args = {
+            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new transaction_router_1.TransactionController();
+            const promise = controller.deletePendingTransaction.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.put('/api/transaction/pending/:transaction_id', authenticateMiddleware([{ "api_key": ["update:transaction"] }]), function TransactionController_updatePendingTransaction(request, response, next) {
+        const args = {
+            transaction_id: { "in": "path", "name": "transaction_id", "required": true, "dataType": "string" },
+            payload: { "in": "body", "name": "payload", "required": true, "ref": "TransactionRequestParameter" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new transaction_router_1.TransactionController();
+            const promise = controller.updatePendingTransaction.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.patch('/api/transaction/pending/item', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_deletePendingTransactionItem(request, response, next) {
+        const args = {
+            payload: { "in": "body", "name": "payload", "required": true, "ref": "DeleteTransactionItemRequestParameter" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new transaction_router_1.TransactionController();
+            const promise = controller.deletePendingTransactionItem.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, undefined, next);
         }
         catch (err) {

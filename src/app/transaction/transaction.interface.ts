@@ -22,6 +22,7 @@ export interface TransactionRequestParameter {
   optional_discount?: number
   description?: string
   detail: TransactionDetailRequestParameter[]
+  packaging_cost?: number
 }
 export interface TransactionUpdateRequestParameter {
   expected_total_price?: number

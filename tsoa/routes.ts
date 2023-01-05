@@ -193,6 +193,7 @@ const models: TsoaRoute.Models = {
             "optional_discount": {"dataType":"double"},
             "description": {"dataType":"string"},
             "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
+            "packaging_cost": {"dataType":"double"},
         },
         "additionalProperties": false,
     },
@@ -1156,6 +1157,7 @@ export function RegisterRoutes(app: express.Router) {
             function TransactionController_createTransaction(request: any, response: any, next: any) {
             const args = {
                     payload: {"in":"body","name":"payload","required":true,"ref":"TransactionRequestParameter"},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

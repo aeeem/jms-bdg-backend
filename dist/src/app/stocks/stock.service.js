@@ -18,7 +18,6 @@ const lodash_1 = __importDefault(require("lodash"));
 const response_1 = __importDefault(require("src/helper/response"));
 const errorTypes_1 = require("src/constants/errorTypes");
 const errorHandler_1 = require("src/errorHandler");
-const stockToko_1 = require("@entity/stockToko");
 const getAllStocksService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return yield stock_1.Stock.find({ relations: ['vendor', 'product'] });
@@ -93,14 +92,9 @@ const updateStockService = (body, id) => __awaiter(void 0, void 0, void 0, funct
 exports.updateStockService = updateStockService;
 const getStockTokoService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const stocks = yield stockToko_1.StockToko.find({
-            relations: [
-                'stock',
-                'stock.product',
-                'stock.product.vendor'
-            ]
-        });
-        return stocks;
+        const stocks = yield stock_1.Stock.find({ relations: ['product', 'product.vendor'] });
+        const filteredStock = stocks.filter(stock => stock.stock_toko > 0);
+        return filteredStock;
     }
     catch (error) {
         return yield Promise.reject(new errorHandler_1.Errors(error));

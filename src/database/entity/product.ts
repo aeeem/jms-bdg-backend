@@ -21,7 +21,7 @@ export class Product extends BaseEntity {
   @OneToMany( () => Stock, stock => stock.product, { cascade: true } )
     stocks: Stock[]
 
-  @ManyToOne( () => Vendor, vendor => vendor.id, { onDelete: 'CASCADE' } )
+  @ManyToOne( () => Vendor, vendor => vendor.products, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'vendorId' } )
     vendor: Vendor
 

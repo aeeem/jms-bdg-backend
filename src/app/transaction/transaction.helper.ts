@@ -4,6 +4,7 @@ import { Stock } from '@entity/stock'
 import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
+import { User } from '@entity/user'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
@@ -106,6 +107,7 @@ export class TransactionProcessor {
   public transaction: Transaction
   public transaction_status: E_TransactionStatus
   public isPending: boolean
+  public user?: User
 
   constructor (
     payload: TransactionRequestParameter,
@@ -113,7 +115,8 @@ export class TransactionProcessor {
     transactionDetails: TransactionDetail[],
     expected_total_price: number,
     total_deposit: number,
-    isPending: boolean
+    isPending: boolean,
+    user?: User
   ) {
     this.payload = payload
     this.customer = customer
@@ -122,6 +125,7 @@ export class TransactionProcessor {
     this.total_deposit = total_deposit
     this.transaction = new Transaction()
     this.isPending = isPending
+    this.user = user
   }
 
   public async start (): Promise<void> {
@@ -213,6 +217,8 @@ export class TransactionProcessor {
       this.transaction.change = this.change || 0
       this.transaction.description = this.payload.description
       this.transaction.optional_discount = this.payload.optional_discount
+      this.transaction.packaging_cost = this.payload.packaging_cost ?? 0
+      this.transaction.cashier = this.user
 
       await this.queryRunner.manager.save( this.transaction )
       return

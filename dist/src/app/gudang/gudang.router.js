@@ -75,7 +75,7 @@ __decorate([
     (0, tsoa_1.Security)('api_key', ['update:gudang']),
     __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], GudangController.prototype, "pindahStockGudang", null);
 __decorate([

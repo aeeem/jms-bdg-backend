@@ -360,6 +360,10 @@
 							"$ref": "#/components/schemas/TransactionDetailRequestParameter"
 						},
 						"type": "array"
+					},
+					"packaging_cost": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [

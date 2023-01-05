@@ -44,11 +44,11 @@ __decorate([
     __metadata("design:type", Number)
 ], CustomerMonetary.prototype, "transaction_id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], CustomerMonetary.prototype, "customer_id", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => customer_1.Customer, (customer) => customer.monetary, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => customer_1.Customer, (customer) => customer.monetary, { onDelete: 'CASCADE', nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'customer_id' }),
     __metadata("design:type", customer_1.Customer)
 ], CustomerMonetary.prototype, "customer", void 0);

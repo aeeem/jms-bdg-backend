@@ -1,7 +1,8 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne
+  Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, OneToMany
 } from 'typeorm'
 import { Role } from './role'
+import { Transaction } from './transaction'
 
 @Entity( { name: 'user' } )
 export class User extends BaseEntity {
@@ -25,6 +26,9 @@ export class User extends BaseEntity {
 
   @Column()
     password: string
+
+  @OneToMany( () => Transaction, transaction => transaction.cashier )
+    transactions: Transaction[]
 
   @ManyToOne( () => Role, ( role: Role ) => role.id, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'role_id' } )

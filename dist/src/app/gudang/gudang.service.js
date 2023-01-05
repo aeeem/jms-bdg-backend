@@ -17,6 +17,7 @@ const stockToko_1 = require("@entity/stockToko");
 const app_1 = require("src/app");
 const errorTypes_1 = require("src/constants/errorTypes");
 const errorHandler_1 = require("src/errorHandler");
+const stockHelper_1 = require("src/helper/stockHelper");
 const StocksCode_1 = require("src/interface/StocksCode");
 const getStockGudangService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -38,22 +39,39 @@ const pindahStockGudangService = (payload) => __awaiter(void 0, void 0, void 0, 
     const queryRunner = app_1.db.queryRunner();
     try {
         yield queryRunner.startTransaction();
-        const stocks_gudang = payload.stock_ids.map(stock_id => {
-            const item_gudang = new stockGudang_1.StockGudang();
-            item_gudang.amount = 1;
-            item_gudang.code = StocksCode_1.E_GUDANG_CODE_KEY.GUD_SUB_BRG_PIN_TOKO;
-            item_gudang.stock_id = stock_id;
-            return item_gudang;
+        const stocks_gudang = payload.map(item => {
+            const stock = new stockGudang_1.StockGudang();
+            stock.amount = item.amount;
+            stock.stock_id = item.stock_id;
+            stock.code = StocksCode_1.E_GUDANG_CODE_KEY.GUD_SUB_BRG_PIN_TOKO;
+            return stock;
         });
-        const stocks_toko = payload.stock_ids.map(stock_id => {
+        const stocks_toko = yield Promise.all(payload.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const stock = yield stock_1.Stock.findOneOrFail(item.stock_id);
             const item_toko = new stockToko_1.StockToko();
-            item_toko.amount = 1;
             item_toko.code = StocksCode_1.E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK;
-            item_toko.stock_id = stock_id;
+            item_toko.stock_id = item.stock_id;
+            item_toko.amount = (stock === null || stock === void 0 ? void 0 : stock.weight) * item.amount;
             return item_toko;
-        });
+        })));
+        // const updateStockGudangOnStockTable = await Promise.all( payload.map( async stock => {
+        //   // append dari stock gudang yg di database, dan yang baru di add dari payload
+        //   const stockGudang = [...await StockGudang.find( { where: { stock_id: stock.stock_id } } ), ...stocks_gudang]
+        //   const stockData = await Stock.findOneOrFail( stock.stock_id )
+        //   stockData.stock_gudang = CalculateTotalStock( stockGudang )
+        //   return stockData
+        // } ) )
+        const updateStockValue = yield Promise.all(payload.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const stockGudang = [...yield stockGudang_1.StockGudang.find({ where: { stock_id: item.stock_id } }), ...stocks_gudang];
+            const stockToko = [...yield stockToko_1.StockToko.find({ where: { stock_id: item.stock_id } }), ...stocks_toko];
+            const stockData = yield stock_1.Stock.findOneOrFail(item.stock_id);
+            stockData.stock_gudang = (0, stockHelper_1.CalculateTotalStock)(stockGudang);
+            stockData.stock_toko = (0, stockHelper_1.CalculateTotalStock)(stockToko);
+            return stockData;
+        })));
         yield queryRunner.manager.save(stocks_gudang);
         yield queryRunner.manager.save(stocks_toko);
+        yield queryRunner.manager.save(updateStockValue);
         yield queryRunner.commitTransaction();
         return stocks_gudang;
     }

@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransactionDetail = void 0;
 const typeorm_1 = require("typeorm");
-const product_1 = require("./product");
+const stock_1 = require("./stock");
 const transaction_1 = require("./transaction");
 let TransactionDetail = class TransactionDetail extends typeorm_1.BaseEntity {
 };
@@ -29,18 +29,22 @@ __decorate([
 ], TransactionDetail.prototype, "sub_total", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => transaction_1.Transaction, (transaction) => transaction.id, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.JoinColumn)({ name: 'transaction_id' }),
     __metadata("design:type", transaction_1.Transaction)
 ], TransactionDetail.prototype, "transaction", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => product_1.Product, (product) => product.id, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)({ name: 'product_id' }),
-    __metadata("design:type", product_1.Product)
-], TransactionDetail.prototype, "product", void 0);
+    (0, typeorm_1.ManyToOne)(() => stock_1.Stock, (stock) => stock.id),
+    (0, typeorm_1.JoinColumn)({ name: 'stock_id' }),
+    __metadata("design:type", stock_1.Stock)
+], TransactionDetail.prototype, "stock", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], TransactionDetail.prototype, "product_id", void 0);
+], TransactionDetail.prototype, "stock_id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], TransactionDetail.prototype, "transaction_id", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
@@ -49,6 +53,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], TransactionDetail.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)(),
+    __metadata("design:type", Date)
+], TransactionDetail.prototype, "deleted_at", void 0);
 TransactionDetail = __decorate([
     (0, typeorm_1.Entity)({ name: 'transaction_detail' })
 ], TransactionDetail);

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.E_ERROR = void 0;
 const enums_1 = require("src/constants/enums");
 exports.E_ERROR = {
+    CANT_MAKE_DEBT_FOR_UNREGISTERED_CUSTOMER: { message: 'Pelanggan yang tidak terdaftar tidak dapat melakukan transaksi hutang.', status: enums_1.HTTP_CODE.BAD_REQUEST },
     CUSTOMER_NO_DEPOSIT: { message: 'Pelanggan tidak memiliki deposit.', status: enums_1.HTTP_CODE.OK },
     TRANSACTION_NOT_FOUND: { message: 'Transaksi tidak ditemukan.', status: enums_1.HTTP_CODE.NOT_FOUND },
     REGISTER_INVALID_PAYLOAD: { message: 'Nip, password, nama tidak boleh kosong', status: enums_1.HTTP_CODE.BAD_REQUEST },
@@ -14,6 +15,7 @@ exports.E_ERROR = {
     EXPECTED_TOTAL_PRICE_NOT_MATCH: { message: 'Total tidak sesuai', status: enums_1.HTTP_CODE.FORBIDDEN },
     PRODUCT_NOT_FOUND: { message: 'Product tidak ditemukan', status: enums_1.HTTP_CODE.NO_CONTENT },
     STOCK_NOT_FOUND: { message: 'Stock Tidak ditemukan', status: enums_1.HTTP_CODE.NOT_FOUND },
+    INSUFFICIENT_STOCK: { message: 'Stock Toko tidak cukup', status: enums_1.HTTP_CODE.NOT_FOUND },
     CUSTOMER_NOT_FOUND: { message: 'Pelanggan Tidak ditemukan', status: enums_1.HTTP_CODE.NO_CONTENT },
     DATABASE_ERROR: { message: 'E_DATABASE_ERROR', status: enums_1.HTTP_CODE.INTERNAL_SERVER_ERROR },
     UNKNOWN_ERROR: { message: 'E_UNKNOWN_ERROR', status: enums_1.HTTP_CODE.INTERNAL_SERVER_ERROR },

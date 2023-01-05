@@ -12,12 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProductService = exports.updateProductService = exports.searchProductService = exports.createProductService = exports.getAllProductsService = void 0;
+exports.addMixedProductService = exports.deleteProductService = exports.updateProductService = exports.searchProductService = exports.createProductService = exports.getAllProductsService = void 0;
 const product_1 = require("@entity/product");
 const stock_1 = require("@entity/stock");
+const stockToko_1 = require("@entity/stockToko");
+const stockGudang_1 = require("@entity/stockGudang");
 const vendor_1 = require("@entity/vendor");
+const app_1 = require("src/app");
 const errorTypes_1 = require("src/constants/errorTypes");
 const response_1 = __importDefault(require("src/helper/response"));
+const StocksCode_1 = require("src/interface/StocksCode");
 const errorHandler_1 = require("../../errorHandler");
 const getAllProductsService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -30,27 +34,49 @@ const getAllProductsService = () => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getAllProductsService = getAllProductsService;
 const createProductService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryRunner = app_1.db.queryRunner();
     try {
+        yield queryRunner.startTransaction();
         const new_products = yield Promise.all(payload.map((product) => __awaiter(void 0, void 0, void 0, function* () {
             const vendor = yield vendor_1.Vendor.findOne({ where: { id: product.vendorId } });
             if (vendor == null)
-                throw errorTypes_1.E_ERROR.NOT_FOUND;
-            const stock = new stock_1.Stock();
-            stock.buy_price = product.hargaModal;
-            stock.sell_price = product.hargaJual;
-            stock.stock_gudang = product.stok;
+                throw errorTypes_1.E_ERROR.VENDOR_NOT_FOUND;
+            const stocks = product.stok.map(item => {
+                const newStock = new stock_1.Stock();
+                newStock.buy_price = product.hargaModal;
+                newStock.sell_price = product.hargaJual;
+                newStock.weight = item.berat;
+                return newStock;
+            });
+            const insertedStocks = yield queryRunner.manager.save(stocks);
+            const stockGudang = yield Promise.all(insertedStocks.map((stock, index) => __awaiter(void 0, void 0, void 0, function* () {
+                const newStockGudang = new stockGudang_1.StockGudang();
+                newStockGudang.amount = product.stok[index].jumlahBox;
+                newStockGudang.code = StocksCode_1.E_GUDANG_CODE_KEY.GUD_ADD_BRG_MASUK;
+                newStockGudang.stock_id = stock.id;
+                stock.stock_gudang += product.stok[index].jumlahBox;
+                yield queryRunner.manager.save(stock);
+                return newStockGudang;
+            })));
             const newProduct = new product_1.Product();
             newProduct.sku = product.sku;
             newProduct.name = product.name;
             newProduct.arrival_date = product.tanggalMasuk;
-            newProduct.stocks = [stock];
+            newProduct.stocks = stocks;
+            newProduct.vendorId = product.vendorId;
+            yield queryRunner.manager.save(stockGudang);
             return newProduct;
         })));
-        yield product_1.Product.save(new_products);
+        yield queryRunner.manager.save(new_products);
+        yield queryRunner.commitTransaction();
         return new_products;
     }
     catch (e) {
-        throw new errorHandler_1.Errors(e);
+        yield queryRunner.rollbackTransaction();
+        return yield Promise.reject(new errorHandler_1.Errors(e));
+    }
+    finally {
+        yield queryRunner.release();
     }
 });
 exports.createProductService = createProductService;
@@ -78,7 +104,6 @@ const updateProductService = (id, payload) => __awaiter(void 0, void 0, void 0, 
         }
         _updatedStock.buy_price = payload.hargaModal;
         _updatedStock.sell_price = payload.hargaJual;
-        _updatedStock.stock_toko = payload.stok;
         if (_updatedProduct == null) {
             throw errorTypes_1.E_ERROR.PRODUCT_NOT_FOUND;
         }
@@ -107,3 +132,28 @@ const deleteProductService = ({ id }) => __awaiter(void 0, void 0, void 0, funct
     }
 });
 exports.deleteProductService = deleteProductService;
+const addMixedProductService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const queryRunner = app_1.db.queryRunner();
+    try {
+        yield queryRunner.startTransaction();
+        const stocks = Promise.all(payload.map((item) => __awaiter(void 0, void 0, void 0, function* () {
+            const isProductExist = yield stock_1.Stock.findOne({ where: { sku: item.sku }, relations: ['stock'] });
+            if (isProductExist) {
+                const stock_toko = new stockToko_1.StockToko();
+                stock_toko.amount = item.amount;
+                stock_toko.code = StocksCode_1.E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK;
+                return stock_toko;
+            }
+        })));
+        yield queryRunner.manager.save(stocks);
+        yield queryRunner.commitTransaction();
+        return yield stocks;
+    }
+    catch (error) {
+        return yield Promise.reject(new errorHandler_1.Errors(error));
+    }
+    finally {
+        yield queryRunner.release();
+    }
+});
+exports.addMixedProductService = addMixedProductService;

@@ -4,6 +4,7 @@ import {
 import { Customer } from './customer'
 import { CustomerMonetary } from './customerMonetary'
 import { TransactionDetail } from './transactionDetail'
+import { User } from './user'
 
 @Entity( { name: 'transaction' } )
 export class Transaction extends BaseEntity {
@@ -35,11 +36,12 @@ export class Transaction extends BaseEntity {
   @JoinColumn( { name: 'customer_id' } )
     customer?: Customer
 
-  @OneToMany( () => TransactionDetail, ( transactionDetail: TransactionDetail ) => transactionDetail.transaction, {
-    cascade: true, onDelete: 'CASCADE', eager: true
-  } )
+  @OneToMany( () => TransactionDetail, ( transactionDetail: TransactionDetail ) => transactionDetail.transaction, { cascade: true, onDelete: 'CASCADE' } )
   @JoinColumn()
     transactionDetails: TransactionDetail[]
+
+  @Column( { nullable: true } )
+    packaging_cost?: number
 
   @Column()
     status: string
@@ -55,6 +57,9 @@ export class Transaction extends BaseEntity {
   @OneToMany( () => CustomerMonetary, ( customerMonetary: CustomerMonetary ) => customerMonetary.transaction, { onDelete: 'CASCADE' } )
   @JoinColumn()
     customerMonetary: CustomerMonetary[]
+
+  @ManyToOne( () => User, user => user.transactions, { nullable: true } )
+    cashier?: User
 
   @CreateDateColumn()
     created_at: Date

@@ -4,6 +4,7 @@ import { Stock } from '@entity/stock'
 import { StockToko } from '@entity/stockToko'
 import { Transaction } from '@entity/transaction'
 import { TransactionDetail } from '@entity/transactionDetail'
+import { User } from '@entity/user'
 import _ from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
@@ -37,7 +38,7 @@ export const getAllTransactionService = async () => {
   }
 }
 
-export const createTransactionService = async ( payload: TransactionRequestParameter, isPending: boolean = false ) => {
+export const createTransactionService = async ( payload: TransactionRequestParameter, isPending: boolean = false, user?: User ) => {
   const queryRunner = db.queryRunner()
   try {
     await queryRunner.startTransaction()
@@ -77,7 +78,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     } ) )
 
     const transactionProcess = new TransactionProcessor(
-      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending
+      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user
     )
 
     await queryRunner.manager.save( stockSync )

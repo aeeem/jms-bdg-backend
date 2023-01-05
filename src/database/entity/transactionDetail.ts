@@ -15,11 +15,11 @@ export class TransactionDetail extends BaseEntity {
   @Column()
     sub_total: number
 
-  @ManyToOne( () => Transaction, ( transaction: Transaction ) => transaction.id, { onDelete: 'CASCADE' } )
+  @ManyToOne( () => Transaction, ( transaction: Transaction ) => transaction.transactionDetails, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'transaction_id' } )
     transaction: Transaction
 
-  @ManyToOne( () => Stock, ( stock: Stock ) => stock.id )
+  @ManyToOne( () => Stock, ( stock: Stock ) => stock.transactionDetails )
   @JoinColumn( { name: 'stock_id' } )
     stock: Stock
 

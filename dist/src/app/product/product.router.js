@@ -20,8 +20,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
+const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const product_service_1 = require("./product.service");
 let ProductsController = class ProductsController extends tsoa_1.Controller {
@@ -32,7 +36,12 @@ let ProductsController = class ProductsController extends tsoa_1.Controller {
     }
     createProduct(payload) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, product_service_1.createProductService)(payload);
+            try {
+                return yield (0, product_service_1.createProductService)(payload);
+            }
+            catch (error) {
+                return error;
+            }
         });
     }
     updateProduct(id, payload) {
@@ -48,6 +57,17 @@ let ProductsController = class ProductsController extends tsoa_1.Controller {
     searchProduct(query) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield (0, product_service_1.searchProductService)({ query });
+        });
+    }
+    createMixedProduct(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const addCampur = yield (0, product_service_1.addMixedProductService)(payload);
+                return response_1.default.success({ data: addCampur, stat_code: 200 });
+            }
+            catch (error) {
+                return error;
+            }
         });
     }
 };
@@ -91,6 +111,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "searchProduct", null);
+__decorate([
+    (0, tsoa_1.Post)('/add-campur'),
+    (0, tsoa_1.Security)('api_key', ['create:product']),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ProductsController.prototype, "createMixedProduct", null);
 ProductsController = __decorate([
     (0, tsoa_1.Tags)('Products'),
     (0, tsoa_1.Route)('/api/products')
