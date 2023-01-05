@@ -89,7 +89,7 @@ const formatTransaction = (transactions) => {
 };
 exports.formatTransaction = formatTransaction;
 class TransactionProcessor {
-    constructor(payload, customer, transactionDetails, expected_total_price, total_deposit, isPending) {
+    constructor(payload, customer, transactionDetails, expected_total_price, total_deposit, isPending, user) {
         this.transaction_details = [];
         this.queryRunner = app_1.db.queryRunner();
         this.total_deposit = 0;
@@ -164,6 +164,7 @@ class TransactionProcessor {
                 this.transaction.description = this.payload.description;
                 this.transaction.optional_discount = this.payload.optional_discount;
                 this.transaction.packaging_cost = (_a = this.payload.packaging_cost) !== null && _a !== void 0 ? _a : 0;
+                this.transaction.cashier = this.user;
                 yield this.queryRunner.manager.save(this.transaction);
                 return;
             }
@@ -225,6 +226,7 @@ class TransactionProcessor {
         this.total_deposit = total_deposit;
         this.transaction = new transaction_1.Transaction();
         this.isPending = isPending;
+        this.user = user;
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {

@@ -28,12 +28,12 @@ __decorate([
     __metadata("design:type", Number)
 ], TransactionDetail.prototype, "sub_total", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => transaction_1.Transaction, (transaction) => transaction.id, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => transaction_1.Transaction, (transaction) => transaction.transactionDetails, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'transaction_id' }),
     __metadata("design:type", transaction_1.Transaction)
 ], TransactionDetail.prototype, "transaction", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => stock_1.Stock, (stock) => stock.id),
+    (0, typeorm_1.ManyToOne)(() => stock_1.Stock, (stock) => stock.transactionDetails),
     (0, typeorm_1.JoinColumn)({ name: 'stock_id' }),
     __metadata("design:type", stock_1.Stock)
 ], TransactionDetail.prototype, "stock", void 0);

@@ -26,6 +26,7 @@ export const getAllTransactionService = async () => {
     const transactions = await Transaction.find( {
       relations: [
         'customer',
+        'cashier',
         'transactionDetails',
         'transactionDetails.stock',
         'transactionDetails.stock.product',
@@ -126,6 +127,7 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
           stockToko.amount = payload.amount - transactionDetail.amount
           stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
         }
+        
         if ( payload.amount < transactionDetail.amount ) {
           masterStock.stock_toko += transactionDetail.amount - payload.amount
           stockToko.amount = transactionDetail.amount - payload.amount

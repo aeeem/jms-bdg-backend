@@ -34,6 +34,7 @@ const getAllTransactionService = () => __awaiter(void 0, void 0, void 0, functio
         const transactions = yield transaction_1.Transaction.find({
             relations: [
                 'customer',
+                'cashier',
                 'transactionDetails',
                 'transactionDetails.stock',
                 'transactionDetails.stock.product',
@@ -47,7 +48,7 @@ const getAllTransactionService = () => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getAllTransactionService = getAllTransactionService;
-const createTransactionService = (payload, isPending = false) => __awaiter(void 0, void 0, void 0, function* () {
+const createTransactionService = (payload, isPending = false, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     const queryRunner = app_1.db.queryRunner();
     try {
@@ -79,7 +80,7 @@ const createTransactionService = (payload, isPending = false) => __awaiter(void 
             yield queryRunner.manager.save(stock_toko);
             return stock;
         })));
-        const transactionProcess = new transaction_helper_1.TransactionProcessor(payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending);
+        const transactionProcess = new transaction_helper_1.TransactionProcessor(payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user);
         yield queryRunner.manager.save(stockSync);
         yield transactionProcess.start();
         yield queryRunner.commitTransaction();

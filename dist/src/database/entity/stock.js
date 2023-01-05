@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stock = void 0;
 const typeorm_1 = require("typeorm");
 const product_1 = require("./product");
+const transactionDetail_1 = require("./transactionDetail");
 let Stock = class Stock extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -47,6 +48,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Stock.prototype, "productId", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => transactionDetail_1.TransactionDetail, transactionDetail => transactionDetail.stock),
+    __metadata("design:type", Array)
+], Stock.prototype, "transactionDetails", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

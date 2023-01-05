@@ -887,6 +887,7 @@ function RegisterRoutes(app) {
     app.post('/api/transaction/create', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_createTransaction(request, response, next) {
         const args = {
             payload: { "in": "body", "name": "payload", "required": true, "ref": "TransactionRequestParameter" },
+            request: { "in": "request", "name": "request", "required": true, "dataType": "object" },
         };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];

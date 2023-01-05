@@ -62,10 +62,11 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
             }
         });
     }
-    createTransaction(payload) {
+    createTransaction(payload, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const createdTransaction = yield (0, transaction_service_1.createTransactionService)(payload);
+                const user = request.loggedInUser;
+                const createdTransaction = yield (0, transaction_service_1.createTransactionService)(payload, false, user);
                 return response_1.default.success({ data: createdTransaction });
             }
             catch (error) {
@@ -167,8 +168,9 @@ __decorate([
     (0, tsoa_1.Post)('/create'),
     (0, tsoa_1.Security)('api_key', ['create:transaction']),
     __param(0, (0, tsoa_1.Body)()),
+    __param(1, (0, tsoa_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "createTransaction", null);
 __decorate([

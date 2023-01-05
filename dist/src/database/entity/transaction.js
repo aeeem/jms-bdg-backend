@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const customer_1 = require("./customer");
 const customerMonetary_1 = require("./customerMonetary");
 const transactionDetail_1 = require("./transactionDetail");
+const user_1 = require("./user");
 let Transaction = class Transaction extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -54,9 +55,7 @@ __decorate([
     __metadata("design:type", customer_1.Customer)
 ], Transaction.prototype, "customer", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => transactionDetail_1.TransactionDetail, (transactionDetail) => transactionDetail.transaction, {
-        cascade: true, onDelete: 'CASCADE', eager: true
-    }),
+    (0, typeorm_1.OneToMany)(() => transactionDetail_1.TransactionDetail, (transactionDetail) => transactionDetail.transaction, { cascade: true, onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Array)
 ], Transaction.prototype, "transactionDetails", void 0);
@@ -83,6 +82,10 @@ __decorate([
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Array)
 ], Transaction.prototype, "customerMonetary", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_1.User, user => user.transactions, { nullable: true }),
+    __metadata("design:type", user_1.User)
+], Transaction.prototype, "cashier", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

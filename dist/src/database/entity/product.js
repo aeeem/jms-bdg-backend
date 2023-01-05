@@ -36,7 +36,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Product.prototype, "stocks", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => vendor_1.Vendor, vendor => vendor.id, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => vendor_1.Vendor, vendor => vendor.products, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'vendorId' }),
     __metadata("design:type", vendor_1.Vendor)
 ], Product.prototype, "vendor", void 0);

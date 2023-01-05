@@ -35,6 +35,7 @@ function expressAuthentication(request, securityName, scopes) {
                 if (user == null) {
                     throw errorTypes_1.E_ERROR.USER_NOT_FOUND;
                 }
+                request.loggedInUser = user;
                 const userScopes = user.role.scopes;
                 const userScopeKeys = Object.keys(userScopes)
                     .filter(key => ![

@@ -57,6 +57,11 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
         name          : transaction.customer?.name,
         contact_number: transaction.customer?.contact_number
       },
+      cashier: {
+        id     : transaction.cashier?.id,
+        name   : transaction.cashier?.name,
+        noInduk: transaction.cashier?.noInduk
+      },
       items: transaction.transactionDetails.map( detail => {
         return {
           id     : detail.id,
