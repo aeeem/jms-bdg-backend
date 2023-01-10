@@ -1084,6 +1084,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function TransactionController_getAllTransaction(request: any, response: any, next: any) {
             const args = {
+                    sort: {"in":"query","name":"sort","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

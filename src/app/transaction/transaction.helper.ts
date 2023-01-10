@@ -57,7 +57,10 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
         name          : transaction.customer?.name,
         contact_number: transaction.customer?.contact_number
       },
-      cashier: {
+      packaging_cost   : transaction.packaging_cost,
+      description      : transaction.description,
+      optional_discount: transaction.optional_discount,
+      cashier          : {
         id     : transaction.cashier?.id,
         name   : transaction.cashier?.name,
         noInduk: transaction.cashier?.noInduk

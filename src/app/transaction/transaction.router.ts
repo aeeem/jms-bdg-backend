@@ -9,15 +9,22 @@ import {
   createTransactionService, deletePendingTransactionItemService, deletePendingTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updatePendingTransactionService, updateTransactionService
 } from './transaction.service'
 import { RequestWithUser } from 'src/auth'
+
+// export interface I_FILTER_PARAM {
+//   sort?: {
+//     order: 'ASC' | 'DESC'
+//   }
+// }
+
 @Tags( 'Transaction' )
 @Route( '/api/transaction' )
 @Security( 'api_key' )
 export class TransactionController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:transaction'] )
-  public async getAllTransaction ( ) {
+  public async getAllTransaction ( @Query( 'sort' ) sort?: string ) {
     try {
-      const transactions = await getAllTransactionService()
+      const transactions = await getAllTransactionService( sort )
       return makeResponse.success( { data: transactions } )
     } catch ( error ) {
       return error

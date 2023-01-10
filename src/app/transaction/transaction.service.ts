@@ -21,9 +21,14 @@ import {
   DeleteTransactionItemRequestParameter, TransactionDetailRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
 
-export const getAllTransactionService = async () => {
+export type T_Sort = 'DESC' | 'ASC' | 1 | -1 | undefined
+
+export const getAllTransactionService = async ( sort: string = 'DESC' ) => {
   try {
+    const order = sort as T_Sort
     const transactions = await Transaction.find( {
+      order    : { updated_at: order },
+      where    : { status: E_TransactionStatus.FINISHED },
       relations: [
         'customer',
         'cashier',
@@ -87,8 +92,8 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     await queryRunner.commitTransaction()
 
     return {
-      ...transactionProcess.transaction,
-      customer: {
+      transaction: formatTransaction( [transactionProcess.transaction] ),
+      customer   : {
         ...transactionProcess.transaction.customer,
         deposit_balance: transactionProcess.transaction.customer ? ( await getCustomerDepositService( transactionProcess.transaction?.customer?.id ) ).total_deposit : 0,
         debt_balance   : transactionProcess.transaction.customer ? ( await getCustomerDebtService( transactionProcess.transaction?.customer?.id ) ).total_debt : 0
