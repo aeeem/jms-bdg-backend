@@ -309,6 +309,9 @@
 					"sub_total": {
 						"type": "number",
 						"format": "double"
+					},
+					"box": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -443,7 +446,6 @@
 								}
 							},
 							"required": [
-								"box",
 								"id"
 							],
 							"type": "object"

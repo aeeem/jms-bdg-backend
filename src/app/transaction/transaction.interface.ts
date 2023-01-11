@@ -9,6 +9,7 @@ export interface TransactionDetailRequestParameter{
   amount: number
   stock_id: number
   sub_total: number
+  box?: boolean
 }
 
 export interface TransactionRequestParameter {
@@ -36,7 +37,7 @@ export interface TransactionUpdateRequestParameter {
     amount?: number
     productId?: number
     sub_total?: number
-    box: boolean
+    box?: boolean
   }>
 }
 

@@ -12,6 +12,7 @@ import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Errors } from 'src/errorHandler'
+import { stockDeductor } from 'src/helper/stockHelper'
 import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
 import {
@@ -68,19 +69,11 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     } ) )
 
     const stockSync = await Promise.all( payload.detail.map( async detail => {
-      const stock = await Stock.findOneOrFail( detail.stock_id )
-      if ( stock.stock_toko - detail.amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
-      stock.stock_toko -= detail.amount
-      
-      // Add deduction record into stock_toko
-      const stock_toko = new StockToko()
-      stock_toko.amount = detail.amount
-      stock_toko.code = E_TOKO_CODE_KEY.TOK_SUB_TRANSAKSI
-      stock_toko.stock_id = detail.stock_id
+      const stockHelper = await stockDeductor( detail.stock_id, detail.amount, detail.box )
 
-      await queryRunner.manager.save( stock_toko )
+      await queryRunner.manager.save( stockHelper.entity )
 
-      return stock
+      return stockHelper.stock
     } ) )
 
     const transactionProcess = new TransactionProcessor(
@@ -101,7 +94,6 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       }
     }
   } catch ( error: any ) {
-    console.log( error )
     await queryRunner.rollbackTransaction()
     return await Promise.reject( new Errors( error ) )
   } finally {
