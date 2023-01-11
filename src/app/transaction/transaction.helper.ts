@@ -20,7 +20,7 @@ export const restoreStocks = async ( items: TransactionDetail[] ) => {
     await queryRunner.startTransaction()
 
     for ( const item of items ) {
-      const stockItem = await Stock.findOneOrFail( item.stock_id )
+      const stockItem = await Stock.findOneOrFail( item.stock_id, { relations: ['product'] } )
       stockItem.stock_toko += item.amount
       
       const stockToko = new StockToko()
@@ -70,19 +70,18 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           id     : detail.id,
           amount : detail.amount,
           product: {
-            id      : detail.stock.product.id,
-            name    : detail.stock.product.name,
-            vendorId: detail.stock.product.vendorId,
-            sku     : detail.stock.product.sku,
-            stock   : {
-              id         : detail.stock.id,
-              total_stock: detail.stock.stock_gudang,
-              sell_price : detail.stock.sell_price,
-              buy_price  : detail.stock.buy_price
-            }
+            id          : detail.stock.product.id,
+            stockId     : detail.stock.id,
+            name        : detail.stock.product.name,
+            vendorId    : detail.stock.product.vendorId,
+            vendorName  : detail.stock.product.vendor.name,
+            sku         : detail.stock.product.sku,
+            stock_toko  : detail.stock.stock_toko,
+            stock_gudang: detail.stock.stock_gudang,
+            sell_price  : detail.stock.sell_price,
+            buy_price   : detail.stock.buy_price
           },
           sub_total: detail.sub_total
-
         }
       } ),
       status    : transaction.status,

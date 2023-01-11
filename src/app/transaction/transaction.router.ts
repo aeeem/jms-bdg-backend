@@ -42,17 +42,6 @@ export class TransactionController extends Controller {
     }
   }
 
-  @Get( '/{id}' )
-  @Security( 'api_key', ['read:transaction'] )
-  public async getTransactionById ( @Path( 'id' ) id: string ) {
-    try {
-      const transaction = await getTransactionByIdService( id )
-      return makeResponse.success( { data: transaction } )
-    } catch ( error ) {
-      return error
-    }
-  }
-  
   @Post( '/create' )
   @Security( 'api_key', ['create:transaction'] )
   public async createTransaction ( @Body() payload: TransactionRequestParameter, @Request() request: RequestWithUser ) {
@@ -65,6 +54,17 @@ export class TransactionController extends Controller {
     }
   }
 
+  @Get( '/{id}' )
+  @Security( 'api_key', ['read:transaction'] )
+  public async getTransactionById ( @Path( 'id' ) id: string ) {
+    try {
+      const transaction = await getTransactionByIdService( id )
+      return makeResponse.success( { data: transaction } )
+    } catch ( error ) {
+      return error
+    }
+  }
+  
   @Post( '/pending' )
   @Security( 'api_key', ['create:transaction'] )
   public async createPendingTransaction ( @Body() payload: TransactionRequestParameter ) {
@@ -108,7 +108,7 @@ export class TransactionController extends Controller {
       return error
     }
   }
-  
+
   @Put( '/{id}/' )
   @Security( 'api_key', ['update:transaction'] )
   public async updateTransaction ( @Path( 'id' ) id: string, @Body() payload: TransactionUpdateRequestParameter ) {
@@ -129,12 +129,4 @@ export class TransactionController extends Controller {
       return error
     }
   }
-}
-
-@Tags( 'PendingTransaction' )
-@Route( '/api/pending-transaction' )
-@Security( 'api_key' )
-
-export class PendingTransactionController extends Controller {
-
 }

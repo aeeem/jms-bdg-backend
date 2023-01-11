@@ -422,6 +422,9 @@
 					"detail": {
 						"items": {
 							"properties": {
+								"box": {
+									"type": "boolean"
+								},
 								"sub_total": {
 									"type": "number",
 									"format": "double"
@@ -440,6 +443,7 @@
 								}
 							},
 							"required": [
+								"box",
 								"id"
 							],
 							"type": "object"
@@ -1774,6 +1778,42 @@
 				]
 			}
 		},
+		"/api/transaction/create": {
+			"post": {
+				"operationId": "CreateTransaction",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Transaction"
+				],
+				"security": [
+					{
+						"api_key": [
+							"create:transaction"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TransactionRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/api/transaction/{id}": {
 			"get": {
 				"operationId": "GetTransactionById",
@@ -1883,42 +1923,6 @@
 						}
 					}
 				]
-			}
-		},
-		"/api/transaction/create": {
-			"post": {
-				"operationId": "CreateTransaction",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Transaction"
-				],
-				"security": [
-					{
-						"api_key": [
-							"create:transaction"
-						]
-					}
-				],
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/TransactionRequestParameter"
-							}
-						}
-					}
-				}
 			}
 		},
 		"/api/transaction/pending": {

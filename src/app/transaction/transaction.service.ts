@@ -51,7 +51,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
     const customerDeposit = customer ? ( await getCustomerDepositService( customer.id ) ).total_deposit : 0
 
-    const stocks = await Stock.find( )
+    const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
 
     const expected_total_price = 0
 
@@ -63,7 +63,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       detail.amount = transactionDetail.amount
       detail.sub_total = transactionDetail.sub_total
       detail.stock_id = transactionDetail.stock_id
-
+      detail.stock = stock
       return detail
     } ) )
 
@@ -93,6 +93,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     return {
       transaction: formatTransaction( [transactionProcess.transaction] ),
+      deposit    : payload.deposit,
       customer   : {
         ...transactionProcess.transaction.customer,
         deposit_balance: transactionProcess.transaction.customer ? ( await getCustomerDepositService( transactionProcess.transaction?.customer?.id ) ).total_deposit : 0,
@@ -100,6 +101,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       }
     }
   } catch ( error: any ) {
+    console.log( error )
     await queryRunner.rollbackTransaction()
     return await Promise.reject( new Errors( error ) )
   } finally {

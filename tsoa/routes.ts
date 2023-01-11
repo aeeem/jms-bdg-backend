@@ -21,8 +21,6 @@ import { StockController } from './../src/app/stocks/stock.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { TransactionController } from './../src/app/transaction/transaction.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { PendingTransactionController } from './../src/app/transaction/transaction.router';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UserPermissionController } from './../src/app/user/user.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { VendorController } from './../src/app/vendor/vendor.router';
@@ -216,7 +214,7 @@ const models: TsoaRoute.Models = {
             "amount_paid": {"dataType":"double"},
             "deposit": {"dataType":"double"},
             "transaction_date": {"dataType":"datetime"},
-            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"sub_total":{"dataType":"double"},"productId":{"dataType":"double"},"amount":{"dataType":"double"},"id":{"dataType":"double","required":true}}},"required":true},
+            "detail": {"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"box":{"dataType":"boolean","required":true},"sub_total":{"dataType":"double"},"productId":{"dataType":"double"},"amount":{"dataType":"double"},"id":{"dataType":"double","required":true}}},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1128,30 +1126,6 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/transaction/:id',
-            authenticateMiddleware([{"api_key":["read:transaction"]}]),
-
-            function TransactionController_getTransactionById(request: any, response: any, next: any) {
-            const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new TransactionController();
-
-
-              const promise = controller.getTransactionById.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/transaction/create',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
 
@@ -1171,6 +1145,30 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.createTransaction.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/transaction/:id',
+            authenticateMiddleware([{"api_key":["read:transaction"]}]),
+
+            function TransactionController_getTransactionById(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new TransactionController();
+
+
+              const promise = controller.getTransactionById.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
