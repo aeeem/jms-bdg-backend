@@ -61,6 +61,9 @@ export class Transaction extends BaseEntity {
   @ManyToOne( () => User, user => user.transactions, { nullable: true } )
     cashier?: User
 
+  @Column( { nullable: true } )
+    deposit?: number
+
   @CreateDateColumn()
     created_at: Date
 

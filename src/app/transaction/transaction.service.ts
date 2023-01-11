@@ -86,7 +86,6 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     return {
       transaction: formatTransaction( [transactionProcess.transaction] ),
-      deposit    : payload.deposit,
       customer   : {
         ...transactionProcess.transaction.customer,
         deposit_balance: transactionProcess.transaction.customer ? ( await getCustomerDepositService( transactionProcess.transaction?.customer?.id ) ).total_deposit : 0,

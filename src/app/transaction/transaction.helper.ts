@@ -52,6 +52,7 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
       change              : transaction.change,
       outstanding_amount  : transaction.outstanding_amount,
       transaction_date    : transaction.transaction_date,
+      deposit             : transaction.deposit,
       customer            : {
         id            : transaction.customer?.id,
         name          : transaction.customer?.name,
@@ -226,7 +227,7 @@ export class TransactionProcessor {
       this.transaction.optional_discount = this.payload.optional_discount
       this.transaction.packaging_cost = this.payload.packaging_cost ?? 0
       this.transaction.cashier = this.user
-
+      this.transaction.deposit = this.payload.deposit
       await this.queryRunner.manager.save( this.transaction )
       return
     } catch ( error ) {
