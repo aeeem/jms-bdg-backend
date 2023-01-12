@@ -57,6 +57,7 @@ app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Re
  ***********************************************************************************/
 
 app.use( ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
+  console.log( 'HERE <><>', err )
   if ( err instanceof ValidateError ) {
     // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
     const error = new Errors( err )

@@ -14,6 +14,7 @@ export const E_ERROR = {
   PRODUCT_NOT_FOUND                       : { message: 'Product tidak ditemukan', status: HTTP_CODE.NO_CONTENT },
   STOCK_NOT_FOUND                         : { message: 'Stock Tidak ditemukan', status: HTTP_CODE.NOT_FOUND },
   INSUFFICIENT_STOCK                      : { message: 'Stock Toko tidak cukup', status: HTTP_CODE.NOT_FOUND },
+  INSUFFICIENT_STOCK_GDG                  : { message: 'Stock Gudang tidak cukup', status: HTTP_CODE.NOT_FOUND },
   CUSTOMER_NOT_FOUND                      : { message: 'Pelanggan Tidak ditemukan', status: HTTP_CODE.NO_CONTENT },
   DATABASE_ERROR                          : { message: 'E_DATABASE_ERROR', status: HTTP_CODE.INTERNAL_SERVER_ERROR },
   UNKNOWN_ERROR                           : { message: 'E_UNKNOWN_ERROR', status: HTTP_CODE.INTERNAL_SERVER_ERROR },

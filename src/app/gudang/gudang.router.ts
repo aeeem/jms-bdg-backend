@@ -17,7 +17,7 @@ export class GudangController extends Controller {
       const stocks = await getStockGudangService()
       return makeResponse.success( { data: stocks } )
     } catch ( error ) {
-      return error
+      return await Promise.reject( error )
     }
   }
   
@@ -27,8 +27,8 @@ export class GudangController extends Controller {
     try {
       const stocks = await pindahStockGudangService( payload )
       return makeResponse.success( { data: stocks } )
-    } catch ( error ) {
-      return error
+    } catch ( error: any ) {
+      return await Promise.reject( error )
     }
   }
 

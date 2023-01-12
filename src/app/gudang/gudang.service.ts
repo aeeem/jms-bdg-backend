@@ -5,7 +5,6 @@ import { StockToko } from '@entity/stockToko'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
-import { CalculateTotalStock } from 'src/helper/stockHelper'
 import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { PindahStockGudangRequestParameter, TambahStockGudangRequestParameter } from './gudang.interface'
 
@@ -54,13 +53,14 @@ export const pindahStockGudangService = async ( payload: PindahStockGudangReques
     // } ) )
 
     const updateStockValue = await Promise.all( payload.map( async item => {
-      const stockGudang = [...await StockGudang.find( { where: { stock_id: item.stock_id } } ), ...stocks_gudang]
-      const stockToko = [...await StockToko.find( { where: { stock_id: item.stock_id } } ), ...stocks_toko]
       const stockData = await Stock.findOneOrFail( item.stock_id )
-      stockData.stock_gudang = CalculateTotalStock( stockGudang )
-      stockData.stock_toko = CalculateTotalStock( stockToko )
+      stockData.stock_gudang -= item.amount
+      stockData.stock_toko += item.amount * stockData.weight
       return stockData
     } ) )
+
+    const hasMinusStock = updateStockValue.some( stock => stock.stock_gudang < 0 )
+    if ( hasMinusStock ) throw E_ERROR.INSUFFICIENT_STOCK_GDG
 
     await queryRunner.manager.save( stocks_gudang )
     await queryRunner.manager.save( stocks_toko )
@@ -70,7 +70,7 @@ export const pindahStockGudangService = async ( payload: PindahStockGudangReques
     return stocks_gudang
   } catch ( error: any ) {
     await queryRunner.rollbackTransaction()
-    return await Promise.reject( new Errors( error ) )
+    await Promise.reject( new Errors( error ) )
   } finally {
     await queryRunner.release()
   }
