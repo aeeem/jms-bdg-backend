@@ -65,6 +65,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       detail.sub_total = transactionDetail.sub_total
       detail.stock_id = transactionDetail.stock_id
       detail.stock = stock
+      detail.is_box = transactionDetail.box
       return detail
     } ) )
 

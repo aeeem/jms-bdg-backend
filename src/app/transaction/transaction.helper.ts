@@ -80,7 +80,8 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
             stock_toko  : detail.stock.stock_toko,
             stock_gudang: detail.stock.stock_gudang,
             sell_price  : detail.stock.sell_price,
-            buy_price   : detail.stock.buy_price
+            buy_price   : detail.stock.buy_price,
+            box         : detail.is_box
           },
           sub_total: detail.sub_total
         }

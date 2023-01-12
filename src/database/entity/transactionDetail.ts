@@ -26,6 +26,9 @@ export class TransactionDetail extends BaseEntity {
   @Column()
     stock_id: number
 
+  @Column( { nullable: true, default: false } )
+    is_box?: boolean
+
   @Column( { nullable: true } )
     transaction_id?: number
 
