@@ -139,13 +139,13 @@ export class TransactionProcessor {
 
   public async start (): Promise<void> {
     try {
-      await this.processTransaction()
       if ( this.payload.use_deposit && this.customer && !this.isPending ) {
         if ( !this.total_deposit ) throw E_ERROR.CUSTOMER_NO_DEPOSIT
-        return await this.payWithDeposit()
+        await this.payWithDeposit()
       } else if ( !this.isPending ) {
-        return await this.payWithCash()
+        await this.payWithCash()
       }
+      return await this.processTransaction()
     } catch ( error ) {
       return await Promise.reject( error )
     }
@@ -154,8 +154,9 @@ export class TransactionProcessor {
   payWithCash = async (): Promise<void> => {
     try {
       // process transaction
-      const hasChange = this.payload.amount_paid >= this.payload.actual_total_price
+      const hasChange = this.payload.amount_paid > this.payload.actual_total_price
       this.change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0
+      
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
       if ( hasChange && this.payload.deposit ) {
         return await this.makeDeposit( this.change )
