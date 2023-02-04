@@ -86,9 +86,10 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           sub_total: detail.sub_total
         }
       } ),
-      status    : transaction.status,
-      created_at: transaction.created_at,
-      updated_at: transaction.updated_at
+      status     : transaction.status,
+      is_transfer: transaction.is_transfer,
+      created_at : transaction.created_at,
+      updated_at : transaction.updated_at
     }
   } )
 }
@@ -230,6 +231,7 @@ export class TransactionProcessor {
       this.transaction.packaging_cost = this.payload.packaging_cost ?? 0
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
+      this.transaction.is_transfer = this.payload.is_transfer
       await this.queryRunner.manager.save( this.transaction )
       return
     } catch ( error ) {

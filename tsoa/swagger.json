@@ -367,6 +367,9 @@
 					"packaging_cost": {
 						"type": "number",
 						"format": "double"
+					},
+					"is_transfer": {
+						"type": "boolean"
 					}
 				},
 				"required": [

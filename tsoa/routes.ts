@@ -193,6 +193,7 @@ const models: TsoaRoute.Models = {
             "description": {"dataType":"string"},
             "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
             "packaging_cost": {"dataType":"double"},
+            "is_transfer": {"dataType":"boolean"},
         },
         "additionalProperties": false,
     },

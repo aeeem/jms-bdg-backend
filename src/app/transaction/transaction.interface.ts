@@ -24,6 +24,7 @@ export interface TransactionRequestParameter {
   description?: string
   detail: TransactionDetailRequestParameter[]
   packaging_cost?: number
+  is_transfer?: boolean
 }
 export interface TransactionUpdateRequestParameter {
   expected_total_price?: number
