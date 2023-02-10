@@ -157,11 +157,11 @@ export class TransactionProcessor {
     try {
       // process transaction
       const hasChange = this.payload.amount_paid > this.payload.actual_total_price
-      this.change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0
+      const change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0
       
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
       if ( hasChange && this.payload.deposit ) {
-        return await this.makeDeposit( this.change )
+        return await this.makeDeposit( change )
       }
       // [8] customer bayar dengan cash namun dana tidak cukup
       if ( this.payload.amount_paid <= this.payload.actual_total_price ) {
@@ -169,6 +169,7 @@ export class TransactionProcessor {
           this.payload.actual_total_price - this.payload.amount_paid
         )
       }
+      this.change = change
     } catch ( error ) {
       return await Promise.reject( error )
     }
