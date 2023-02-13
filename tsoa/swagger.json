@@ -1461,6 +1461,30 @@
 				}
 			}
 		},
+		"/api/report/daily": {
+			"get": {
+				"operationId": "GetDailyReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Report"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/api/roles": {
 			"get": {
 				"operationId": "GetAllRoles",
