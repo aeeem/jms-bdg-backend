@@ -1482,7 +1482,16 @@
 						"api_key": []
 					}
 				],
-				"parameters": []
+				"parameters": [
+					{
+						"in": "query",
+						"name": "date_param",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/api/roles": {

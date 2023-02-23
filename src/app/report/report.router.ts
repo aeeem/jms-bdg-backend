@@ -1,6 +1,8 @@
+import dayjs from 'dayjs'
+import { DateFormat } from 'src/constants/date'
 import makeResponse from 'src/helper/response'
 import {
-  Controller, Get, Route, Security, Tags
+  Controller, Get, Query, Route, Security, Tags
 } from 'tsoa'
 import { getDailyReportService } from './report.service'
 
@@ -9,10 +11,11 @@ import { getDailyReportService } from './report.service'
 export class ReportController extends Controller {
   @Security( 'api_key' )
   @Get( '/daily' )
-  public async getDailyReport () {
+  public async getDailyReport ( @Query() date_param?: string ) {
     try {
-      await getDailyReportService()
-      return makeResponse.success( { data: 'asd' } )
+      const date = date_param ? dayjs( date_param, DateFormat ) : dayjs()
+      const data = await getDailyReportService( date )
+      return makeResponse.success( { data } )
     } catch ( error ) {
       return error
     }
