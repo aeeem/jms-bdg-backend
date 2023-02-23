@@ -57,6 +57,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateExpenseRequestBody": {
+        "dataType": "refObject",
+        "properties": {
+            "note": {"dataType":"string","required":true},
+            "amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "AddDepositRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -294,14 +303,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/api/cash-flow',
+        app.post('/api/cash-flow',
             authenticateMiddleware([{"api_key":[]}]),
 
-            function CashFlowController_getCashFlow(request: any, response: any, next: any) {
+            function CashFlowController_createExpense(request: any, response: any, next: any) {
             const args = {
-                    year: {"in":"query","name":"year","required":true,"dataType":"double"},
-                    month: {"in":"query","name":"month","dataType":"double"},
-                    week: {"in":"query","name":"week","dataType":"double"},
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateExpenseRequestBody"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -313,7 +320,7 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new CashFlowController();
 
 
-              const promise = controller.getCashFlow.apply(controller, validatedArgs as any);
+              const promise = controller.createExpense.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);
@@ -938,6 +945,32 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.getDailyReport.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/report/cash-flow',
+            authenticateMiddleware([{"api_key":[]}]),
+
+            function ReportController_getCashFlow(request: any, response: any, next: any) {
+            const args = {
+                    year: {"in":"query","name":"year","required":true,"dataType":"double"},
+                    month: {"in":"query","name":"month","dataType":"double"},
+                    week: {"in":"query","name":"week","dataType":"double"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ReportController();
+
+
+              const promise = controller.getCashFlow.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

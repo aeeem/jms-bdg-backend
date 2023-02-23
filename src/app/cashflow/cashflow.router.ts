@@ -1,21 +1,19 @@
 import makeResponse from 'src/helper/response'
 import {
-  Controller, Get, Query, Route, Security, Tags
+  Body,
+  Controller, Post, Route, Security, Tags
 } from 'tsoa'
-import { getCashFlowService } from './cashflow.service'
+import { CreateExpenseRequestBody } from './cashflow.interfaces'
+import { createExpenseService } from './cashflow.service'
 
 @Tags( 'Cashflow' )
 @Route( '/api/cash-flow' )
 export class CashFlowController extends Controller {
   @Security( 'api_key' )
-  @Get( '/' )
-  public async getCashFlow (
-  @Query() year: number,
-    @Query() month?: number,
-    @Query() week?: number
-  ) {
+  @Post( '/' )
+  public async createExpense ( @Body() body: CreateExpenseRequestBody ) {
     try {
-      const data = await getCashFlowService( year, month, week )
+      const data = await createExpenseService( body )
       return makeResponse.success( { data } )
     } catch ( error ) {
       return error

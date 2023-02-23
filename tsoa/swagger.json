@@ -42,6 +42,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"CreateExpenseRequestBody": {
+				"properties": {
+					"note": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"note",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"AddDepositRequestParameter": {
 				"properties": {
 					"customer_id": {
@@ -571,8 +588,8 @@
 			}
 		},
 		"/api/cash-flow": {
-			"get": {
-				"operationId": "GetCashFlow",
+			"post": {
+				"operationId": "CreateExpense",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -591,35 +608,17 @@
 						"api_key": []
 					}
 				],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "year",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "month",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "week",
-						"required": false,
-						"schema": {
-							"format": "double",
-							"type": "number"
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateExpenseRequestBody"
+							}
 						}
 					}
-				]
+				}
 			}
 		},
 		"/api/customer": {
@@ -1541,6 +1540,58 @@
 						"required": false,
 						"schema": {
 							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/report/cash-flow": {
+			"get": {
+				"operationId": "GetCashFlow",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Report"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "year",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "month",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "week",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
