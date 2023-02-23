@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import { Customer } from './customer'
 import { CustomerMonetary } from './customerMonetary'
@@ -8,8 +8,16 @@ import { User } from './user'
 
 @Entity( { name: 'transaction' } )
 export class Transaction extends BaseEntity {
+  @BeforeInsert()
+  generateTransactionId () {
+    // console.log( this )
+  }
+
   @PrimaryGeneratedColumn()
     id: number
+
+  @Column( { nullable: true } )
+    transaction_id: string
 
   @Column()
     expected_total_price: number

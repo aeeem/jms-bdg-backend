@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import doSeeding from './seeds'
 import { StockGudangSubscriber } from './subscriber/stockGudang'
 import { StockTokoSubscriber } from './subscriber/stockToko'
+import { TransactionsSubscriber } from './subscriber/transactions'
 
 dotenv.config( {} )
 export default class Database {
@@ -21,7 +22,11 @@ export default class Database {
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       logging    : false,
       synchronize: true,
-      subscribers: [StockGudangSubscriber, StockTokoSubscriber]
+      subscribers: [
+        StockGudangSubscriber,
+        StockTokoSubscriber,
+        TransactionsSubscriber
+      ]
     } ).then( _con => {
       this.connection = _con
       console.log( 'Connected to db!!' )
@@ -41,7 +46,11 @@ export default class Database {
       dropSchema : true,
       synchronize: true,
       logging    : false,
-      subscribers: [StockGudangSubscriber, StockTokoSubscriber]
+      subscribers: [
+        StockGudangSubscriber,
+        StockTokoSubscriber,
+        TransactionsSubscriber
+      ]
 
     } ).then( async _con => {
       this.connection = _con
