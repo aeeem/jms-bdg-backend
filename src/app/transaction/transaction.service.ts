@@ -1,3 +1,4 @@
+import { CashFlow } from '@entity/cashFlow'
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
 import { Stock } from '@entity/stock'
@@ -9,6 +10,7 @@ import _ from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
+import { E_CashFlowCode, E_CashFlowType } from 'src/database/enum/cashFlow'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Errors } from 'src/errorHandler'
@@ -80,9 +82,17 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     const transactionProcess = new TransactionProcessor(
       payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user
     )
-
+ 
     await queryRunner.manager.save( stockSync )
     await transactionProcess.start()
+
+    const cashFlow = new CashFlow()
+    cashFlow.amount = payload.amount_paid
+    cashFlow.code = E_CashFlowCode.IN_TRANSACTION
+    cashFlow.transaction_id = transactionProcess.transaction.id
+    cashFlow.type = E_CashFlowType.CashIn
+
+    await queryRunner.manager.save( cashFlow )
     await queryRunner.commitTransaction()
 
     return {

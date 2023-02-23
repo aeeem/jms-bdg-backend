@@ -4,7 +4,6 @@ import { padLeft } from 'src/helper/number'
 import {
   EntitySubscriberInterface, EventSubscriber, InsertEvent, TransactionCommitEvent
 } from 'typeorm'
-import { E_TransactionStatus } from '../enum/transaction'
 
 @EventSubscriber()
 export class TransactionsSubscriber implements EntitySubscriberInterface<Transaction> {

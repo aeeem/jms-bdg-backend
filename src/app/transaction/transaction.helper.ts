@@ -234,6 +234,7 @@ export class TransactionProcessor {
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
       this.transaction.is_transfer = this.payload.is_transfer
+
       await this.queryRunner.manager.save( this.transaction )
       return
     } catch ( error ) {
