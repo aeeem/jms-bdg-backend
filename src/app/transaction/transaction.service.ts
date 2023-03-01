@@ -87,7 +87,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     await transactionProcess.start()
 
     const cashFlow = new CashFlow()
-    cashFlow.amount = payload.amount_paid
+    cashFlow.amount = payload.actual_total_price
     cashFlow.code = E_CashFlowCode.IN_TRANSACTION
     cashFlow.transaction_id = transactionProcess.transaction.id
     cashFlow.type = E_CashFlowType.CashIn

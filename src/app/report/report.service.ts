@@ -9,7 +9,10 @@ export const getDailyReportService = async ( date: Dayjs ) => {
   const todayTransaction = transactions.filter( transaction => dayjs( transaction?.transaction_date ).format( DateFormat ) === date.format( DateFormat ) )
   const yesterdayTransaction = transactions.filter( transactions => dayjs( transactions?.transaction_date ).format( DateFormat ) === date.subtract( 1, 'day' ).format( DateFormat ) )
   return {
-    sumYesterday: sumOf( yesterdayTransaction ),
+    sumYesterday: {
+      transfer: sumOf( yesterdayTransaction.filter( transaction => transaction.is_transfer ) ),
+      cash    : sumOf( yesterdayTransaction.filter( transaction => !transaction.is_transfer ) )
+    },
     todayTransaction
   }
 }
