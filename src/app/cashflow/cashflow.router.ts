@@ -3,17 +3,28 @@ import {
   Body,
   Controller, Post, Route, Security, Tags
 } from 'tsoa'
-import { CreateExpenseRequestBody } from './cashflow.interfaces'
-import { createExpenseService } from './cashflow.service'
+import { CreateCashInRequestBody, CreateCashOutRequestBody } from './cashflow.interfaces'
+import { createCashInService, createCashOutService } from './cashflow.service'
 
 @Tags( 'Cashflow' )
 @Route( '/api/cash-flow' )
 export class CashFlowController extends Controller {
   @Security( 'api_key' )
-  @Post( '/' )
-  public async createExpense ( @Body() body: CreateExpenseRequestBody ) {
+  @Post( '/cash-out' )
+  public async createCashOut ( @Body() body: CreateCashOutRequestBody ) {
     try {
-      const data = await createExpenseService( body )
+      const data = await createCashOutService( body )
+      return makeResponse.success( { data } )
+    } catch ( error ) {
+      return error
+    }
+  }
+
+  @Security( 'api_key' )
+  @Post( '/cash-in' )
+  public async createCashIn ( @Body() body: CreateCashInRequestBody ) {
+    try {
+      const data = await createCashInService( body )
       return makeResponse.success( { data } )
     } catch ( error ) {
       return error

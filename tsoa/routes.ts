@@ -57,7 +57,17 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateExpenseRequestBody": {
+    "CreateCashOutRequestBody": {
+        "dataType": "refObject",
+        "properties": {
+            "note": {"dataType":"string","required":true},
+            "amount": {"dataType":"double","required":true},
+            "cash_type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["TRANSFER"]},{"dataType":"enum","enums":["CASH"]}],"required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateCashInRequestBody": {
         "dataType": "refObject",
         "properties": {
             "note": {"dataType":"string","required":true},
@@ -303,12 +313,12 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/api/cash-flow',
+        app.post('/api/cash-flow/cash-out',
             authenticateMiddleware([{"api_key":[]}]),
 
-            function CashFlowController_createExpense(request: any, response: any, next: any) {
+            function CashFlowController_createCashOut(request: any, response: any, next: any) {
             const args = {
-                    body: {"in":"body","name":"body","required":true,"ref":"CreateExpenseRequestBody"},
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashOutRequestBody"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -320,7 +330,31 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new CashFlowController();
 
 
-              const promise = controller.createExpense.apply(controller, validatedArgs as any);
+              const promise = controller.createCashOut.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/cash-flow/cash-in',
+            authenticateMiddleware([{"api_key":[]}]),
+
+            function CashFlowController_createCashIn(request: any, response: any, next: any) {
+            const args = {
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashInRequestBody"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new CashFlowController();
+
+
+              const promise = controller.createCashIn.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

@@ -1,7 +1,9 @@
 import {
   BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
-import { E_CashFlowCode, E_CashFlowType } from '../enum/cashFlow'
+import {
+  E_CashFlowCode, E_CashFlowType, E_CashType
+} from '../enum/cashFlow'
 import { Transaction } from './transaction'
 
 @Entity( 'CashFlow' )
@@ -20,6 +22,9 @@ export class CashFlow extends BaseEntity {
     enum: E_CashFlowType
   } )
     type: E_CashFlowType
+
+  @Column( { default: E_CashType.CASH } )
+    cash_type: string
 
   @OneToOne( () => Transaction, { nullable: true } )
   @JoinColumn( { name: 'transaction_id' } )

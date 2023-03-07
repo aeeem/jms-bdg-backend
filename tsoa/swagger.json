@@ -42,7 +42,32 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateExpenseRequestBody": {
+			"CreateCashOutRequestBody": {
+				"properties": {
+					"note": {
+						"type": "string"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"cash_type": {
+						"type": "string",
+						"enum": [
+							"TRANSFER",
+							"CASH"
+						]
+					}
+				},
+				"required": [
+					"note",
+					"amount",
+					"cash_type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateCashInRequestBody": {
 				"properties": {
 					"note": {
 						"type": "string"
@@ -587,9 +612,9 @@
 				}
 			}
 		},
-		"/api/cash-flow": {
+		"/api/cash-flow/cash-out": {
 			"post": {
-				"operationId": "CreateExpense",
+				"operationId": "CreateCashOut",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -614,7 +639,41 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateExpenseRequestBody"
+								"$ref": "#/components/schemas/CreateCashOutRequestBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/cash-flow/cash-in": {
+			"post": {
+				"operationId": "CreateCashIn",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Cashflow"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateCashInRequestBody"
 							}
 						}
 					}

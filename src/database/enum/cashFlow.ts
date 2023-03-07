@@ -5,5 +5,11 @@ export enum E_CashFlowType {
 
 export enum E_CashFlowCode {
   IN_TRANSACTION = 'in-transaction',
-  OUT_MISC = 'out-misc'
+  OUT_MISC = 'out-misc',
+  IN_ADJUSTMENT = 'in-adjustment'
+}
+
+export enum E_CashType {
+  TRANSFER = 'transfer',
+  CASH = 'cash'
 }
