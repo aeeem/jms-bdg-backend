@@ -9,11 +9,8 @@ import { Raw } from 'typeorm'
 import { sumOf } from './report.helper'
 
 interface DailyReportResponse {
-  total: {
-    transfer: number
-    cash: number
-  }
-  items: CashFlowResponseItem[]
+  yesterdayTransaction: CashFlowResponseItem
+  todayTransactions: CashFlowResponseItem[]
 }
 interface CashFlowResponseItem {
   id: number
@@ -23,7 +20,7 @@ interface CashFlowResponseItem {
   sub_total_transfer: number
 }
 
-export const getDailyReportService = async ( date: Dayjs ) => {
+export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportResponse> => {
   const transactions = await Transaction.find( { where: { status: E_TransactionStatus.FINISHED }, relations: ['customer'] } )
   const cashFlow = await CashFlow.createQueryBuilder( )
     .where( 'Date(CashFlow.created_at) = current_date' )
@@ -69,6 +66,6 @@ export const getDailyReportService = async ( date: Dayjs ) => {
   
   return {
     yesterdayTransaction: yesterdayTransactionFormatted,
-    todayTransaction    : [...cashFlowFormatted, ...transactionFormatted]
+    todayTransactions   : [...cashFlowFormatted, ...transactionFormatted]
   }
 }
