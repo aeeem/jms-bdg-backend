@@ -1,24 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { CashFlow } from '@entity/cashFlow'
 import { Transaction } from '@entity/transaction'
+import { Vendor } from '@entity/vendor'
 import dayjs, { Dayjs } from 'dayjs'
 import { DateFormat } from 'src/constants/date'
 import { E_CashFlowCode, E_CashType } from 'src/database/enum/cashFlow'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Raw } from 'typeorm'
-import { sumOf } from './report.helper'
-
-interface DailyReportResponse {
-  yesterdayTransaction: CashFlowResponseItem
-  todayTransactions: CashFlowResponseItem[]
-}
-interface CashFlowResponseItem {
-  id: number
-  note: string
-  type: string
-  sub_total_cash: number
-  sub_total_transfer: number
-}
+import { reportFormatter, sumOf } from './report.helper'
+import { CashFlowResponseItem, DailyReportResponse } from './report.interface'
 
 export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportResponse> => {
   const transactions = await Transaction.find( { where: { status: E_TransactionStatus.FINISHED }, relations: ['customer'] } )
@@ -35,6 +25,7 @@ export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportR
       note              : cf.note,
       type              : cf.cash_type,
       sub_total_cash    : cf.cash_type === 'cash' ? cf.amount : 0,
+      flow_type         : cf.type,
       sub_total_transfer: cf.cash_type === 'transfer' ? cf.amount : 0
     }
   } )
@@ -43,6 +34,7 @@ export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportR
       id                : transaction.id,
       note              : transaction.customer?.name ?? '',
       type              : transaction.is_transfer ? E_CashType.TRANSFER : E_CashType.TRANSFER,
+      flow_type         : 'cash-in',
       sub_total_cash    : !transaction.is_transfer ? transaction.actual_total_price : 0,
       sub_total_transfer: transaction.is_transfer ? transaction.actual_total_price : 0
     }
@@ -68,4 +60,21 @@ export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportR
     yesterdayTransaction: yesterdayTransactionFormatted,
     todayTransactions   : [...cashFlowFormatted, ...transactionFormatted]
   }
+}
+
+export const getCashReportService = async () => {
+  const transactions = await Transaction.find( { relations: ['customer'] } )
+  const cashFlows = await CashFlow.find()
+
+  return reportFormatter( cashFlows, transactions )
+}
+
+export const getVendorReportService = async ( month: number ) => {
+  const vendor = await Vendor.find( {
+    relations: [
+      'products',
+      'products.stocks',
+      'products.stocks.transactionDetails'
+    ]
+  } )
 }

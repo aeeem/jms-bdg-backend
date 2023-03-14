@@ -17,7 +17,6 @@ const stockToko_1 = require("@entity/stockToko");
 const app_1 = require("src/app");
 const errorTypes_1 = require("src/constants/errorTypes");
 const errorHandler_1 = require("src/errorHandler");
-const stockHelper_1 = require("src/helper/stockHelper");
 const StocksCode_1 = require("src/interface/StocksCode");
 const getStockGudangService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -62,13 +61,14 @@ const pindahStockGudangService = (payload) => __awaiter(void 0, void 0, void 0, 
         //   return stockData
         // } ) )
         const updateStockValue = yield Promise.all(payload.map((item) => __awaiter(void 0, void 0, void 0, function* () {
-            const stockGudang = [...yield stockGudang_1.StockGudang.find({ where: { stock_id: item.stock_id } }), ...stocks_gudang];
-            const stockToko = [...yield stockToko_1.StockToko.find({ where: { stock_id: item.stock_id } }), ...stocks_toko];
             const stockData = yield stock_1.Stock.findOneOrFail(item.stock_id);
-            stockData.stock_gudang = (0, stockHelper_1.CalculateTotalStock)(stockGudang);
-            stockData.stock_toko = (0, stockHelper_1.CalculateTotalStock)(stockToko);
+            stockData.stock_gudang -= item.amount;
+            stockData.stock_toko += item.amount * stockData.weight;
             return stockData;
         })));
+        const hasMinusStock = updateStockValue.some(stock => stock.stock_gudang < 0);
+        if (hasMinusStock)
+            throw errorTypes_1.E_ERROR.INSUFFICIENT_STOCK_GDG;
         yield queryRunner.manager.save(stocks_gudang);
         yield queryRunner.manager.save(stocks_toko);
         yield queryRunner.manager.save(updateStockValue);
@@ -77,7 +77,7 @@ const pindahStockGudangService = (payload) => __awaiter(void 0, void 0, void 0, 
     }
     catch (error) {
         yield queryRunner.rollbackTransaction();
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        yield Promise.reject(new errorHandler_1.Errors(error));
     }
     finally {
         yield queryRunner.release();

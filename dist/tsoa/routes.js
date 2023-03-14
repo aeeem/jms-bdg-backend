@@ -17,6 +17,8 @@ const runtime_1 = require("@tsoa/runtime");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const auth_router_1 = require("./../src/app/auth/auth.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+const cashflow_router_1 = require("./../src/app/cashflow/cashflow.router");
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const customer_router_1 = require("./../src/app/customer/customer.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const employee_router_1 = require("./../src/app/employee/employee.router");
@@ -24,6 +26,8 @@ const employee_router_1 = require("./../src/app/employee/employee.router");
 const gudang_router_1 = require("./../src/app/gudang/gudang.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const product_router_1 = require("./../src/app/product/product.router");
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+const report_router_1 = require("./../src/app/report/report.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 const role_router_1 = require("./../src/app/role/role.router");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -58,6 +62,25 @@ const models = {
             "noInduk": { "dataType": "string", "required": true },
             "password": { "dataType": "string", "required": true },
             "name": { "dataType": "string", "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateCashOutRequestBody": {
+        "dataType": "refObject",
+        "properties": {
+            "note": { "dataType": "string", "required": true },
+            "amount": { "dataType": "double", "required": true },
+            "cash_type": { "dataType": "union", "subSchemas": [{ "dataType": "enum", "enums": ["TRANSFER"] }, { "dataType": "enum", "enums": ["CASH"] }], "required": true },
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "CreateCashInRequestBody": {
+        "dataType": "refObject",
+        "properties": {
+            "note": { "dataType": "string", "required": true },
+            "amount": { "dataType": "double", "required": true },
         },
         "additionalProperties": false,
     },
@@ -183,6 +206,7 @@ const models = {
             "amount": { "dataType": "double", "required": true },
             "stock_id": { "dataType": "double", "required": true },
             "sub_total": { "dataType": "double", "required": true },
+            "box": { "dataType": "boolean" },
         },
         "additionalProperties": false,
     },
@@ -201,6 +225,7 @@ const models = {
             "description": { "dataType": "string" },
             "detail": { "dataType": "array", "array": { "dataType": "refObject", "ref": "TransactionDetailRequestParameter" }, "required": true },
             "packaging_cost": { "dataType": "double" },
+            "is_transfer": { "dataType": "boolean" },
         },
         "additionalProperties": false,
     },
@@ -223,7 +248,7 @@ const models = {
             "amount_paid": { "dataType": "double" },
             "deposit": { "dataType": "double" },
             "transaction_date": { "dataType": "datetime" },
-            "detail": { "dataType": "array", "array": { "dataType": "nestedObjectLiteral", "nestedProperties": { "sub_total": { "dataType": "double" }, "productId": { "dataType": "double" }, "amount": { "dataType": "double" }, "id": { "dataType": "double", "required": true } } }, "required": true },
+            "detail": { "dataType": "array", "array": { "dataType": "nestedObjectLiteral", "nestedProperties": { "box": { "dataType": "boolean" }, "sub_total": { "dataType": "double" }, "productId": { "dataType": "double" }, "amount": { "dataType": "double" }, "id": { "dataType": "double", "required": true } } }, "required": true },
         },
         "additionalProperties": false,
     },
@@ -276,6 +301,40 @@ function RegisterRoutes(app) {
             validatedArgs = getValidatedArgs(args, request, response);
             const controller = new auth_router_1.AuthController();
             const promise = controller.register.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/api/cash-flow/cash-out', authenticateMiddleware([{ "api_key": [] }]), function CashFlowController_createCashOut(request, response, next) {
+        const args = {
+            body: { "in": "body", "name": "body", "required": true, "ref": "CreateCashOutRequestBody" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new cashflow_router_1.CashFlowController();
+            const promise = controller.createCashOut.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/api/cash-flow/cash-in', authenticateMiddleware([{ "api_key": [] }]), function CashFlowController_createCashIn(request, response, next) {
+        const args = {
+            body: { "in": "body", "name": "body", "required": true, "ref": "CreateCashInRequestBody" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new cashflow_router_1.CashFlowController();
+            const promise = controller.createCashIn.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, undefined, next);
         }
         catch (err) {
@@ -704,6 +763,74 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/report/daily', authenticateMiddleware([{ "api_key": [] }]), function ReportController_getDailyReport(request, response, next) {
+        const args = {
+            date_param: { "in": "query", "name": "date_param", "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new report_router_1.ReportController();
+            const promise = controller.getDailyReport.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/report/cash-flow', authenticateMiddleware([{ "api_key": [] }]), function ReportController_getCashFlow(request, response, next) {
+        const args = {
+            year: { "in": "query", "name": "year", "required": true, "dataType": "double" },
+            month: { "in": "query", "name": "month", "dataType": "double" },
+            week: { "in": "query", "name": "week", "dataType": "double" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new report_router_1.ReportController();
+            const promise = controller.getCashFlow.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/report/cash-report', authenticateMiddleware([{ "api_key": [] }]), function ReportController_getCashReport(request, response, next) {
+        const args = {};
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new report_router_1.ReportController();
+            const promise = controller.getCashReport.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/report/supplier', authenticateMiddleware([{ "api_key": [] }]), function ReportController_getSupplierReport(request, response, next) {
+        const args = {
+            month: { "in": "query", "name": "month", "dataType": "double" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new report_router_1.ReportController();
+            const promise = controller.getSupplierReport.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.get('/api/roles', authenticateMiddleware([{ "api_key": ["read:role"] }]), function RoleController_getAllRoles(request, response, next) {
         const args = {};
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -835,7 +962,9 @@ function RegisterRoutes(app) {
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.get('/api/transaction', authenticateMiddleware([{ "api_key": ["read:transaction"] }]), function TransactionController_getAllTransaction(request, response, next) {
-        const args = {};
+        const args = {
+            sort: { "in": "query", "name": "sort", "dataType": "string" },
+        };
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         let validatedArgs = [];
         try {
@@ -867,23 +996,6 @@ function RegisterRoutes(app) {
         }
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    app.get('/api/transaction/:id', authenticateMiddleware([{ "api_key": ["read:transaction"] }]), function TransactionController_getTransactionById(request, response, next) {
-        const args = {
-            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
-        };
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        let validatedArgs = [];
-        try {
-            validatedArgs = getValidatedArgs(args, request, response);
-            const controller = new transaction_router_1.TransactionController();
-            const promise = controller.getTransactionById.apply(controller, validatedArgs);
-            promiseHandler(controller, promise, response, undefined, next);
-        }
-        catch (err) {
-            return next(err);
-        }
-    });
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     app.post('/api/transaction/create', authenticateMiddleware([{ "api_key": ["create:transaction"] }]), function TransactionController_createTransaction(request, response, next) {
         const args = {
             payload: { "in": "body", "name": "payload", "required": true, "ref": "TransactionRequestParameter" },
@@ -895,6 +1007,23 @@ function RegisterRoutes(app) {
             validatedArgs = getValidatedArgs(args, request, response);
             const controller = new transaction_router_1.TransactionController();
             const promise = controller.createTransaction.apply(controller, validatedArgs);
+            promiseHandler(controller, promise, response, undefined, next);
+        }
+        catch (err) {
+            return next(err);
+        }
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.get('/api/transaction/:id', authenticateMiddleware([{ "api_key": ["read:transaction"] }]), function TransactionController_getTransactionById(request, response, next) {
+        const args = {
+            id: { "in": "path", "name": "id", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        let validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+            const controller = new transaction_router_1.TransactionController();
+            const promise = controller.getTransactionById.apply(controller, validatedArgs);
             promiseHandler(controller, promise, response, undefined, next);
         }
         catch (err) {

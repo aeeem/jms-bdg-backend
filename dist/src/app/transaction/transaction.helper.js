@@ -25,7 +25,7 @@ const restoreStocks = (items) => __awaiter(void 0, void 0, void 0, function* () 
     try {
         yield queryRunner.startTransaction();
         for (const item of items) {
-            const stockItem = yield stock_1.Stock.findOneOrFail(item.stock_id);
+            const stockItem = yield stock_1.Stock.findOneOrFail(item.stock_id, { relations: ['product'] });
             stockItem.stock_toko += item.amount;
             const stockToko = new stockToko_1.StockToko();
             stockToko.amount = item.amount;
@@ -48,7 +48,7 @@ const restoreStocks = (items) => __awaiter(void 0, void 0, void 0, function* () 
 exports.restoreStocks = restoreStocks;
 const formatTransaction = (transactions) => {
     return transactions.map(transaction => {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f;
         return {
             id: transaction.id,
             expected_total_price: transaction.expected_total_price,
@@ -57,10 +57,19 @@ const formatTransaction = (transactions) => {
             change: transaction.change,
             outstanding_amount: transaction.outstanding_amount,
             transaction_date: transaction.transaction_date,
+            deposit: transaction.deposit,
             customer: {
                 id: (_a = transaction.customer) === null || _a === void 0 ? void 0 : _a.id,
                 name: (_b = transaction.customer) === null || _b === void 0 ? void 0 : _b.name,
                 contact_number: (_c = transaction.customer) === null || _c === void 0 ? void 0 : _c.contact_number
+            },
+            packaging_cost: transaction.packaging_cost,
+            description: transaction.description,
+            optional_discount: transaction.optional_discount,
+            cashier: {
+                id: (_d = transaction.cashier) === null || _d === void 0 ? void 0 : _d.id,
+                name: (_e = transaction.cashier) === null || _e === void 0 ? void 0 : _e.name,
+                noInduk: (_f = transaction.cashier) === null || _f === void 0 ? void 0 : _f.noInduk
             },
             items: transaction.transactionDetails.map(detail => {
                 return {
@@ -68,20 +77,23 @@ const formatTransaction = (transactions) => {
                     amount: detail.amount,
                     product: {
                         id: detail.stock.product.id,
+                        stockId: detail.stock.id,
                         name: detail.stock.product.name,
                         vendorId: detail.stock.product.vendorId,
+                        vendorName: detail.stock.product.vendor.name,
                         sku: detail.stock.product.sku,
-                        stock: {
-                            id: detail.stock.id,
-                            total_stock: detail.stock.stock_gudang,
-                            sell_price: detail.stock.sell_price,
-                            buy_price: detail.stock.buy_price
-                        }
+                        stock_toko: detail.stock.stock_toko,
+                        stock_gudang: detail.stock.stock_gudang,
+                        sell_price: detail.stock.sell_price,
+                        buy_price: detail.stock.buy_price,
+                        box: detail.is_box,
+                        weight: detail.stock.weight
                     },
                     sub_total: detail.sub_total
                 };
             }),
             status: transaction.status,
+            is_transfer: transaction.is_transfer,
             created_at: transaction.created_at,
             updated_at: transaction.updated_at
         };
@@ -96,16 +108,17 @@ class TransactionProcessor {
         this.payWithCash = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 // process transaction
-                const hasChange = this.payload.amount_paid >= this.payload.actual_total_price;
-                this.change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0;
+                const hasChange = this.payload.amount_paid > this.payload.actual_total_price;
+                const change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0;
                 // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
                 if (hasChange && this.payload.deposit) {
-                    return yield this.makeDeposit(this.change);
+                    return yield this.makeDeposit(change);
                 }
                 // [8] customer bayar dengan cash namun dana tidak cukup
                 if (this.payload.amount_paid <= this.payload.actual_total_price) {
                     return yield this.makeDebt(this.payload.actual_total_price - this.payload.amount_paid);
                 }
+                this.change = change;
             }
             catch (error) {
                 return yield Promise.reject(error);
@@ -165,6 +178,8 @@ class TransactionProcessor {
                 this.transaction.optional_discount = this.payload.optional_discount;
                 this.transaction.packaging_cost = (_a = this.payload.packaging_cost) !== null && _a !== void 0 ? _a : 0;
                 this.transaction.cashier = this.user;
+                this.transaction.deposit = this.payload.deposit;
+                this.transaction.is_transfer = this.payload.is_transfer;
                 yield this.queryRunner.manager.save(this.transaction);
                 return;
             }
@@ -231,15 +246,15 @@ class TransactionProcessor {
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield this.processTransaction();
                 if (this.payload.use_deposit && this.customer && !this.isPending) {
                     if (!this.total_deposit)
                         throw errorTypes_1.E_ERROR.CUSTOMER_NO_DEPOSIT;
-                    return yield this.payWithDeposit();
+                    yield this.payWithDeposit();
                 }
                 else if (!this.isPending) {
-                    return yield this.payWithCash();
+                    yield this.payWithCash();
                 }
+                return yield this.processTransaction();
             }
             catch (error) {
                 return yield Promise.reject(error);

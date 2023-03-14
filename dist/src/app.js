@@ -86,6 +86,7 @@ app.use('/docs', swagger_ui_express_1.default.serve, (req, res) => __awaiter(voi
  ***********************************************************************************/
 app.use((err, req, res, next) => {
     var _a;
+    console.log('HERE <><>', err);
     if (err instanceof tsoa_1.ValidateError) {
         // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
         const error = new errorHandler_1.Errors(err);

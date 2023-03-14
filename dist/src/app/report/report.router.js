@@ -24,38 +24,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GudangController = void 0;
+exports.ReportController = void 0;
+const dayjs_1 = __importDefault(require("dayjs"));
+const date_1 = require("src/constants/date");
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
-const gudang_service_1 = require("./gudang.service");
-let GudangController = class GudangController extends tsoa_1.Controller {
-    getStockGudang() {
+const cashflow_service_1 = require("../cashflow/cashflow.service");
+const report_service_1 = require("./report.service");
+let ReportController = class ReportController extends tsoa_1.Controller {
+    getDailyReport(date_param) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stocks = yield (0, gudang_service_1.getStockGudangService)();
-                return response_1.default.success({ data: stocks });
+                const date = date_param ? (0, dayjs_1.default)(date_param, date_1.DateFormat) : (0, dayjs_1.default)();
+                const data = yield (0, report_service_1.getDailyReportService)(date);
+                return response_1.default.success({ data });
             }
             catch (error) {
-                return yield Promise.reject(error);
+                return error;
             }
         });
     }
-    pindahStockGudang(payload) {
+    getCashFlow(year, month, week) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stocks = yield (0, gudang_service_1.pindahStockGudangService)(payload);
-                return response_1.default.success({ data: stocks });
+                const data = yield (0, cashflow_service_1.getCashFlowService)(year, month, week);
+                return response_1.default.success({ data });
             }
             catch (error) {
-                return yield Promise.reject(error);
+                return error;
             }
         });
     }
-    tambahStockGudang(payload) {
+    getCashReport() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // const stocks = await tambahStockGudangService( payload )
-                // return makeResponse.success( { data: stocks } )
+                const data = yield (0, report_service_1.getCashReportService)();
+                return response_1.default.success({ data });
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    getSupplierReport(month) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const monthParam = month !== null && month !== void 0 ? month : (0, dayjs_1.default)().month();
+                const data = yield (0, report_service_1.getVendorReportService)(monthParam);
+                return response_1.default.success({ data });
             }
             catch (error) {
                 return error;
@@ -64,31 +80,40 @@ let GudangController = class GudangController extends tsoa_1.Controller {
     }
 };
 __decorate([
-    (0, tsoa_1.Get)('/'),
-    (0, tsoa_1.Security)('api_key', ['read:gudang']),
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Get)('/daily'),
+    __param(0, (0, tsoa_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ReportController.prototype, "getDailyReport", null);
+__decorate([
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Get)('/cash-flow'),
+    __param(0, (0, tsoa_1.Query)()),
+    __param(1, (0, tsoa_1.Query)()),
+    __param(2, (0, tsoa_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Number, Number]),
+    __metadata("design:returntype", Promise)
+], ReportController.prototype, "getCashFlow", null);
+__decorate([
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Get)('/cash-report'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], GudangController.prototype, "getStockGudang", null);
+], ReportController.prototype, "getCashReport", null);
 __decorate([
-    (0, tsoa_1.Post)('/pindah-stok'),
-    (0, tsoa_1.Security)('api_key', ['update:gudang']),
-    __param(0, (0, tsoa_1.Body)()),
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Get)('/supplier'),
+    __param(0, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
-], GudangController.prototype, "pindahStockGudang", null);
-__decorate([
-    (0, tsoa_1.Post)('/'),
-    (0, tsoa_1.Security)('api_key', ['create:gudang']),
-    __param(0, (0, tsoa_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], GudangController.prototype, "tambahStockGudang", null);
-GudangController = __decorate([
-    (0, tsoa_1.Tags)('Gudang'),
-    (0, tsoa_1.Route)('/api/gudang'),
-    (0, tsoa_1.Security)('api_key')
-], GudangController);
-exports.GudangController = GudangController;
+], ReportController.prototype, "getSupplierReport", null);
+ReportController = __decorate([
+    (0, tsoa_1.Tags)('Report'),
+    (0, tsoa_1.Route)('/api/report')
+], ReportController);
+exports.ReportController = ReportController;

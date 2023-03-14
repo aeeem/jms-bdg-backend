@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTransactionService = exports.getTransactionByIdService = exports.updateTransactionService = exports.searchTransactionService = exports.deletePendingTransactionItemService = exports.deletePendingTransactionService = exports.updatePendingTransactionService = exports.createTransactionService = exports.getAllTransactionService = void 0;
+const cashFlow_1 = require("@entity/cashFlow");
 const customer_1 = require("@entity/customer");
 const customerMonetary_1 = require("@entity/customerMonetary");
 const stock_1 = require("@entity/stock");
@@ -23,15 +24,20 @@ const lodash_1 = __importDefault(require("lodash"));
 const app_1 = require("src/app");
 const errorTypes_1 = require("src/constants/errorTypes");
 const languageEnums_1 = require("src/constants/languageEnums");
+const cashFlow_2 = require("src/database/enum/cashFlow");
 const hutangPiutang_1 = require("src/database/enum/hutangPiutang");
 const transaction_2 = require("src/database/enum/transaction");
 const errorHandler_1 = require("src/errorHandler");
+const stockHelper_1 = require("src/helper/stockHelper");
 const StocksCode_1 = require("src/interface/StocksCode");
 const customer_service_1 = require("../customer/customer.service");
 const transaction_helper_1 = require("./transaction.helper");
-const getAllTransactionService = () => __awaiter(void 0, void 0, void 0, function* () {
+const getAllTransactionService = (sort = 'DESC') => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const order = sort;
         const transactions = yield transaction_1.Transaction.find({
+            order: { updated_at: order },
+            where: { status: transaction_2.E_TransactionStatus.FINISHED },
             relations: [
                 'customer',
                 'cashier',
@@ -55,7 +61,7 @@ const createTransactionService = (payload, isPending = false, user) => __awaiter
         yield queryRunner.startTransaction();
         const customer = yield customer_1.Customer.findOne({ where: { id: payload.customer_id } });
         const customerDeposit = customer ? (yield (0, customer_service_1.getCustomerDepositService)(customer.id)).total_deposit : 0;
-        const stocks = yield stock_1.Stock.find();
+        const stocks = yield stock_1.Stock.find({ relations: ['product', 'product.vendor'] });
         const expected_total_price = 0;
         const transactionDetails = yield Promise.all(payload.detail.map((transactionDetail) => __awaiter(void 0, void 0, void 0, function* () {
             const stock = stocks.find(product => product.id === transactionDetail.stock_id);
@@ -65,26 +71,29 @@ const createTransactionService = (payload, isPending = false, user) => __awaiter
             detail.amount = transactionDetail.amount;
             detail.sub_total = transactionDetail.sub_total;
             detail.stock_id = transactionDetail.stock_id;
+            detail.stock = stock;
+            detail.is_box = transactionDetail.box;
             return detail;
         })));
         const stockSync = yield Promise.all(payload.detail.map((detail) => __awaiter(void 0, void 0, void 0, function* () {
-            const stock = yield stock_1.Stock.findOneOrFail(detail.stock_id);
-            if (stock.stock_toko - detail.amount < 0)
-                throw errorTypes_1.E_ERROR.INSUFFICIENT_STOCK;
-            stock.stock_toko -= detail.amount;
-            // Add deduction record into stock_toko
-            const stock_toko = new stockToko_1.StockToko();
-            stock_toko.amount = detail.amount;
-            stock_toko.code = StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_TRANSAKSI;
-            stock_toko.stock_id = detail.stock_id;
-            yield queryRunner.manager.save(stock_toko);
-            return stock;
+            const stockHelper = yield (0, stockHelper_1.stockDeductor)(detail.stock_id, detail.amount, detail.box);
+            yield queryRunner.manager.save(stockHelper.entity);
+            return stockHelper.stock;
         })));
         const transactionProcess = new transaction_helper_1.TransactionProcessor(payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user);
         yield queryRunner.manager.save(stockSync);
         yield transactionProcess.start();
+        const cashFlow = new cashFlow_1.CashFlow();
+        cashFlow.amount = payload.actual_total_price;
+        cashFlow.code = cashFlow_2.E_CashFlowCode.IN_TRANSACTION;
+        cashFlow.transaction_id = transactionProcess.transaction.id;
+        cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
+        yield queryRunner.manager.save(cashFlow);
         yield queryRunner.commitTransaction();
-        return Object.assign(Object.assign({}, transactionProcess.transaction), { customer: Object.assign(Object.assign({}, transactionProcess.transaction.customer), { deposit_balance: transactionProcess.transaction.customer ? (yield (0, customer_service_1.getCustomerDepositService)((_b = (_a = transactionProcess.transaction) === null || _a === void 0 ? void 0 : _a.customer) === null || _b === void 0 ? void 0 : _b.id)).total_deposit : 0, debt_balance: transactionProcess.transaction.customer ? (yield (0, customer_service_1.getCustomerDebtService)((_d = (_c = transactionProcess.transaction) === null || _c === void 0 ? void 0 : _c.customer) === null || _d === void 0 ? void 0 : _d.id)).total_debt : 0 }) });
+        return {
+            transaction: (0, transaction_helper_1.formatTransaction)([transactionProcess.transaction]),
+            customer: Object.assign(Object.assign({}, transactionProcess.transaction.customer), { deposit_balance: transactionProcess.transaction.customer ? (yield (0, customer_service_1.getCustomerDepositService)((_b = (_a = transactionProcess.transaction) === null || _a === void 0 ? void 0 : _a.customer) === null || _b === void 0 ? void 0 : _b.id)).total_deposit : 0, debt_balance: transactionProcess.transaction.customer ? (yield (0, customer_service_1.getCustomerDebtService)((_d = (_c = transactionProcess.transaction) === null || _c === void 0 ? void 0 : _c.customer) === null || _d === void 0 ? void 0 : _d.id)).total_debt : 0 })
+        };
     }
     catch (error) {
         yield queryRunner.rollbackTransaction();

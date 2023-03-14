@@ -19,6 +19,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const seeds_1 = __importDefault(require("./seeds"));
 const stockGudang_1 = require("./subscriber/stockGudang");
 const stockToko_1 = require("./subscriber/stockToko");
+const transactions_1 = require("./subscriber/transactions");
 dotenv_1.default.config({});
 class Database {
     connectToDB() {
@@ -33,7 +34,11 @@ class Database {
                 entities: [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
                 logging: false,
                 synchronize: true,
-                subscribers: [stockGudang_1.StockGudangSubscriber, stockToko_1.StockTokoSubscriber]
+                subscribers: [
+                    stockGudang_1.StockGudangSubscriber,
+                    stockToko_1.StockTokoSubscriber,
+                    transactions_1.TransactionsSubscriber
+                ]
             }).then(_con => {
                 this.connection = _con;
                 console.log('Connected to db!!');
@@ -54,7 +59,11 @@ class Database {
                 dropSchema: true,
                 synchronize: true,
                 logging: false,
-                subscribers: [stockGudang_1.StockGudangSubscriber, stockToko_1.StockTokoSubscriber]
+                subscribers: [
+                    stockGudang_1.StockGudangSubscriber,
+                    stockToko_1.StockTokoSubscriber,
+                    transactions_1.TransactionsSubscriber
+                ]
             }).then((_con) => __awaiter(this, void 0, void 0, function* () {
                 this.connection = _con;
                 console.log('Connected to db!!');

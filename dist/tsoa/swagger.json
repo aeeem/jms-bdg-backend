@@ -42,6 +42,48 @@
                 "type": "object",
                 "additionalProperties": false
             },
+            "CreateCashOutRequestBody": {
+                "properties": {
+                    "note": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "cash_type": {
+                        "type": "string",
+                        "enum": [
+                            "TRANSFER",
+                            "CASH"
+                        ]
+                    }
+                },
+                "required": [
+                    "note",
+                    "amount",
+                    "cash_type"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
+            "CreateCashInRequestBody": {
+                "properties": {
+                    "note": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "required": [
+                    "note",
+                    "amount"
+                ],
+                "type": "object",
+                "additionalProperties": false
+            },
             "AddDepositRequestParameter": {
                 "properties": {
                     "customer_id": {
@@ -309,6 +351,9 @@
                     "sub_total": {
                         "type": "number",
                         "format": "double"
+                    },
+                    "box": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -364,6 +409,9 @@
                     "packaging_cost": {
                         "type": "number",
                         "format": "double"
+                    },
+                    "is_transfer": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
@@ -422,6 +470,9 @@
                     "detail": {
                         "items": {
                             "properties": {
+                                "box": {
+                                    "type": "boolean"
+                                },
                                 "sub_total": {
                                     "type": "number",
                                     "format": "double"
@@ -555,6 +606,74 @@
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/RegisterRequestParameter"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cash-flow/cash-out": {
+            "post": {
+                "operationId": "CreateCashOut",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Cashflow"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCashOutRequestBody"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cash-flow/cash-in": {
+            "post": {
+                "operationId": "CreateCashIn",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Cashflow"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCashInRequestBody"
                             }
                         }
                     }
@@ -1452,6 +1571,149 @@
                 }
             }
         },
+        "/api/report/daily": {
+            "get": {
+                "operationId": "GetDailyReport",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Report"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "date_param",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/report/cash-flow": {
+            "get": {
+                "operationId": "GetCashFlow",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Report"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "year",
+                        "required": true,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "month",
+                        "required": false,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "week",
+                        "required": false,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    }
+                ]
+            }
+        },
+        "/api/report/cash-report": {
+            "get": {
+                "operationId": "GetCashReport",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Report"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": []
+            }
+        },
+        "/api/report/supplier": {
+            "get": {
+                "operationId": "GetSupplierReport",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Report"
+                ],
+                "security": [
+                    {
+                        "api_key": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "month",
+                        "required": false,
+                        "schema": {
+                            "format": "double",
+                            "type": "number"
+                        }
+                    }
+                ]
+            }
+        },
         "/api/roles": {
             "get": {
                 "operationId": "GetAllRoles",
@@ -1719,7 +1981,16 @@
                         ]
                     }
                 ],
-                "parameters": []
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "sort",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ]
             }
         },
         "/api/transaction/search": {
@@ -1763,6 +2034,42 @@
                         }
                     }
                 ]
+            }
+        },
+        "/api/transaction/create": {
+            "post": {
+                "operationId": "CreateTransaction",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "Transaction"
+                ],
+                "security": [
+                    {
+                        "api_key": [
+                            "create:transaction"
+                        ]
+                    }
+                ],
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransactionRequestParameter"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/transaction/{id}": {
@@ -1874,42 +2181,6 @@
                         }
                     }
                 ]
-            }
-        },
-        "/api/transaction/create": {
-            "post": {
-                "operationId": "CreateTransaction",
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "Transaction"
-                ],
-                "security": [
-                    {
-                        "api_key": [
-                            "create:transaction"
-                        ]
-                    }
-                ],
-                "parameters": [],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TransactionRequestParameter"
-                            }
-                        }
-                    }
-                }
             }
         },
         "/api/transaction/pending": {

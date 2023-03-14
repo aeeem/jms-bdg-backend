@@ -16,6 +16,7 @@ exports.E_ERROR = {
     PRODUCT_NOT_FOUND: { message: 'Product tidak ditemukan', status: enums_1.HTTP_CODE.NO_CONTENT },
     STOCK_NOT_FOUND: { message: 'Stock Tidak ditemukan', status: enums_1.HTTP_CODE.NOT_FOUND },
     INSUFFICIENT_STOCK: { message: 'Stock Toko tidak cukup', status: enums_1.HTTP_CODE.NOT_FOUND },
+    INSUFFICIENT_STOCK_GDG: { message: 'Stock Gudang tidak cukup', status: enums_1.HTTP_CODE.NOT_FOUND },
     CUSTOMER_NOT_FOUND: { message: 'Pelanggan Tidak ditemukan', status: enums_1.HTTP_CODE.NO_CONTENT },
     DATABASE_ERROR: { message: 'E_DATABASE_ERROR', status: enums_1.HTTP_CODE.INTERNAL_SERVER_ERROR },
     UNKNOWN_ERROR: { message: 'E_UNKNOWN_ERROR', status: enums_1.HTTP_CODE.INTERNAL_SERVER_ERROR },

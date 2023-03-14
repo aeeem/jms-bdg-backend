@@ -8,8 +8,8 @@ export const getCashFlowService = async ( year: number, month?: number, week?: n
     return await CashFlow
       .createQueryBuilder()
       .leftJoinAndSelect( 'CashFlow.transaction', 'transaction' )
-      .where( `extract(month from CashFlow.created_at)=${month}` )
-      .andWhere( `extract(year from CashFlow.created_at)=${year}` )
+      .where( 'extract(month from CashFlow.created_at)= :month', { month } )
+      .andWhere( 'extract(year from CashFlow.created_at)= :year', { year } )
       .getMany()
   }
 
@@ -18,8 +18,8 @@ export const getCashFlowService = async ( year: number, month?: number, week?: n
     return await CashFlow
       .createQueryBuilder()
       .leftJoinAndSelect( 'CashFlow.transaction', 'transaction' )
-      .where( `extract(week from CashFlow.created_at)=${week}` )
-      .andWhere( `extract(year from CashFlow.created_at)=${year}` )
+      .where( 'extract(week from CashFlow.created_at)=:week', { week } )
+      .andWhere( 'extract(year from CashFlow.created_at)=:year', { year } )
       .getMany()
   }
 }

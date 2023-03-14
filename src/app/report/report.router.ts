@@ -5,7 +5,9 @@ import {
   Controller, Get, Query, Route, Security, Tags
 } from 'tsoa'
 import { getCashFlowService } from '../cashflow/cashflow.service'
-import { getDailyReportService } from './report.service'
+import {
+  getCashReportService, getDailyReportService, getVendorReportService
+} from './report.service'
 
 @Tags( 'Report' )
 @Route( '/api/report' )
@@ -31,6 +33,31 @@ export class ReportController extends Controller {
   ) {
     try {
       const data = await getCashFlowService( year, month, week )
+      return makeResponse.success( { data } )
+    } catch ( error ) {
+      return error
+    }
+  }
+
+  @Security( 'api_key' )
+  @Get( '/cash-report' )
+  public async getCashReport () {
+    try {
+      const data = await getCashReportService()
+      return makeResponse.success( { data } )
+    } catch ( error ) {
+      return error
+    }
+  }
+
+  @Security( 'api_key' )
+  @Get( '/supplier' )
+  public async getSupplierReport (
+  @Query() month?: number
+  ) {
+    try {
+      const monthParam = month ?? dayjs().month()
+      const data = await getVendorReportService( monthParam )
       return makeResponse.success( { data } )
     } catch ( error ) {
       return error

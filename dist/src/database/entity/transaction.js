@@ -16,11 +16,24 @@ const customerMonetary_1 = require("./customerMonetary");
 const transactionDetail_1 = require("./transactionDetail");
 const user_1 = require("./user");
 let Transaction = class Transaction extends typeorm_1.BaseEntity {
+    generateTransactionId() {
+        // console.log( this )
+    }
 };
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], Transaction.prototype, "generateTransactionId", null);
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Transaction.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Transaction.prototype, "transaction_id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
@@ -86,6 +99,14 @@ __decorate([
     (0, typeorm_1.ManyToOne)(() => user_1.User, user => user.transactions, { nullable: true }),
     __metadata("design:type", user_1.User)
 ], Transaction.prototype, "cashier", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "deposit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Boolean)
+], Transaction.prototype, "is_transfer", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

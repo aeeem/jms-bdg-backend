@@ -42,6 +42,10 @@ __decorate([
     __metadata("design:type", Number)
 ], TransactionDetail.prototype, "stock_id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true, default: false }),
+    __metadata("design:type", Boolean)
+], TransactionDetail.prototype, "is_box", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], TransactionDetail.prototype, "transaction_id", void 0);

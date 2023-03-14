@@ -24,38 +24,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GudangController = void 0;
+exports.CashFlowController = void 0;
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
-const gudang_service_1 = require("./gudang.service");
-let GudangController = class GudangController extends tsoa_1.Controller {
-    getStockGudang() {
+const cashflow_service_1 = require("./cashflow.service");
+let CashFlowController = class CashFlowController extends tsoa_1.Controller {
+    createCashOut(body) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stocks = yield (0, gudang_service_1.getStockGudangService)();
-                return response_1.default.success({ data: stocks });
+                const data = yield (0, cashflow_service_1.createCashOutService)(body);
+                return response_1.default.success({ data });
             }
             catch (error) {
-                return yield Promise.reject(error);
+                return error;
             }
         });
     }
-    pindahStockGudang(payload) {
+    createCashIn(body) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const stocks = yield (0, gudang_service_1.pindahStockGudangService)(payload);
-                return response_1.default.success({ data: stocks });
-            }
-            catch (error) {
-                return yield Promise.reject(error);
-            }
-        });
-    }
-    tambahStockGudang(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                // const stocks = await tambahStockGudangService( payload )
-                // return makeResponse.success( { data: stocks } )
+                const data = yield (0, cashflow_service_1.createCashInService)(body);
+                return response_1.default.success({ data });
             }
             catch (error) {
                 return error;
@@ -64,31 +53,23 @@ let GudangController = class GudangController extends tsoa_1.Controller {
     }
 };
 __decorate([
-    (0, tsoa_1.Get)('/'),
-    (0, tsoa_1.Security)('api_key', ['read:gudang']),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], GudangController.prototype, "getStockGudang", null);
-__decorate([
-    (0, tsoa_1.Post)('/pindah-stok'),
-    (0, tsoa_1.Security)('api_key', ['update:gudang']),
-    __param(0, (0, tsoa_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
-    __metadata("design:returntype", Promise)
-], GudangController.prototype, "pindahStockGudang", null);
-__decorate([
-    (0, tsoa_1.Post)('/'),
-    (0, tsoa_1.Security)('api_key', ['create:gudang']),
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Post)('/cash-out'),
     __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], GudangController.prototype, "tambahStockGudang", null);
-GudangController = __decorate([
-    (0, tsoa_1.Tags)('Gudang'),
-    (0, tsoa_1.Route)('/api/gudang'),
-    (0, tsoa_1.Security)('api_key')
-], GudangController);
-exports.GudangController = GudangController;
+], CashFlowController.prototype, "createCashOut", null);
+__decorate([
+    (0, tsoa_1.Security)('api_key'),
+    (0, tsoa_1.Post)('/cash-in'),
+    __param(0, (0, tsoa_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], CashFlowController.prototype, "createCashIn", null);
+CashFlowController = __decorate([
+    (0, tsoa_1.Tags)('Cashflow'),
+    (0, tsoa_1.Route)('/api/cash-flow')
+], CashFlowController);
+exports.CashFlowController = CashFlowController;

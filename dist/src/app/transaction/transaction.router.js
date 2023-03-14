@@ -24,15 +24,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PendingTransactionController = exports.TransactionController = void 0;
+exports.TransactionController = void 0;
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const transaction_service_1 = require("./transaction.service");
+// export interface I_FILTER_PARAM {
+//   sort?: {
+//     order: 'ASC' | 'DESC'
+//   }
+// }
 let TransactionController = class TransactionController extends tsoa_1.Controller {
-    getAllTransaction() {
+    getAllTransaction(sort) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const transactions = yield (0, transaction_service_1.getAllTransactionService)();
+                const transactions = yield (0, transaction_service_1.getAllTransactionService)(sort);
                 return response_1.default.success({ data: transactions });
             }
             catch (error) {
@@ -51,23 +56,23 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
             }
         });
     }
-    getTransactionById(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const transaction = yield (0, transaction_service_1.getTransactionByIdService)(id);
-                return response_1.default.success({ data: transaction });
-            }
-            catch (error) {
-                return error;
-            }
-        });
-    }
     createTransaction(payload, request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = request.loggedInUser;
                 const createdTransaction = yield (0, transaction_service_1.createTransactionService)(payload, false, user);
                 return response_1.default.success({ data: createdTransaction });
+            }
+            catch (error) {
+                return error;
+            }
+        });
+    }
+    getTransactionById(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const transaction = yield (0, transaction_service_1.getTransactionByIdService)(id);
+                return response_1.default.success({ data: transaction });
             }
             catch (error) {
                 return error;
@@ -143,8 +148,9 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
 __decorate([
     (0, tsoa_1.Get)('/'),
     (0, tsoa_1.Security)('api_key', ['read:transaction']),
+    __param(0, (0, tsoa_1.Query)('sort')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "getAllTransaction", null);
 __decorate([
@@ -157,14 +163,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "searchTransaction", null);
 __decorate([
-    (0, tsoa_1.Get)('/{id}'),
-    (0, tsoa_1.Security)('api_key', ['read:transaction']),
-    __param(0, (0, tsoa_1.Path)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], TransactionController.prototype, "getTransactionById", null);
-__decorate([
     (0, tsoa_1.Post)('/create'),
     (0, tsoa_1.Security)('api_key', ['create:transaction']),
     __param(0, (0, tsoa_1.Body)()),
@@ -173,6 +171,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], TransactionController.prototype, "createTransaction", null);
+__decorate([
+    (0, tsoa_1.Get)('/{id}'),
+    (0, tsoa_1.Security)('api_key', ['read:transaction']),
+    __param(0, (0, tsoa_1.Path)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TransactionController.prototype, "getTransactionById", null);
 __decorate([
     (0, tsoa_1.Post)('/pending'),
     (0, tsoa_1.Security)('api_key', ['create:transaction']),
@@ -229,11 +235,3 @@ TransactionController = __decorate([
     (0, tsoa_1.Security)('api_key')
 ], TransactionController);
 exports.TransactionController = TransactionController;
-let PendingTransactionController = class PendingTransactionController extends tsoa_1.Controller {
-};
-PendingTransactionController = __decorate([
-    (0, tsoa_1.Tags)('PendingTransaction'),
-    (0, tsoa_1.Route)('/api/pending-transaction'),
-    (0, tsoa_1.Security)('api_key')
-], PendingTransactionController);
-exports.PendingTransactionController = PendingTransactionController;
