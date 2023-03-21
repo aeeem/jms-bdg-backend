@@ -87,10 +87,11 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           sub_total: detail.sub_total
         }
       } ),
-      status     : transaction.status,
-      is_transfer: transaction.is_transfer,
-      created_at : transaction.created_at,
-      updated_at : transaction.updated_at
+      status        : transaction.status,
+      is_transfer   : transaction.is_transfer,
+      created_at    : transaction.created_at,
+      updated_at    : transaction.updated_at,
+      transaction_id: transaction.transaction_id
     }
   } )
 }
