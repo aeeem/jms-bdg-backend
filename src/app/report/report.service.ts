@@ -79,4 +79,5 @@ export const getVendorReportService = async ( month: number ) => {
       'products.stocks.transactionDetails'
     ]
   } )
+  return vendor
 }

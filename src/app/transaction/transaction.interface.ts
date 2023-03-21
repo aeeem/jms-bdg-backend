@@ -15,7 +15,7 @@ export interface TransactionDetailRequestParameter{
 export interface TransactionRequestParameter {
   expected_total_price: number
   actual_total_price: number
-  customer_id?: number
+  customer_id?: number | null
   amount_paid: number
   deposit?: number
   transaction_date?: Date

@@ -164,7 +164,7 @@ export class TransactionProcessor {
         return await this.makeDeposit( change )
       }
       // [8] customer bayar dengan cash namun dana tidak cukup
-      if ( this.payload.amount_paid <= this.payload.actual_total_price ) {
+      if ( this.payload.amount_paid < this.payload.actual_total_price ) {
         return await this.makeDebt(
           this.payload.actual_total_price - this.payload.amount_paid
         )
