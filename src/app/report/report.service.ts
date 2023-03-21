@@ -12,56 +12,52 @@ import { Raw } from 'typeorm'
 import { reportFormatter, sumOf } from './report.helper'
 import { CashFlowResponseItem, DailyReportResponse } from './report.interface'
 
-export const getDailyReportService = async ( date: Dayjs ): Promise<DailyReportResponse> => {
-  const transactions = await Transaction.find( { where: { status: E_TransactionStatus.FINISHED }, relations: ['customer'] } )
-  const cashFlow = await CashFlow.createQueryBuilder( )
-    .where( 'Date(CashFlow.created_at) = current_date' )
-    .orWhere( 'Date(CashFlow.created_at) = current_date - 1' )
-    .getMany()
-  const todayTransaction = transactions.filter( transaction => dayjs( transaction?.transaction_date ).format( DateFormat ) === date.format( DateFormat ) )
-  const cashFlowFormatted: CashFlowResponseItem[] = cashFlow.map( cf => {
+export const getDailyReportService = async ( date: Dayjs ): Promise<any> => {
+  const cashFlow = await CashFlow.find( {
+    relations: ['transaction'],
+    where    : { created_at: Raw( alias => `${alias} >= current_date - 1` ) }
+  } )
+  const rawTodayCashFlow = cashFlow.filter( cf => dayjs( cf?.created_at ).format( DateFormat ) === date.format( DateFormat ) )
+  const rawYesterdayCashFlow = cashFlow.filter( cf => dayjs( cf?.created_at ).format( DateFormat ) === date.subtract( 1, 'day' ).format( DateFormat ) )
+  
+  const todayCashFlow: CashFlowResponseItem[] = rawTodayCashFlow.map( cf => {
     return {
       id                : cf.id,
-      note              : cf.note,
+      note              : cf.transaction ? cf.transaction.customer?.name ?? '' : cf.note,
       type              : cf.cash_type,
-      sub_total_cash    : cf.cash_type === 'cash' ? cf.amount : 0,
       flow_type         : cf.type,
-      sub_total_transfer: cf.cash_type === 'transfer' ? cf.amount : 0
-    }
-  } )
-  const transactionFormatted: CashFlowResponseItem[] = todayTransaction.map( transaction => {
-    return {
-      id                : transaction.id,
-      note              : transaction.customer?.name ?? '',
-      type              : transaction.is_transfer ? E_CashType.TRANSFER : E_CashType.TRANSFER,
-      flow_type         : 'cash-in',
-      sub_total_cash    : !transaction.is_transfer ? transaction.actual_total_price : 0,
-      sub_total_transfer: transaction.is_transfer ? transaction.actual_total_price : 0
+      sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount : 0,
+      sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount : 0
     }
   } )
 
-  const yesterdayTransactionFormatted: CashFlowResponseItem = cashFlow.map( cashFlow => ( {
-    id                : cashFlow.id,
+  const yesterdayCashflow = rawYesterdayCashFlow.map( cf => ( {
+    id                : cf.id,
     note              : 'Stock Tunai (Total transaksi H-1)',
     type              : `${E_CashType.CASH} / ${E_CashType.TRANSFER}`,
-    sub_total_cash    : cashFlow.cash_type === E_CashType.CASH ? cashFlow.amount : 0,
-    sub_total_transfer: cashFlow.cash_type === E_CashType.TRANSFER ? cashFlow.amount : 0
-  } ) ).reduce( ( acc, curr ) => {
-    const sub_total_cash = curr.type === E_CashFlowType.CashIn ? acc.sub_total_cash + curr.sub_total_cash : acc.sub_total_cash - curr.sub_total_cash
-    const sub_total_transfer = curr.type === E_CashFlowType.CashIn ? acc.sub_total_transfer + curr.sub_total_transfer : acc.sub_total_transfer - curr.sub_total_transfer
+    sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount : 0,
+    sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount : 0,
+    flow_type         : cf.type
+  } ) ).reduceRight( ( acc, curr ) => {
     return {
-      id  : curr.id,
-      note: 'Stock Tunai (Total transaksi H-1)',
-      type: curr.type,
-      sub_total_cash,
-      sub_total_transfer
+      id                : curr.id,
+      note              : curr.note,
+      type              : curr.type,
+      sub_total_cash    : curr.flow_type === E_CashFlowType.CashIn ? acc.sub_total_cash + curr.sub_total_cash : acc.sub_total_cash - curr.sub_total_cash,
+      sub_total_transfer: curr.flow_type === E_CashFlowType.CashIn ? acc.sub_total_transfer + curr.sub_total_transfer : acc.sub_total_transfer - curr.sub_total_transfer,
+      flow_type         : curr.flow_type
     }
   } )
-  
+
   return {
-    yesterdayTransaction: yesterdayTransactionFormatted,
-    todayTransactions   : [...cashFlowFormatted, ...transactionFormatted]
+    todayCashFlow,
+    yesterdayCashflow
   }
+
+  // return {
+  //   yesterdayTransaction: yesterdayTransactionFormatted,
+  //   todayTransactions   : [...cashFlowFormatted, ...todayCashFlow]
+  // }
 }
 
 export const getCashReportService = async () => {

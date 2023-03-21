@@ -50,6 +50,7 @@ export class TransactionController extends Controller {
       const createdTransaction = await createTransactionService( payload, false, user )
       return makeResponse.success( { data: createdTransaction } )
     } catch ( error: any ) {
+      console.log( error )
       return error
     }
   }

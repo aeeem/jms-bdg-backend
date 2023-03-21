@@ -20,6 +20,7 @@ export class ReportController extends Controller {
       const data = await getDailyReportService( date )
       return makeResponse.success( { data } )
     } catch ( error ) {
+      console.log( error )
       return error
     }
   }
