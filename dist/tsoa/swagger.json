@@ -376,7 +376,8 @@
                     },
                     "customer_id": {
                         "type": "number",
-                        "format": "double"
+                        "format": "double",
+                        "nullable": true
                     },
                     "amount_paid": {
                         "type": "number",

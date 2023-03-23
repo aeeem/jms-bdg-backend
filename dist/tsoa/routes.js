@@ -216,7 +216,7 @@ const models = {
         "properties": {
             "expected_total_price": { "dataType": "double", "required": true },
             "actual_total_price": { "dataType": "double", "required": true },
-            "customer_id": { "dataType": "double" },
+            "customer_id": { "dataType": "union", "subSchemas": [{ "dataType": "double" }, { "dataType": "enum", "enums": [null] }] },
             "amount_paid": { "dataType": "double", "required": true },
             "deposit": { "dataType": "double" },
             "transaction_date": { "dataType": "datetime" },

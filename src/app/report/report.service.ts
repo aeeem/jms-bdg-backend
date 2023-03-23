@@ -53,11 +53,6 @@ export const getDailyReportService = async ( date: Dayjs ): Promise<any> => {
     todayCashFlow,
     yesterdayCashflow
   }
-
-  // return {
-  //   yesterdayTransaction: yesterdayTransactionFormatted,
-  //   todayTransactions   : [...cashFlowFormatted, ...todayCashFlow]
-  // }
 }
 
 export const getCashReportService = async () => {

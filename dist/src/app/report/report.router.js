@@ -40,6 +40,7 @@ let ReportController = class ReportController extends tsoa_1.Controller {
                 return response_1.default.success({ data });
             }
             catch (error) {
+                console.log(error);
                 return error;
             }
         });

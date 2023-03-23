@@ -64,6 +64,7 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
                 return response_1.default.success({ data: createdTransaction });
             }
             catch (error) {
+                console.log(error);
                 return error;
             }
         });
