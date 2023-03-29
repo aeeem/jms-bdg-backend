@@ -30,6 +30,11 @@ export const accountCode: AccountCode = {
     code  : 'DEBT_ADD_INSUFFICIENT_FUND',
     type  : 'DEBT'
   },
+  DEBT_SUB_PAY_WITH_TRANSFER: {
+    action: 'SUB',
+    code  : 'DEBT_SUB_PAY_WITH_TRANSFER',
+    type  : 'DEBT'
+  },
   DEBT_SUB_PAY_WITH_CASH: {
     action: 'SUB',
     code  : 'DEBT_SUB_PAY_WITH_CASH',
@@ -73,6 +78,11 @@ export const accountCode: AccountCode = {
   DEP_SUB_PAID_WITH_DEPOSIT: {
     action: 'SUB',
     code  : 'DEP_SUB_PAID_WITH_DEPOSIT',
+    type  : 'DEP'
+  },
+  DEP_ADD_CASH_DEPOSIT_TRANSFER: {
+    action: 'ADD',
+    code  : 'DEP_ADD_CASH_DEPOSIT_TRANSFER',
     type  : 'DEP'
   }
 }
