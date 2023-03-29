@@ -78,9 +78,19 @@ export const getStockTokoService = async () => {
   try {
     const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
 
-    const filteredStock = stocks.filter( stock => stock.stock_toko > 0 )
+    const filteredStock = stocks.filter( stock => stock.stock_toko > 0 || stock.stock_gudang > 0 )
 
-    return filteredStock
+    const formattedStock = filteredStock.map( stock => {
+      let only_gudang = false
+      if ( stock.stock_toko <= 0 && stock.stock_gudang > 0 ) {
+        only_gudang = true
+      }
+      return {
+        ...stock,
+        gudang: only_gudang
+      }
+    } )
+    return formattedStock
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
