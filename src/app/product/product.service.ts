@@ -30,23 +30,23 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
 
       if ( vendor == null ) throw E_ERROR.VENDOR_NOT_FOUND
 
-      const stocks = product.stok.map( item => {
+      const stocks = product?.stok?.map( item => {
         const newStock = new Stock()
-        newStock.buy_price = product.hargaModal
-        newStock.sell_price = product.hargaJual
+        newStock.buy_price = product.hargaModal ?? 0
+        newStock.sell_price = product.hargaJual ?? 0
         newStock.weight = item.berat
         return newStock
       } )
 
-      const insertedStocks = await queryRunner.manager.save( stocks )
+      const insertedStocks = await queryRunner.manager.save( stocks ) as Stock[]
 
       const stockGudang = await Promise.all( insertedStocks.map( async ( stock, index ) => {
         const newStockGudang = new StockGudang()
-        newStockGudang.amount = product.stok[index].jumlahBox
+        newStockGudang.amount = product.stok ? product.stok[index].jumlahBox : 0
         newStockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_MASUK
         newStockGudang.stock_id = stock.id
 
-        stock.stock_gudang += product.stok[index].jumlahBox
+        stock.stock_gudang += product.stok ? product.stok[index].jumlahBox : 0
 
         await queryRunner.manager.save( stock )
 
@@ -57,7 +57,7 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
       newProduct.sku = product.sku
       newProduct.name = product.name
       newProduct.arrival_date = product.tanggalMasuk
-      newProduct.stocks = stocks
+      newProduct.stocks = stocks ?? []
       newProduct.vendorId = product.vendorId
       
       await queryRunner.manager.save( stockGudang )
@@ -93,16 +93,17 @@ export const searchProductService = async ( { query }: { query: string } ) => {
 export const updateProductService = async ( id: number, payload: ProductRequestParameter ) => {
   try {
     const _updatedProduct = await Product.findOne( { where: { id } } )
-    const _updatedStock = await Stock.findOne( { where: { productId: id } } )
-    if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
-    _updatedStock.buy_price = payload.hargaModal
-    _updatedStock.sell_price = payload.hargaJual
+    // const _updatedStock = await Stock.findOne( { where: { productId: id } } )
+    // if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
+    // _updatedStock.buy_price = payload.hargaModal
+    // _updatedStock.sell_price = payload.hargaJual
 
     if ( _updatedProduct == null ) { throw E_ERROR.PRODUCT_NOT_FOUND }
     _updatedProduct.name = payload.name
     _updatedProduct.sku = payload.sku
     _updatedProduct.arrival_date = payload.tanggalMasuk
-    _updatedProduct.stocks = [_updatedStock]
+    _updatedProduct.vendorId = payload.vendorId
+    // _updatedProduct.stocks = [_updatedStock]
   
     await _updatedProduct.save()
     return await Product.findOne( { where: { id } } )

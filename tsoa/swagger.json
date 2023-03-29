@@ -287,10 +287,7 @@
 					"sku",
 					"name",
 					"vendorId",
-					"tanggalMasuk",
-					"hargaModal",
-					"hargaJual",
-					"stok"
+					"tanggalMasuk"
 				],
 				"type": "object",
 				"additionalProperties": false
