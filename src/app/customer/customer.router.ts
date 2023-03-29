@@ -70,7 +70,6 @@ export class CustomerController extends Controller {
     }
   }
 
-
   @Post( '/debt/pay' )
   @Security( 'api_key', ['create:customer'] )
   public async payDebt ( @Body() payload: AddDepositRequestParameter ) {
