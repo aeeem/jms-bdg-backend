@@ -13,9 +13,11 @@ export interface CustomerUpdateRequestParameter {
 export interface AddDepositRequestParameter{
   customer_id: number
   amount: number
+  is_transfer: boolean
 }
 
 export interface AddDebtRequestParameter{
   customer_id: number
   amount: number
+  is_transfer: boolean
 }

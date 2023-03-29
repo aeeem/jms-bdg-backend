@@ -58,7 +58,9 @@ export const getCustomerDebtService = async ( id: number ) => {
   }
 }
 
-export const addDepositService = async ( { amount, customer_id }: AddDepositRequestParameter ) => {
+export const addDepositService = async ( {
+  amount, customer_id, is_transfer
+}: AddDepositRequestParameter ) => {
   try {
     const customer = await Customer.findOne( { where: { id: customer_id } } )
     if ( !customer ) throw E_ERROR.CUSTOMER_NOT_FOUND
@@ -66,7 +68,7 @@ export const addDepositService = async ( { amount, customer_id }: AddDepositRequ
     customerMonetary.customer_id = customer.id
     customerMonetary.amount = amount
     customerMonetary.type = E_Recievables.DEPOSIT
-    customerMonetary.source = E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT
+    customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT_TRANSFER : E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT
     await customerMonetary.save()
     return customerMonetary
   } catch ( error: any ) {
@@ -74,7 +76,9 @@ export const addDepositService = async ( { amount, customer_id }: AddDepositRequ
   }
 }
 
-export const payDebtService = async ( { amount, customer_id }: AddDebtRequestParameter ) => {
+export const payDebtService = async ( {
+  amount, customer_id, is_transfer
+}: AddDebtRequestParameter ) => {
   try {
     const customer = await Customer.findOne( { where: { id: customer_id } } )
     if ( !customer ) throw E_ERROR.CUSTOMER_NOT_FOUND
@@ -82,7 +86,7 @@ export const payDebtService = async ( { amount, customer_id }: AddDebtRequestPar
     customerMonetary.customer_id = customer.id
     customerMonetary.amount = amount
     customerMonetary.type = E_Recievables.DEBT
-    customerMonetary.source = E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
+    customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEBT_SUB_PAY_WITH_TRANSFER : E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
     await customerMonetary.save()
     return customerMonetary
   } catch ( error: any ) {

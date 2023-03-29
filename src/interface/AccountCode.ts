@@ -4,6 +4,7 @@
 export enum E_CODE_KEY {
   'DEP_ADD_TRANSACTION_CHANGE'        = 'DEP_ADD_TRANSACTION_CHANGE', //  'Kembalian Jadi deposit'
   'DEP_ADD_CASH_DEPOSIT'              = 'DEP_ADD_CASH_DEPOSIT', // 'Titip tunai'
+  'DEP_ADD_CASH_DEPOSIT_TRANSFER'     = 'DEP_ADD_CASH_DEPOSIT_TRANSFER', // 'Titip tunai Transfer'
   'DEP_ADD_RETURN_GOODS_CASH'         = 'DEP_ADD_RETURN_GOODS_CASH', // 'retur bayar tunai'
   'DEP_ADD_RETURN_GOODS_DEPOSIT'      = 'DEP_ADD_RETURN_GOODS_DEPOSIT', // 'retur Bayar deposit'
   'DEP_SUB_PAID_WITH_DEPOSIT'         = 'DEP_SUB_PAID_WITH_DEPOSIT', // 'Bayar transaksi menggunakan deposit'
@@ -11,6 +12,7 @@ export enum E_CODE_KEY {
   'DEBT_ADD_INSUFFICIENT_FUND'        = 'DEBT_ADD_INSUFFICIENT_FUND', // 'Transaksi kurang bayar'
   'DEBT_SUB_PAY_WITH_DEPOSIT'         = 'DEBT_SUB_PAY_WITH_DEPOSIT', // 'Bayar Hutang Dengan deposit'
   'DEBT_SUB_PAY_WITH_CASH'            = 'DEBT_SUB_PAY_WITH_CASH', // 'Bayar hutang dengan tunai'
+  'DEBT_SUB_PAY_WITH_TRANSFER'        = 'DEBT_SUB_PAY_WITH_TRANSFER', // 'Bayar hutang dengan transfer'
   'DEBT_SUB_RETURN_GOODS'             = 'DEBT_SUB_RETURN_GOODS' // 'Dari retur barang'
 }
 
