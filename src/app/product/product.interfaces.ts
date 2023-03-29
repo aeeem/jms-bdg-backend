@@ -3,9 +3,9 @@ export interface ProductRequestParameter {
   name: string
   vendorId: number
   tanggalMasuk: Date
-  hargaModal: number
-  hargaJual: number
-  stok: StockPayload[]
+  hargaModal?: number
+  hargaJual?: number
+  stok?: StockPayload[]
 }
 
 interface StockPayload {

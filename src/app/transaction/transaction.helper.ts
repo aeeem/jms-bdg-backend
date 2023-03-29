@@ -87,11 +87,13 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           sub_total: detail.sub_total
         }
       } ),
-      status        : transaction.status,
-      is_transfer   : transaction.is_transfer,
-      created_at    : transaction.created_at,
-      updated_at    : transaction.updated_at,
-      transaction_id: transaction.transaction_id
+      status           : transaction.status,
+      is_transfer      : transaction.is_transfer,
+      created_at       : transaction.created_at,
+      updated_at       : transaction.updated_at,
+      transaction_id   : transaction.transaction_id,
+      remaining_deposit: transaction.remaining_deposit,
+      usage_deposit    : transaction.usage_deposit
     }
   } )
 }
@@ -120,6 +122,7 @@ export class TransactionProcessor {
   public transaction_status: E_TransactionStatus
   public isPending: boolean
   public user?: User
+  private remainingDeposit: number
 
   constructor (
     payload: TransactionRequestParameter,
@@ -235,6 +238,10 @@ export class TransactionProcessor {
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
       this.transaction.is_transfer = this.payload.is_transfer
+      if ( this.payload.use_deposit ) {
+        this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
+        this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
+      }
 
       await this.queryRunner.manager.save( this.transaction )
       return
@@ -284,6 +291,7 @@ export class TransactionProcessor {
       customerMonet.source = E_CODE_KEY.DEP_SUB_PAID_WITH_DEPOSIT
       await this.queryRunner.manager.save( customerMonet )
       this.transaction_status = E_TransactionStatus.FINISHED
+      this.remainingDeposit = this.total_deposit - amount
     } catch ( error ) {
       return await Promise.reject( error )
     }
