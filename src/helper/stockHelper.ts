@@ -29,8 +29,8 @@ export const CalculateTotalStock = ( stock: StockGudang[] | StockToko[] ): numbe
 
 export const stockDeductor: I_StockDeductor = async ( stock_id, amount, is_gudang ) => {
   const stock = await Stock.findOneOrFail( stock_id )
+  
   if ( is_gudang && stock.stock_gudang - amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
-  if ( stock.stock_toko - amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
 
   if ( is_gudang ) {
     const stock_gudang = new StockGudang()
@@ -46,7 +46,7 @@ export const stockDeductor: I_StockDeductor = async ( stock_id, amount, is_gudan
 
   if ( stock.stock_toko - amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
   stock.stock_toko -= amount
-      
+    
   // Add deduction record into stock_toko
   const stock_toko = new StockToko()
   stock_toko.amount = amount
