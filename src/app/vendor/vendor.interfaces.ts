@@ -4,5 +4,5 @@ export interface VendorRequestParameter {
   pic_name?: string
   pic_phone_number?: string
   code: string
-  shipping_cost: number
+  shipping_cost?: number
 }

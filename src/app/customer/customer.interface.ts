@@ -1,6 +1,6 @@
 export interface CustomerRequestParameter {
   name: string
-  contact_number: string
+  contact_number?: string
 }
 
 export interface CustomerUpdateRequestParameter {
