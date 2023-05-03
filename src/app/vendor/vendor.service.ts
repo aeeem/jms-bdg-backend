@@ -30,7 +30,7 @@ export const addVendorService = async ( body: VendorRequestParameter ) => {
     const _newVendor = new Vendor()
     _newVendor.name = body.name
     _newVendor.code = body.code
-    _newVendor.shipping_cost = body.shipping_cost
+    _newVendor.shipping_cost = body.shipping_cost ?? 0
     _newVendor.address = body.address
     _newVendor.pic_name = body.pic_name
     _newVendor.pic_phone_number = body.pic_phone_number
@@ -47,7 +47,7 @@ export const updateVendorService = async ( id: string, body: VendorRequestParame
     vendor.address = body.address
     vendor.name = body.name
     vendor.code = body.code
-    vendor.shipping_cost = body.shipping_cost
+    vendor.shipping_cost = body.shipping_cost ?? 0
     vendor.pic_name = body.pic_name
     vendor.pic_phone_number = body.pic_phone_number
     await vendor.save()

@@ -114,7 +114,7 @@ export const createCustomerService = async ( payload: CustomerRequestParameter )
     await queryRunner.startTransaction()
     const _newCustomer = new Customer()
     _newCustomer.name = payload.name
-    _newCustomer.contact_number = payload.contact_number
+    _newCustomer.contact_number = payload.contact_number ?? ''
     await queryRunner.manager.save( _newCustomer )
 
     const _customerMonet = new CustomerMonetary()
