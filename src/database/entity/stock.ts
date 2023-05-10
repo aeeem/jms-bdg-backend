@@ -9,7 +9,9 @@ export class Stock extends BaseEntity {
   @PrimaryGeneratedColumn()
     id: number
 
-  @Column( { nullable: true } )
+  @Column( 'decimal', {
+    nullable: true, precision: 6, scale: 2
+  } )
     stock_toko!: number
 
   @Column( { nullable: true } )
