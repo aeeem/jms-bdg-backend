@@ -8,9 +8,7 @@ export class StockToko extends BaseEntity {
   @PrimaryGeneratedColumn()
     id: number
 
-  @Column( 'decimal', {
-    scale: 2, precision: 6, nullable: true
-  } )
+  @Column( { nullable: true } )
     amount!: number
 
   @Column( { nullable: true } )

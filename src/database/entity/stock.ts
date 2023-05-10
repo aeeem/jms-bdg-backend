@@ -9,9 +9,7 @@ export class Stock extends BaseEntity {
   @PrimaryGeneratedColumn()
     id: number
 
-  @Column( 'decimal', {
-    nullable: true, precision: 6, scale: 2
-  } )
+  @Column( { nullable: true } )
     stock_toko!: number
 
   @Column( { nullable: true } )
@@ -23,7 +21,9 @@ export class Stock extends BaseEntity {
   @Column( { nullable: true } )
     sell_price: number
 
-  @Column( { nullable: true } )
+  @Column( 'decimal', {
+    precision: 6, scale: 2, nullable: true
+  } )
     weight: number
 
   @ManyToOne( () => Product, { onDelete: 'CASCADE' } )
