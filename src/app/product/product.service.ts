@@ -24,7 +24,7 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
 
   try {
     await queryRunner.startTransaction()
-
+    
     const new_products = await Promise.all( payload.map( async product => {
       const vendor = await Vendor.findOne( { where: { id: product.vendorId } } )
 
