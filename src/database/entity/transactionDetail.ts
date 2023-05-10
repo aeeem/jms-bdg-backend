@@ -9,7 +9,9 @@ export class TransactionDetail extends BaseEntity {
   @PrimaryGeneratedColumn()
     id: number
 
-  @Column()
+  @Column( 'decimal', {
+    precision: 6, scale: 2, nullable: true
+  } )
     amount: number
 
   @Column()
