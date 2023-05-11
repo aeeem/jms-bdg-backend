@@ -81,6 +81,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "customer_id": {"dataType":"double","required":true},
             "amount": {"dataType":"double","required":true},
+            "is_transfer": {"dataType":"boolean","required":true},
         },
         "additionalProperties": false,
     },
@@ -89,7 +90,7 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "name": {"dataType":"string","required":true},
-            "contact_number": {"dataType":"string","required":true},
+            "contact_number": {"dataType":"string"},
         },
         "additionalProperties": false,
     },
@@ -252,7 +253,7 @@ const models: TsoaRoute.Models = {
             "pic_name": {"dataType":"string"},
             "pic_phone_number": {"dataType":"string"},
             "code": {"dataType":"string","required":true},
-            "shipping_cost": {"dataType":"double","required":true},
+            "shipping_cost": {"dataType":"double"},
         },
         "additionalProperties": false,
     },

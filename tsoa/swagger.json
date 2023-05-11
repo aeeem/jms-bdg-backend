@@ -93,11 +93,15 @@
 					"amount": {
 						"type": "number",
 						"format": "double"
+					},
+					"is_transfer": {
+						"type": "boolean"
 					}
 				},
 				"required": [
 					"customer_id",
-					"amount"
+					"amount",
+					"is_transfer"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -112,8 +116,7 @@
 					}
 				},
 				"required": [
-					"name",
-					"contact_number"
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -525,8 +528,7 @@
 					}
 				},
 				"required": [
-					"code",
-					"shipping_cost"
+					"code"
 				],
 				"type": "object",
 				"additionalProperties": false
