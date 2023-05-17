@@ -78,7 +78,12 @@ export const getStockTokoService = async () => {
   try {
     const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
 
-    const filteredStockToko = stocks.filter( stock => stock.stock_toko > 0 )
+    const filteredStockToko = stocks.filter( stock => stock.stock_toko > 0 ).map( item => {
+      return {
+        ...item,
+        gudang: false
+      }
+    } )
     const filteredStockGudang = stocks.filter( stock => stock.stock_gudang > 0 )
       .map( item => {
         return {
