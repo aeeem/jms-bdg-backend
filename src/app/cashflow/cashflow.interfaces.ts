@@ -1,11 +1,7 @@
 
-export interface CreateCashInRequestBody {
+export interface CreateCashRequestBody {
   note: string
   amount: number
-}
-
-export interface CreateCashOutRequestBody {
-  note: string
-  amount: number
-  cash_type: 'TRANSFER' | 'CASH'
+  cash_type: 'transfer' | 'cash'
+  transaction_date?: Date
 }

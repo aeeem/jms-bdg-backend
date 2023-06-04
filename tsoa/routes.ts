@@ -57,21 +57,13 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateCashOutRequestBody": {
+    "CreateCashRequestBody": {
         "dataType": "refObject",
         "properties": {
             "note": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
-            "cash_type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["TRANSFER"]},{"dataType":"enum","enums":["CASH"]}],"required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "CreateCashInRequestBody": {
-        "dataType": "refObject",
-        "properties": {
-            "note": {"dataType":"string","required":true},
-            "amount": {"dataType":"double","required":true},
+            "cash_type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["transfer"]},{"dataType":"enum","enums":["cash"]}],"required":true},
+            "transaction_date": {"dataType":"datetime"},
         },
         "additionalProperties": false,
     },
@@ -319,7 +311,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function CashFlowController_createCashOut(request: any, response: any, next: any) {
             const args = {
-                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashOutRequestBody"},
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashRequestBody"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -343,7 +335,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function CashFlowController_createCashIn(request: any, response: any, next: any) {
             const args = {
-                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashInRequestBody"},
+                    body: {"in":"body","name":"body","required":true,"ref":"CreateCashRequestBody"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -968,6 +960,7 @@ export function RegisterRoutes(app: express.Router) {
             function ReportController_getDailyReport(request: any, response: any, next: any) {
             const args = {
                     date_param: {"in":"query","name":"date_param","dataType":"string"},
+                    type_cash: {"in":"query","name":"type_cash","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

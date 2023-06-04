@@ -14,10 +14,10 @@ import {
 export class ReportController extends Controller {
   @Security( 'api_key' )
   @Get( '/daily' )
-  public async getDailyReport ( @Query() date_param?: string ) {
+  public async getDailyReport ( @Query() date_param?: string, @Query() type_cash?: string ) {
     try {
       const date = date_param ? dayjs( date_param, DateFormat ) : dayjs()
-      const data = await getDailyReportService( date )
+      const data = await getDailyReportService( date, type_cash )
       return makeResponse.success( { data } )
     } catch ( error ) {
       console.log( error )

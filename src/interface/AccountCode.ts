@@ -13,7 +13,8 @@ export enum E_CODE_KEY {
   'DEBT_SUB_PAY_WITH_DEPOSIT'         = 'DEBT_SUB_PAY_WITH_DEPOSIT', // 'Bayar Hutang Dengan deposit'
   'DEBT_SUB_PAY_WITH_CASH'            = 'DEBT_SUB_PAY_WITH_CASH', // 'Bayar hutang dengan tunai'
   'DEBT_SUB_PAY_WITH_TRANSFER'        = 'DEBT_SUB_PAY_WITH_TRANSFER', // 'Bayar hutang dengan transfer'
-  'DEBT_SUB_RETURN_GOODS'             = 'DEBT_SUB_RETURN_GOODS' // 'Dari retur barang'
+  'DEBT_SUB_RETURN_GOODS'             = 'DEBT_SUB_RETURN_GOODS', // 'Dari retur barang',
+  'DEBT_SUB_PAY_WITH_CHANGE'          = 'DEBT_SUB_PAY_WITH_CHANGE' // 'Bayar hutang dengan tunai'
 }
 
 type AccountCode = {
@@ -84,5 +85,10 @@ export const accountCode: AccountCode = {
     action: 'ADD',
     code  : 'DEP_ADD_CASH_DEPOSIT_TRANSFER',
     type  : 'DEP'
+  },
+  DEBT_SUB_PAY_WITH_CHANGE: {
+    action: 'SUB',
+    code  : 'DEBT_SUB_PAY_WITH_CHANGE',
+    type  : 'DEBT'
   }
 }

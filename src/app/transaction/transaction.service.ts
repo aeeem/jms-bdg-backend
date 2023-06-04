@@ -10,7 +10,9 @@ import _ from 'lodash'
 import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { TRANSACTION_STATUS } from 'src/constants/languageEnums'
-import { E_CashFlowCode, E_CashFlowType } from 'src/database/enum/cashFlow'
+import {
+  E_CashFlowCode, E_CashFlowType, E_CashType
+} from 'src/database/enum/cashFlow'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Errors } from 'src/errorHandler'
@@ -53,6 +55,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     await queryRunner.startTransaction()
     const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
     const customerDeposit = customer ? ( await getCustomerDepositService( customer.id ) ).total_deposit : 0
+    // getCustomerDebtService with condition is_pay_debt
 
     const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
 
@@ -79,6 +82,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       return stockHelper.stock
     } ) )
 
+    // passing customer debt here
     const transactionProcess = new TransactionProcessor(
       payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user
     )
@@ -86,13 +90,17 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     await queryRunner.manager.save( stockSync )
     await transactionProcess.start()
 
-    const cashFlow = new CashFlow()
-    cashFlow.amount = payload.actual_total_price
-    cashFlow.code = E_CashFlowCode.IN_TRANSACTION
-    cashFlow.transaction_id = transactionProcess.transaction.id
-    cashFlow.type = E_CashFlowType.CashIn
+    if ( payload.amount_paid ) {
+      const cashFlow = new CashFlow()
+      cashFlow.amount = payload.amount_paid < payload.actual_total_price ? payload.amount_paid : payload.actual_total_price
+      cashFlow.code = E_CashFlowCode.IN_TRANSACTION
+      cashFlow.transaction_id = transactionProcess.transaction.id
+      cashFlow.type = E_CashFlowType.CashIn
+      cashFlow.cash_type = payload.is_transfer ? E_CashType.TRANSFER : E_CashType.CASH
+      cashFlow.note = 'Penjualan produk' // temporary harcode
+      await queryRunner.manager.save( cashFlow )
+    }
 
-    await queryRunner.manager.save( cashFlow )
     await queryRunner.commitTransaction()
 
     return {
