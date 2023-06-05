@@ -10,6 +10,10 @@ import {
   AddDebtRequestParameter,
   AddDepositRequestParameter, CustomerRequestParameter, CustomerUpdateRequestParameter
 } from './customer.interface'
+import { CashFlow } from '@entity/cashFlow'
+import {
+  E_CashFlowCode, E_CashFlowType, E_CashType
+} from 'src/database/enum/cashFlow'
 
 export const getAllCustomerService = async () => {
   try {
@@ -70,6 +74,14 @@ export const addDepositService = async ( {
     customerMonetary.type = E_Recievables.DEPOSIT
     customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT_TRANSFER : E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT
     await customerMonetary.save()
+
+    const cashFlow = new CashFlow()
+    cashFlow.amount = amount
+    cashFlow.code = E_CashFlowCode.IN_ADD_DEPOSIT
+    cashFlow.type = E_CashFlowType.CashIn
+    cashFlow.cash_type = is_transfer ? E_CashType.TRANSFER : E_CashType.CASH
+    cashFlow.note = `${customer.name} Tambah Deposit` // temporary harcode
+
     return customerMonetary
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
@@ -88,6 +100,16 @@ export const payDebtService = async ( {
     customerMonetary.type = E_Recievables.DEBT
     customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEBT_SUB_PAY_WITH_TRANSFER : E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
     await customerMonetary.save()
+
+    const cashFlow = new CashFlow()
+    cashFlow.amount = amount
+    cashFlow.code = E_CashFlowCode.IN_PAY_DEBT
+    cashFlow.type = E_CashFlowType.CashIn
+    cashFlow.cash_type = is_transfer ? E_CashType.TRANSFER : E_CashType.CASH
+    cashFlow.note = `${customer.name} Bayar Kasbon` // temporary harcode
+    
+    await cashFlow.save()
+
     return customerMonetary
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )

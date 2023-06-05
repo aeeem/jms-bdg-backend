@@ -42,7 +42,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"CreateCashOutRequestBody": {
+			"CreateCashRequestBody": {
 				"properties": {
 					"note": {
 						"type": "string"
@@ -54,32 +54,19 @@
 					"cash_type": {
 						"type": "string",
 						"enum": [
-							"TRANSFER",
-							"CASH"
+							"transfer",
+							"cash"
 						]
+					},
+					"transaction_date": {
+						"type": "string",
+						"format": "date-time"
 					}
 				},
 				"required": [
 					"note",
 					"amount",
 					"cash_type"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"CreateCashInRequestBody": {
-				"properties": {
-					"note": {
-						"type": "string"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"note",
-					"amount"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -639,7 +626,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateCashOutRequestBody"
+								"$ref": "#/components/schemas/CreateCashRequestBody"
 							}
 						}
 					}
@@ -673,7 +660,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/CreateCashInRequestBody"
+								"$ref": "#/components/schemas/CreateCashRequestBody"
 							}
 						}
 					}
@@ -1596,6 +1583,14 @@
 					{
 						"in": "query",
 						"name": "date_param",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "type_cash",
 						"required": false,
 						"schema": {
 							"type": "string"

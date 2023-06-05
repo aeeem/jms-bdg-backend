@@ -238,6 +238,9 @@ export class TransactionProcessor {
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
       this.transaction.is_transfer = this.payload.is_transfer
+      if ( this.payload.amount_paid < this.payload.actual_total_price ) {
+        this.transaction.outstanding_amount = this.payload.actual_total_price - this.payload.amount_paid
+      }
       if ( this.payload.use_deposit ) {
         this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
         this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
@@ -274,6 +277,21 @@ export class TransactionProcessor {
       customerMonet.type = E_Recievables.DEPOSIT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
+      await this.queryRunner.manager.save( customerMonet )
+      this.transaction_status = E_TransactionStatus.FINISHED
+    } catch ( error ) {
+      return await Promise.reject( error )
+    }
+  }
+
+  subDebt = async (): Promise<void> => {
+    try {
+      const customerMonet = new CustomerMonetary()
+      customerMonet.customer = this.customer
+      customerMonet.amount = 0 // ambil dari kembalian
+      customerMonet.type = E_Recievables.DEBT
+      customerMonet.transaction_id = this.transaction.id
+      customerMonet.source = E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH
       await this.queryRunner.manager.save( customerMonet )
       this.transaction_status = E_TransactionStatus.FINISHED
     } catch ( error ) {
