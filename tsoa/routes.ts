@@ -163,11 +163,20 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StockMixProduct": {
+        "dataType": "refObject",
+        "properties": {
+            "stock_id": {"dataType":"double","required":true},
+            "amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "MixedProductRequestParameter": {
         "dataType": "refObject",
         "properties": {
-            "sku": {"dataType":"string","required":true},
-            "amount": {"dataType":"double","required":true},
+            "selectedStockID": {"dataType":"double","required":true},
+            "stock": {"dataType":"array","array":{"dataType":"refObject","ref":"StockMixProduct"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -935,7 +944,7 @@ export function RegisterRoutes(app: express.Router) {
 
             function ProductsController_createMixedProduct(request: any, response: any, next: any) {
             const args = {
-                    payload: {"in":"body","name":"payload","required":true,"dataType":"array","array":{"dataType":"refObject","ref":"MixedProductRequestParameter"}},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"MixedProductRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

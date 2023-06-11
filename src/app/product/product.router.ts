@@ -48,7 +48,7 @@ export class ProductsController extends Controller {
 
   @Post( '/add-campur' )
   @Security( 'api_key', ['create:product'] )
-  public async createMixedProduct ( @Body() payload: MixedProductRequestParameter[] ) {
+  public async createMixedProduct ( @Body() payload: MixedProductRequestParameter ) {
     try {
       const addCampur = await addMixedProductService( payload )
       return makeResponse.success( { data: addCampur, stat_code: 200 } )
