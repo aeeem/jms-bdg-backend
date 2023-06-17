@@ -16,7 +16,11 @@ export interface SearchProductRequestParameter {
   query: string
 }
 
-export interface MixedProductRequestParameter{
-  sku: string
+interface StockMixProduct {
+  stock_id: number
   amount: number
+}
+export interface MixedProductRequestParameter{
+  selectedStockID: number
+  stock: StockMixProduct[]
 }

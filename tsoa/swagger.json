@@ -282,10 +282,11 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"MixedProductRequestParameter": {
+			"StockMixProduct": {
 				"properties": {
-					"sku": {
-						"type": "string"
+					"stock_id": {
+						"type": "number",
+						"format": "double"
 					},
 					"amount": {
 						"type": "number",
@@ -293,8 +294,28 @@
 					}
 				},
 				"required": [
-					"sku",
+					"stock_id",
 					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"MixedProductRequestParameter": {
+				"properties": {
+					"selectedStockID": {
+						"type": "number",
+						"format": "double"
+					},
+					"stock": {
+						"items": {
+							"$ref": "#/components/schemas/StockMixProduct"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"selectedStockID",
+					"stock"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1548,10 +1569,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"items": {
-									"$ref": "#/components/schemas/MixedProductRequestParameter"
-								},
-								"type": "array"
+								"$ref": "#/components/schemas/MixedProductRequestParameter"
 							}
 						}
 					}

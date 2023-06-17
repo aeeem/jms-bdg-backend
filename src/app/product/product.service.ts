@@ -123,22 +123,28 @@ export const deleteProductService = async ( { id }: { id: number } ) => {
   }
 }
 
-export const addMixedProductService = async ( payload: MixedProductRequestParameter[] ) => {
+export const addMixedProductService = async ( payload: MixedProductRequestParameter ) => {
   const queryRunner = db.queryRunner()
   try {
     await queryRunner.startTransaction()
-    const stocks = Promise.all( payload.map( async item => {
-      const isProductExist = await Stock.findOne( { where: { sku: item.sku }, relations: ['stock'] } )
+    
+    const sumStock = payload.stock.reduce( ( prev, next ) => prev + next.amount, 0 )
+
+    const stocks = await Promise.all( payload.stock.map( async item => {
+      const isProductExist = await Stock.findOne( { where: { id: item.stock_id } } )
       if ( isProductExist ) {
         const stock_toko = new StockToko()
-        stock_toko.amount = item.amount
-        stock_toko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK
+        stock_toko.stock_id = item.stock_id
+        stock_toko.amount = item.stock_id === payload.selectedStockID ? sumStock : item.amount
+        stock_toko.code = item.stock_id === payload.selectedStockID ? E_TOKO_CODE_KEY.TOK_ADD_MIX : E_TOKO_CODE_KEY.TOK_SUB_MIX
+
         return stock_toko
       }
     } ) )
     await queryRunner.manager.save( stocks )
     await queryRunner.commitTransaction()
-    return await stocks
+
+    return stocks
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   } finally {
