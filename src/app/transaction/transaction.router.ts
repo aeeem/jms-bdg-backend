@@ -10,12 +10,6 @@ import {
 } from './transaction.service'
 import { RequestWithUser } from 'src/auth'
 
-// export interface I_FILTER_PARAM {
-//   sort?: {
-//     order: 'ASC' | 'DESC'
-//   }
-// }
-
 @Tags( 'Transaction' )
 @Route( '/api/transaction' )
 @Security( 'api_key' )

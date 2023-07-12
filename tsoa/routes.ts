@@ -17,6 +17,8 @@ import { ProductsController } from './../src/app/product/product.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ReportController } from './../src/app/report/report.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { ReturController } from './../src/app/return/retur.router';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { RoleController } from './../src/app/role/role.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { StatisticController } from './../src/app/statistic/statistic.router';
@@ -181,6 +183,25 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ReturRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "stock_id": {"dataType":"double","required":true},
+            "amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ReturCustomerRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "stock_id": {"dataType":"double","required":true},
+            "amount": {"dataType":"double","required":true},
+            "is_gudang": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StockRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -219,6 +240,7 @@ const models: TsoaRoute.Models = {
             "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
             "packaging_cost": {"dataType":"double"},
             "is_transfer": {"dataType":"boolean"},
+            "pay_debt": {"dataType":"boolean"},
         },
         "additionalProperties": false,
     },
@@ -1055,6 +1077,54 @@ export function RegisterRoutes(app: express.Router) {
 
 
               const promise = controller.getSupplierReport.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/retur/vendor',
+            authenticateMiddleware([{"api_key":["create:stock"]}]),
+
+            function ReturController_addReturItemVendor(request: any, response: any, next: any) {
+            const args = {
+                    payload: {"in":"body","name":"payload","required":true,"ref":"ReturRequestParameter"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ReturController();
+
+
+              const promise = controller.addReturItemVendor.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/retur/customer',
+            authenticateMiddleware([{"api_key":["create:stock"]}]),
+
+            function ReturController_addReturItemCustomer(request: any, response: any, next: any) {
+            const args = {
+                    payload: {"in":"body","name":"payload","required":true,"ref":"ReturCustomerRequestParameter"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new ReturController();
+
+
+              const promise = controller.addReturItemCustomer.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

@@ -320,6 +320,46 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ReturRequestParameter": {
+				"properties": {
+					"stock_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"stock_id",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ReturCustomerRequestParameter": {
+				"properties": {
+					"stock_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					},
+					"is_gudang": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"stock_id",
+					"amount",
+					"is_gudang"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StockRequestParameter": {
 				"properties": {
 					"total_stock": {
@@ -420,6 +460,9 @@
 						"format": "double"
 					},
 					"is_transfer": {
+						"type": "boolean"
+					},
+					"pay_debt": {
 						"type": "boolean"
 					}
 				},
@@ -1725,6 +1768,78 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/retur/vendor": {
+			"post": {
+				"operationId": "AddReturItemVendor",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Return"
+				],
+				"security": [
+					{
+						"api_key": [
+							"create:stock"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ReturRequestParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/retur/customer": {
+			"post": {
+				"operationId": "AddReturItemCustomer",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Return"
+				],
+				"security": [
+					{
+						"api_key": [
+							"create:stock"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ReturCustomerRequestParameter"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/roles": {

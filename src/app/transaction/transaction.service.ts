@@ -84,7 +84,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     // passing customer debt here
     const transactionProcess = new TransactionProcessor(
-      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user
+      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, payload.pay_debt, user
     )
  
     await queryRunner.manager.save( stockSync )

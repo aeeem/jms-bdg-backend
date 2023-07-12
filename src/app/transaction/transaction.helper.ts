@@ -12,6 +12,7 @@ import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { E_CODE_KEY } from 'src/interface/AccountCode'
 import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { TransactionRequestParameter } from './transaction.interface'
+import { getCustomerDebtService } from '../customer/customer.service'
 
 export const restoreStocks = async ( items: TransactionDetail[] ) => {
   const queryRunner = db.queryRunner()
@@ -123,6 +124,7 @@ export class TransactionProcessor {
   public isPending: boolean
   public user?: User
   private remainingDeposit: number
+  public pay_debt: boolean
 
   constructor (
     payload: TransactionRequestParameter,
@@ -131,6 +133,7 @@ export class TransactionProcessor {
     expected_total_price: number,
     total_deposit: number,
     isPending: boolean,
+    pay_debt: boolean = false,
     user?: User
   ) {
     this.payload = payload
@@ -141,6 +144,7 @@ export class TransactionProcessor {
     this.transaction = new Transaction()
     this.isPending = isPending
     this.user = user
+    this.pay_debt = pay_debt
   }
 
   public async start (): Promise<void> {
@@ -166,6 +170,10 @@ export class TransactionProcessor {
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
       if ( hasChange && this.payload.deposit ) {
         return await this.makeDeposit( change )
+      }
+      // [9] customer bayar hutang dengan kembalian tanpa menjadikan deposit
+      if ( hasChange && this.pay_debt ) {
+        return await this.subDebt()
       }
       // [8] customer bayar dengan cash namun dana tidak cukup
       if ( this.payload.amount_paid < this.payload.actual_total_price ) {
@@ -272,13 +280,28 @@ export class TransactionProcessor {
   makeDeposit = async ( amount: number ): Promise<void> => {
     try {
       const customerMonet = new CustomerMonetary()
+      let remainingMoney = 0
+      if ( this.pay_debt ) {
+        if ( !this.customer ) throw E_ERROR.CANT_PAY_DEBT_FOR_UNREGISERED_CUSTOMER
+        const { total_debt } = await getCustomerDebtService( this.customer.id )
+        // tidak bisa melakukan bayar hutang + deposit jika dia masih memiliki hutang setelah bayar dengan kembalian
+        if ( total_debt - this.change > 0 ) throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT
+        const payDebtMonet = new CustomerMonetary()
+        remainingMoney = this.change - total_debt
+        payDebtMonet.customer = this.customer
+        payDebtMonet.amount = remainingMoney
+        payDebtMonet.type = E_Recievables.DEBT
+        payDebtMonet.transaction_id = this.transaction.id
+        payDebtMonet.source = E_CODE_KEY.DEBT_SUB_PAY_WITH_CHANGE
+        await this.queryRunner.manager.save( payDebtMonet )
+      }
       customerMonet.customer = this.customer
-      customerMonet.amount = amount
+      customerMonet.amount = this.pay_debt ? remainingMoney : amount
       customerMonet.type = E_Recievables.DEPOSIT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
-      await this.queryRunner.manager.save( customerMonet )
       this.transaction_status = E_TransactionStatus.FINISHED
+      await this.queryRunner.manager.save( customerMonet )
     } catch ( error ) {
       return await Promise.reject( error )
     }
@@ -286,9 +309,10 @@ export class TransactionProcessor {
 
   subDebt = async (): Promise<void> => {
     try {
+      if ( this.change < 1 ) throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
-      customerMonet.amount = 0 // ambil dari kembalian
+      customerMonet.amount = this.change// ambil dari kembalian
       customerMonet.type = E_Recievables.DEBT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH
