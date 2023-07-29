@@ -81,6 +81,9 @@ export class Transaction extends BaseEntity {
   @Column( { nullable: true } )
     usage_deposit: number
 
+  @Column( { nullable: true } )
+    pay_debt_amount: number
+
   @CreateDateColumn()
     created_at: Date
 

@@ -94,7 +94,8 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
       updated_at       : transaction.updated_at,
       transaction_id   : transaction.transaction_id,
       remaining_deposit: transaction.remaining_deposit,
-      usage_deposit    : transaction.usage_deposit
+      usage_deposit    : transaction.usage_deposit,
+      pay_debt_amount  : transaction.pay_debt_amount
     }
   } )
 }
@@ -125,6 +126,7 @@ export class TransactionProcessor {
   public user?: User
   private remainingDeposit: number
   public pay_debt: boolean
+  private pay_debt_amount: number
 
   constructor (
     payload: TransactionRequestParameter,
@@ -253,6 +255,9 @@ export class TransactionProcessor {
         this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
         this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
       }
+      if ( this.pay_debt ) {
+        this.transaction.pay_debt_amount = this.pay_debt_amount
+      }
 
       await this.queryRunner.manager.save( this.transaction )
       return
@@ -310,14 +315,20 @@ export class TransactionProcessor {
   subDebt = async (): Promise<void> => {
     try {
       if ( this.change < 1 ) throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT
-      const customerMonet = new CustomerMonetary()
-      customerMonet.customer = this.customer
-      customerMonet.amount = this.change// ambil dari kembalian
-      customerMonet.type = E_Recievables.DEBT
-      customerMonet.transaction_id = this.transaction.id
-      customerMonet.source = E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH
-      await this.queryRunner.manager.save( customerMonet )
-      this.transaction_status = E_TransactionStatus.FINISHED
+      if ( this.customer ) {
+        const customerMonet = new CustomerMonetary()
+        const { total_debt } = await getCustomerDebtService( this.customer.id )
+        const pay_debt = ( total_debt - this.change ) < 0 ? total_debt : this.change
+        customerMonet.customer = this.customer
+        customerMonet.amount = pay_debt
+        customerMonet.type = E_Recievables.DEBT
+        customerMonet.transaction_id = this.transaction.id
+        customerMonet.source = E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH
+        await this.queryRunner.manager.save( customerMonet )
+        this.transaction_status = E_TransactionStatus.FINISHED
+        this.pay_debt_amount = pay_debt
+        this.change = this.change - pay_debt
+      }
     } catch ( error ) {
       return await Promise.reject( error )
     }
