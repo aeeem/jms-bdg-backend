@@ -327,6 +327,7 @@ export class TransactionProcessor {
         await this.queryRunner.manager.save( customerMonet )
         this.transaction_status = E_TransactionStatus.FINISHED
         this.pay_debt_amount = pay_debt
+        this.change = change - pay_debt
       }
     } catch ( error ) {
       return await Promise.reject( error )
