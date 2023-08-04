@@ -4,6 +4,15 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { StockGudang } from '@entity/stockGudang'
 import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { StockToko } from '@entity/stockToko'
+import { db } from 'src/app'
+import { Q_GetReturGudang, Q_GetReturToko } from 'src/database/rawQuery/getReturQuery'
+
+export const getListReturService = async () => {
+  const stock_gudang = await db.connection.query( Q_GetReturGudang )
+  const stock_toko = await db.connection.query( Q_GetReturToko )
+
+  return [...stock_gudang, ...stock_toko]
+}
 
 export const addReturItemVendorService = async ( payload: ReturRequestParameter ) => {
   const stock = await Stock.findOne( { where: { id: payload.stock_id } } )

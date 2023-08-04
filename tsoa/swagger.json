@@ -1770,6 +1770,32 @@
 				]
 			}
 		},
+		"/api/retur": {
+			"get": {
+				"operationId": "GetListRetur",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Return"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:stock"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/api/retur/vendor": {
 			"post": {
 				"operationId": "AddReturItemVendor",

@@ -8,7 +8,6 @@ export enum E_GUDANG_CODE_KEY {
   'GUD_SUB_BRG_HAPUS'           = 'GUD_SUB_BRG_HAPUS', // Barang dihapus dari gudang,
   'GUD_SUB_BRG_TRANSAKSI'       = 'GUD_SUB_BRG_TRANSAKSI', // Barang dihapus dari gudang
   'GUD_SUB_BRG_RETUR_TO_VENDOR' = 'GUD_SUB_BRG_RETUR_TO_VENDOR'
-
 }
 
 export enum E_TOKO_CODE_KEY {
