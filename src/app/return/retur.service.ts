@@ -6,12 +6,14 @@ import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { StockToko } from '@entity/stockToko'
 import { db } from 'src/app'
 import { Q_GetReturGudang, Q_GetReturToko } from 'src/database/rawQuery/getReturQuery'
+import dayjs from 'dayjs'
 
 export const getListReturService = async () => {
   const stock_gudang = await db.connection.query( Q_GetReturGudang )
   const stock_toko = await db.connection.query( Q_GetReturToko )
+  const listReturn = [...stock_gudang, ...stock_toko].sort( ( a, b ) => ( dayjs( a?.returned_at ).isAfter( dayjs( b?.returned_at ) ) ? -1 : 1 ) )
 
-  return [...stock_gudang, ...stock_toko]
+  return listReturn
 }
 
 export const addReturItemVendorService = async ( payload: ReturRequestParameter ) => {

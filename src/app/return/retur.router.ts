@@ -16,12 +16,11 @@ export class ReturController extends Controller {
   @Security( 'api_key', ['read:stock'] )
   public async getListRetur () {
     try {
-      console.log( 'here ya boi' )
       const result = await getListReturService()
       return makeResponse.success( {
         data     : result,
         stat_code: 200,
-        stat_msg : 'oyey'
+        stat_msg : 'BEGE'
       } )
     } catch ( error: any ) {
       return makeResponse.error( error )

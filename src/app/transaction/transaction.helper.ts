@@ -184,6 +184,7 @@ export class TransactionProcessor {
       // process transaction
       const hasChange = this.payload.amount_paid > this.calculated_price
       const change = hasChange ? this.payload.amount_paid - this.calculated_price : 0
+      this.change = change
       
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
       if ( hasChange && this.payload.deposit ) {
@@ -199,7 +200,6 @@ export class TransactionProcessor {
           this.calculated_price - this.payload.amount_paid
         )
       }
-      this.change = change
     } catch ( error ) {
       return await Promise.reject( error )
     }
@@ -270,6 +270,8 @@ export class TransactionProcessor {
       if ( this.payload.use_deposit ) {
         this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
         this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
+        // TODO temporary, needed proper code
+        this.transaction.outstanding_amount = this.calculated_price - ( this.payload.amount_paid + this.total_deposit )
       }
       if ( this.pay_debt ) {
         this.transaction.pay_debt_amount = this.pay_debt_amount
@@ -317,12 +319,13 @@ export class TransactionProcessor {
         await this.queryRunner.manager.save( payDebtMonet )
       }
       customerMonet.customer = this.customer
-      customerMonet.amount = this.pay_debt ? remainingMoney : amount
+      customerMonet.amount = this.pay_debt ? remainingMoney : Number( this.payload.deposit ?? 0 )
       customerMonet.type = E_Recievables.DEPOSIT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
       this.transaction_status = E_TransactionStatus.FINISHED
       await this.queryRunner.manager.save( customerMonet )
+      this.change = amount - Number( this.payload.deposit ?? 0 )
     } catch ( error ) {
       return await Promise.reject( error )
     }
