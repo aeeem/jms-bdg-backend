@@ -54,8 +54,11 @@ export const pindahStockGudangService = async ( payload: PindahStockGudangReques
 
     const updateStockValue = await Promise.all( payload.map( async item => {
       const stockData = await Stock.findOneOrFail( item.stock_id )
+      const amountStock = item.amount * stockData.weight
+      const currentStockToko = stockData.stock_toko
+      const resultStockToko = Number( currentStockToko ?? 0 ) + amountStock
       stockData.stock_gudang -= item.amount
-      stockData.stock_toko += item.amount * stockData.weight
+      stockData.stock_toko = resultStockToko
       return stockData
     } ) )
 
