@@ -97,7 +97,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       cashFlow.transaction_id = transactionProcess.transaction.id
       cashFlow.type = E_CashFlowType.CashIn
       cashFlow.cash_type = payload.is_transfer ? E_CashType.TRANSFER : E_CashType.CASH
-      cashFlow.note = 'Penjualan produk' // temporary harcode
+      cashFlow.note = 'Penjualan produk' + `${payload.pay_debt ? ' & Bayar Kasbon' : ''}` // temporary harcode
       await queryRunner.manager.save( cashFlow )
     }
 

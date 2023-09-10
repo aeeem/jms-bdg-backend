@@ -12,34 +12,41 @@ import { CashFlowResponseItem, DailyReportResponse } from './report.interface'
 export const getDailyReportService = async ( date: Dayjs, typeCash: string = E_CashFlowType.CashIn ): Promise<any> => {
   const flowType = typeCash === E_CashFlowType.CashIn ? typeCash : E_CashFlowType.CashOut
   const cashFlow = await CashFlow.find( {
-    relations: ['transaction'],
+    relations: ['transaction', 'transaction.customer'],
     where    : { created_at: Raw( alias => `${alias} >= current_date - 1` ), type: flowType },
     order    : { created_at: 'DESC' }
   } )
 
   const rawTodayCashFlow = cashFlow.filter( cf => dayjs( cf?.created_at ).format( DateFormat ) === date.format( DateFormat ) )
   const rawYesterdayCashFlow = cashFlow.filter( cf => dayjs( cf?.created_at ).format( DateFormat ) === date.subtract( 1, 'day' ).format( DateFormat ) )
-  
+
   const todayCashFlow: CashFlowResponseItem[] = rawTodayCashFlow.map( cf => {
+    const payDebtAmount = cf.transaction.pay_debt_amount ?? 0
+
     return {
       id                : cf.id,
       note              : cf.note,
       type              : cf.cash_type,
       flow_type         : cf.type, // check in out
-      sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount : 0,
-      sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount : 0
+      sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount + payDebtAmount : 0,
+      sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount + payDebtAmount : 0,
+      customerName      : cf.transaction.customer?.name
     }
   } )
 
   const yesterdayCashflow = rawYesterdayCashFlow.length
-    ? rawYesterdayCashFlow.map( cf => ( {
-      id                : cf.id,
-      note              : 'Sistem Stock Tunai (Total transaksi H-1)',
-      type              : `${E_CashType.CASH} / ${E_CashType.TRANSFER}`,
-      sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount : 0,
-      sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount : 0,
-      flow_type         : cf.type
-    } ) )?.reduceRight( ( acc, curr ) => {
+    ? rawYesterdayCashFlow.map( cf => {
+      const payDebtAmount = cf.transaction.pay_debt_amount ?? 0
+
+      return {
+        id                : cf.id,
+        note              : 'Sistem Stock Tunai (Total transaksi H-1)',
+        type              : `${E_CashType.CASH} / ${E_CashType.TRANSFER}`,
+        sub_total_cash    : cf.cash_type === E_CashType.CASH ? cf.amount + payDebtAmount : 0,
+        sub_total_transfer: cf.cash_type === E_CashType.TRANSFER ? cf.amount + payDebtAmount : 0,
+        flow_type         : cf.type
+      }
+    } )?.reduceRight( ( acc, curr ) => {
       return {
         id                : curr.id,
         note              : curr.note,
