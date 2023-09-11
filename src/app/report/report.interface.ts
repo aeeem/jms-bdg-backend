@@ -8,6 +8,8 @@ export interface CashFlowResponseItem {
   type: string
   sub_total_cash: number
   sub_total_transfer: number
+  customerName?: string
+  payDebt?: number
 }
 
 export interface ReportResponse{

@@ -12,7 +12,10 @@ import { MixedProductRequestParameter, ProductRequestParameter } from './product
 
 export const getAllProductsService = async () => {
   try {
-    const products = await Product.find( { relations: ['stocks', 'vendor'] } )
+    const products = await Product.find( {
+      relations: ['stocks', 'vendor'],
+      order    : { created_at: 'DESC' }
+    } )
     return makeResponse.success<Product[]>( { data: products, stat_msg: 'SUCCESS' } )
   } catch ( e: any ) {
     throw new Errors( e )
