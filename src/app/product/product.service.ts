@@ -82,9 +82,9 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
 export const searchProductService = async ( { query }: { query: string } ) => {
   try {
     const products = await Product.createQueryBuilder( 'product' )
-      .where( 'product.sku LIKE :query OR product.name LIKE :query', { query: `%${query}%` } )
-      .leftJoinAndSelect( 'product.stock', 'stock' )
-      .leftJoinAndSelect( 'stock.vendor', 'vendor' )
+      .where( 'LOWER(product.sku) LIKE :query OR LOWER(product.name) LIKE :name', { query: `%${query}%`, name: `%${query}%` } )
+      .leftJoinAndSelect( 'product.stocks', 'stocks' )
+      .leftJoinAndSelect( 'product.vendor', 'vendor' )
       .orderBy( 'product.id', 'ASC' )
       .getMany()
     return makeResponse.success<Product[]>( { data: products, stat_msg: 'SUCCESS' } )
