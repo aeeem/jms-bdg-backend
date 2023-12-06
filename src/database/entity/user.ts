@@ -3,6 +3,7 @@ import {
 } from 'typeorm'
 import { Role } from './role'
 import { Transaction } from './transaction'
+import { Opname } from './opname'
 
 @Entity( { name: 'user' } )
 export class User extends BaseEntity {
@@ -36,4 +37,7 @@ export class User extends BaseEntity {
 
   @Column( { nullable: true } )
     role_id: number
+  
+  @OneToMany( () => Opname, opname => opname.operator )
+    opnames: Opname[]
 }

@@ -224,6 +224,24 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"StockOpnameParameter": {
+				"properties": {
+					"stock_id": {
+						"type": "number",
+						"format": "double"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"stock_id",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StockPayload": {
 				"properties": {
 					"jumlahBox": {
@@ -1391,6 +1409,71 @@
 							"schema": {
 								"items": {
 									"$ref": "#/components/schemas/PindahStockGudangRequestParameter"
+								},
+								"type": "array"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/opname": {
+			"get": {
+				"operationId": "GetAllOpnames",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Opname"
+				],
+				"security": [
+					{
+						"api_key": [
+							"read:stock"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/opname/opname": {
+			"post": {
+				"operationId": "OpnameStock",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Opname"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:stock"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/StockOpnameParameter"
 								},
 								"type": "array"
 							}

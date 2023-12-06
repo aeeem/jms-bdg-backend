@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse } from '@tsoa/runtime';
+import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, HttpStatusCodeLiteral, TsoaResponse, fetchMiddlewares } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AuthController } from './../src/app/auth/auth.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -12,6 +12,8 @@ import { CustomerController } from './../src/app/customer/customer.router';
 import { employeeController } from './../src/app/employee/employee.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { GudangController } from './../src/app/gudang/gudang.router';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { OpnameController } from './../src/app/opname/opname.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductsController } from './../src/app/product/product.router';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -35,7 +37,7 @@ import { ServerStatusController } from './../src/app/util-server-status/server-s
 import { expressAuthentication } from './../src/auth';
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require('promise.any');
-import * as express from 'express';
+import type { RequestHandler, Router } from 'express';
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
@@ -138,6 +140,15 @@ const models: TsoaRoute.Models = {
             "buy_price": {"dataType":"double","required":true},
             "sell_price": {"dataType":"double","required":true},
             "box_amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "StockOpnameParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "stock_id": {"dataType":"double","required":true},
+            "amount": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -286,12 +297,14 @@ const validationService = new ValidationService(models);
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-export function RegisterRoutes(app: express.Router) {
+export function RegisterRoutes(app: Router) {
     // ###########################################################################################################
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
         app.post('/api/auth/login',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.login)),
 
             function AuthController_login(request: any, response: any, next: any) {
             const args = {
@@ -315,6 +328,8 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/auth/register',
+            ...(fetchMiddlewares<RequestHandler>(AuthController)),
+            ...(fetchMiddlewares<RequestHandler>(AuthController.prototype.register)),
 
             function AuthController_register(request: any, response: any, next: any) {
             const args = {
@@ -339,6 +354,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/cash-flow/cash-out',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(CashFlowController)),
+            ...(fetchMiddlewares<RequestHandler>(CashFlowController.prototype.createCashOut)),
 
             function CashFlowController_createCashOut(request: any, response: any, next: any) {
             const args = {
@@ -363,6 +380,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/cash-flow/cash-in',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(CashFlowController)),
+            ...(fetchMiddlewares<RequestHandler>(CashFlowController.prototype.createCashIn)),
 
             function CashFlowController_createCashIn(request: any, response: any, next: any) {
             const args = {
@@ -387,6 +406,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.getAllCustomer)),
 
             function CustomerController_getAllCustomer(request: any, response: any, next: any) {
             const args = {
@@ -410,6 +431,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer/detail/:id',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.findCustomerById)),
 
             function CustomerController_findCustomerById(request: any, response: any, next: any) {
             const args = {
@@ -434,6 +457,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer/search',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.searchCustomer)),
 
             function CustomerController_searchCustomer(request: any, response: any, next: any) {
             const args = {
@@ -458,6 +483,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer/deposit/:id',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.getDeposit)),
 
             function CustomerController_getDeposit(request: any, response: any, next: any) {
             const args = {
@@ -482,6 +509,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer/deposit',
             authenticateMiddleware([{"api_key":["create:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.addDeposit)),
 
             function CustomerController_addDeposit(request: any, response: any, next: any) {
             const args = {
@@ -506,6 +535,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer/debt/pay',
             authenticateMiddleware([{"api_key":["create:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.payDebt)),
 
             function CustomerController_payDebt(request: any, response: any, next: any) {
             const args = {
@@ -530,6 +561,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/customer/debt/:id',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.getDebt)),
 
             function CustomerController_getDebt(request: any, response: any, next: any) {
             const args = {
@@ -554,6 +587,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/customer',
             authenticateMiddleware([{"api_key":["create:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.createCustomer)),
 
             function CustomerController_createCustomer(request: any, response: any, next: any) {
             const args = {
@@ -578,6 +613,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/customer/:id',
             authenticateMiddleware([{"api_key":["update:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.updateCustomer)),
 
             function CustomerController_updateCustomer(request: any, response: any, next: any) {
             const args = {
@@ -603,6 +640,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/customer/:id',
             authenticateMiddleware([{"api_key":["delete:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController)),
+            ...(fetchMiddlewares<RequestHandler>(CustomerController.prototype.deleteCustomer)),
 
             function CustomerController_deleteCustomer(request: any, response: any, next: any) {
             const args = {
@@ -627,6 +666,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/pegawai',
             authenticateMiddleware([{"api_key":["read:pegawai"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.getAllEmployee)),
 
             function employeeController_getAllEmployee(request: any, response: any, next: any) {
             const args = {
@@ -650,6 +691,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/pegawai',
             authenticateMiddleware([{"api_key":["create:pegawai"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.createEmployee)),
 
             function employeeController_createEmployee(request: any, response: any, next: any) {
             const args = {
@@ -674,6 +717,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/pegawai/:id',
             authenticateMiddleware([{"api_key":["update:pegawai"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.updateEmployee)),
 
             function employeeController_updateEmployee(request: any, response: any, next: any) {
             const args = {
@@ -699,6 +744,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/pegawai/search',
             authenticateMiddleware([{"api_key":["read:customer"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.searchEmployee)),
 
             function employeeController_searchEmployee(request: any, response: any, next: any) {
             const args = {
@@ -723,6 +770,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/pegawai/:id',
             authenticateMiddleware([{"api_key":["delete:pegawai"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.deleteEmployee)),
 
             function employeeController_deleteEmployee(request: any, response: any, next: any) {
             const args = {
@@ -747,6 +796,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.patch('/api/pegawai/:id',
             authenticateMiddleware([{"api_key":["update:pegawai"]}]),
+            ...(fetchMiddlewares<RequestHandler>(employeeController)),
+            ...(fetchMiddlewares<RequestHandler>(employeeController.prototype.changeEmployeeRole)),
 
             function employeeController_changeEmployeeRole(request: any, response: any, next: any) {
             const args = {
@@ -772,6 +823,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/gudang',
             authenticateMiddleware([{"api_key":["read:gudang"]}]),
+            ...(fetchMiddlewares<RequestHandler>(GudangController)),
+            ...(fetchMiddlewares<RequestHandler>(GudangController.prototype.getStockGudang)),
 
             function GudangController_getStockGudang(request: any, response: any, next: any) {
             const args = {
@@ -795,6 +848,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/gudang/pindah-stok',
             authenticateMiddleware([{"api_key":["update:gudang"]}]),
+            ...(fetchMiddlewares<RequestHandler>(GudangController)),
+            ...(fetchMiddlewares<RequestHandler>(GudangController.prototype.pindahStockGudang)),
 
             function GudangController_pindahStockGudang(request: any, response: any, next: any) {
             const args = {
@@ -819,6 +874,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/gudang',
             authenticateMiddleware([{"api_key":["create:gudang"]}]),
+            ...(fetchMiddlewares<RequestHandler>(GudangController)),
+            ...(fetchMiddlewares<RequestHandler>(GudangController.prototype.tambahStockGudang)),
 
             function GudangController_tambahStockGudang(request: any, response: any, next: any) {
             const args = {
@@ -841,8 +898,62 @@ export function RegisterRoutes(app: express.Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/opname',
+            authenticateMiddleware([{"api_key":["read:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(OpnameController)),
+            ...(fetchMiddlewares<RequestHandler>(OpnameController.prototype.getAllOpnames)),
+
+            function OpnameController_getAllOpnames(request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new OpnameController();
+
+
+              const promise = controller.getAllOpnames.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/opname/opname',
+            authenticateMiddleware([{"api_key":["update:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(OpnameController)),
+            ...(fetchMiddlewares<RequestHandler>(OpnameController.prototype.opnameStock)),
+
+            function OpnameController_opnameStock(request: any, response: any, next: any) {
+            const args = {
+                    body: {"in":"body","name":"body","required":true,"dataType":"array","array":{"dataType":"refObject","ref":"StockOpnameParameter"}},
+                    request: {"in":"request","name":"request","required":true,"dataType":"object"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new OpnameController();
+
+
+              const promise = controller.opnameStock.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/products',
             authenticateMiddleware([{"api_key":["read:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.getAllProducts)),
 
             function ProductsController_getAllProducts(request: any, response: any, next: any) {
             const args = {
@@ -866,6 +977,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/products',
             authenticateMiddleware([{"api_key":["create:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.createProduct)),
 
             function ProductsController_createProduct(request: any, response: any, next: any) {
             const args = {
@@ -890,6 +1003,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/products',
             authenticateMiddleware([{"api_key":["update:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.updateProduct)),
 
             function ProductsController_updateProduct(request: any, response: any, next: any) {
             const args = {
@@ -915,6 +1030,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/products',
             authenticateMiddleware([{"api_key":["delete:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.deleteProduct)),
 
             function ProductsController_deleteProduct(request: any, response: any, next: any) {
             const args = {
@@ -939,6 +1056,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/products/search',
             authenticateMiddleware([{"api_key":["read:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.searchProduct)),
 
             function ProductsController_searchProduct(request: any, response: any, next: any) {
             const args = {
@@ -963,6 +1082,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/products/add-campur',
             authenticateMiddleware([{"api_key":["create:product"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController)),
+            ...(fetchMiddlewares<RequestHandler>(ProductsController.prototype.createMixedProduct)),
 
             function ProductsController_createMixedProduct(request: any, response: any, next: any) {
             const args = {
@@ -987,6 +1108,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/report/daily',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.getDailyReport)),
 
             function ReportController_getDailyReport(request: any, response: any, next: any) {
             const args = {
@@ -1012,6 +1135,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/report/cash-flow',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.getCashFlow)),
 
             function ReportController_getCashFlow(request: any, response: any, next: any) {
             const args = {
@@ -1038,6 +1163,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/report/cash-report',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.getCashReport)),
 
             function ReportController_getCashReport(request: any, response: any, next: any) {
             const args = {
@@ -1061,6 +1188,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/report/supplier',
             authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.getSupplierReport)),
 
             function ReportController_getSupplierReport(request: any, response: any, next: any) {
             const args = {
@@ -1085,6 +1214,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/retur',
             authenticateMiddleware([{"api_key":["read:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReturController)),
+            ...(fetchMiddlewares<RequestHandler>(ReturController.prototype.getListRetur)),
 
             function ReturController_getListRetur(request: any, response: any, next: any) {
             const args = {
@@ -1108,6 +1239,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/retur/vendor',
             authenticateMiddleware([{"api_key":["create:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReturController)),
+            ...(fetchMiddlewares<RequestHandler>(ReturController.prototype.addReturItemVendor)),
 
             function ReturController_addReturItemVendor(request: any, response: any, next: any) {
             const args = {
@@ -1132,6 +1265,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/retur/customer',
             authenticateMiddleware([{"api_key":["create:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReturController)),
+            ...(fetchMiddlewares<RequestHandler>(ReturController.prototype.addReturItemCustomer)),
 
             function ReturController_addReturItemCustomer(request: any, response: any, next: any) {
             const args = {
@@ -1156,6 +1291,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/roles',
             authenticateMiddleware([{"api_key":["read:role"]}]),
+            ...(fetchMiddlewares<RequestHandler>(RoleController)),
+            ...(fetchMiddlewares<RequestHandler>(RoleController.prototype.getAllRoles)),
 
             function RoleController_getAllRoles(request: any, response: any, next: any) {
             const args = {
@@ -1178,6 +1315,8 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/statistic/dashboard',
+            ...(fetchMiddlewares<RequestHandler>(StatisticController)),
+            ...(fetchMiddlewares<RequestHandler>(StatisticController.prototype.getDashboardStats)),
 
             function StatisticController_getDashboardStats(request: any, response: any, next: any) {
             const args = {
@@ -1201,6 +1340,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock',
             authenticateMiddleware([{"api_key":["read:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.getAllStock)),
 
             function StockController_getAllStock(request: any, response: any, next: any) {
             const args = {
@@ -1224,6 +1365,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock/toko',
             authenticateMiddleware([{"api_key":["read:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.getStockToko)),
 
             function StockController_getStockToko(request: any, response: any, next: any) {
             const args = {
@@ -1247,6 +1390,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/stock/:id',
             authenticateMiddleware([{"api_key":["update:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.updateStock)),
 
             function StockController_updateStock(request: any, response: any, next: any) {
             const args = {
@@ -1272,6 +1417,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/stock/:id',
             authenticateMiddleware([{"api_key":["delete:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.deleteStock)),
 
             function StockController_deleteStock(request: any, response: any, next: any) {
             const args = {
@@ -1296,6 +1443,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.patch('/api/stock/:id',
             authenticateMiddleware([{"api_key":["update:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.patchStock)),
 
             function StockController_patchStock(request: any, response: any, next: any) {
             const args = {
@@ -1321,6 +1470,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock/search/:query',
             authenticateMiddleware([{"api_key":["read:stock"]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.findStock)),
 
             function StockController_findStock(request: any, response: any, next: any) {
             const args = {
@@ -1345,6 +1496,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction',
             authenticateMiddleware([{"api_key":["read:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.getAllTransaction)),
 
             function TransactionController_getAllTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1369,6 +1522,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction/search',
             authenticateMiddleware([{"api_key":["read:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.searchTransaction)),
 
             function TransactionController_searchTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1394,6 +1549,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/transaction/create',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.createTransaction)),
 
             function TransactionController_createTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1419,6 +1576,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/transaction/:id',
             authenticateMiddleware([{"api_key":["read:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.getTransactionById)),
 
             function TransactionController_getTransactionById(request: any, response: any, next: any) {
             const args = {
@@ -1443,6 +1602,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/transaction/pending',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.createPendingTransaction)),
 
             function TransactionController_createPendingTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1467,6 +1628,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/transaction/pending/:id',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.deletePendingTransaction)),
 
             function TransactionController_deletePendingTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1491,6 +1654,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/transaction/pending/:transaction_id',
             authenticateMiddleware([{"api_key":["update:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.updatePendingTransaction)),
 
             function TransactionController_updatePendingTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1516,6 +1681,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.patch('/api/transaction/pending/item',
             authenticateMiddleware([{"api_key":["create:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.deletePendingTransactionItem)),
 
             function TransactionController_deletePendingTransactionItem(request: any, response: any, next: any) {
             const args = {
@@ -1540,6 +1707,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/transaction/:id',
             authenticateMiddleware([{"api_key":["update:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.updateTransaction)),
 
             function TransactionController_updateTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1565,6 +1734,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/transaction/:id',
             authenticateMiddleware([{"api_key":["delete:transaction"]}]),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController)),
+            ...(fetchMiddlewares<RequestHandler>(TransactionController.prototype.deleteTransaction)),
 
             function TransactionController_deleteTransaction(request: any, response: any, next: any) {
             const args = {
@@ -1589,6 +1760,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/user-permission/get-all',
             authenticateMiddleware([{"api_key":["read:user"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController)),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController.prototype.getAllUser)),
 
             function UserPermissionController_getAllUser(request: any, response: any, next: any) {
             const args = {
@@ -1612,6 +1785,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/user-permission/create',
             authenticateMiddleware([{"api_key":["create:user"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController)),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController.prototype.createUser)),
 
             function UserPermissionController_createUser(request: any, response: any, next: any) {
             const args = {
@@ -1636,6 +1811,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/user-permission/update/:id',
             authenticateMiddleware([{"api_key":["update:user"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController)),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController.prototype.updateUser)),
 
             function UserPermissionController_updateUser(request: any, response: any, next: any) {
             const args = {
@@ -1661,6 +1838,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/user-permission/delete/:id',
             authenticateMiddleware([{"api_key":["delete:user"]}]),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController)),
+            ...(fetchMiddlewares<RequestHandler>(UserPermissionController.prototype.deleteUser)),
 
             function UserPermissionController_deleteUser(request: any, response: any, next: any) {
             const args = {
@@ -1685,6 +1864,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/vendor',
             authenticateMiddleware([{"api_key":["read:vendor"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VendorController)),
+            ...(fetchMiddlewares<RequestHandler>(VendorController.prototype.getAllVendor)),
 
             function VendorController_getAllVendor(request: any, response: any, next: any) {
             const args = {
@@ -1708,6 +1889,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/vendor/search',
             authenticateMiddleware([{"api_key":["read:vendor"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VendorController)),
+            ...(fetchMiddlewares<RequestHandler>(VendorController.prototype.findVendor)),
 
             function VendorController_findVendor(request: any, response: any, next: any) {
             const args = {
@@ -1732,6 +1915,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/api/vendor',
             authenticateMiddleware([{"api_key":["create:vendor"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VendorController)),
+            ...(fetchMiddlewares<RequestHandler>(VendorController.prototype.addVendor)),
 
             function VendorController_addVendor(request: any, response: any, next: any) {
             const args = {
@@ -1756,6 +1941,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.put('/api/vendor',
             authenticateMiddleware([{"api_key":["update:vendor"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VendorController)),
+            ...(fetchMiddlewares<RequestHandler>(VendorController.prototype.updateVendor)),
 
             function VendorController_updateVendor(request: any, response: any, next: any) {
             const args = {
@@ -1781,6 +1968,8 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/vendor',
             authenticateMiddleware([{"api_key":["delete:vendor"]}]),
+            ...(fetchMiddlewares<RequestHandler>(VendorController)),
+            ...(fetchMiddlewares<RequestHandler>(VendorController.prototype.deleteVendor)),
 
             function VendorController_deleteVendor(request: any, response: any, next: any) {
             const args = {
@@ -1804,6 +1993,8 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/server-status',
+            ...(fetchMiddlewares<RequestHandler>(ServerStatusController)),
+            ...(fetchMiddlewares<RequestHandler>(ServerStatusController.prototype.getServerStatus)),
 
             function ServerStatusController_getServerStatus(request: any, response: any, next: any) {
             const args = {
@@ -1826,6 +2017,8 @@ export function RegisterRoutes(app: express.Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/server-status/routes',
+            ...(fetchMiddlewares<RequestHandler>(ServerStatusController)),
+            ...(fetchMiddlewares<RequestHandler>(ServerStatusController.prototype.getServerRoutes)),
 
             function ServerStatusController_getServerRoutes(request: any, response: any, next: any) {
             const args = {
@@ -1896,7 +2089,7 @@ export function RegisterRoutes(app: express.Router) {
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
             try {
-                request['user'] = await promiseAny(secMethodOrPromises);
+                request['user'] = await promiseAny.call(Promise, secMethodOrPromises);
                 next();
             }
             catch(err) {
@@ -1943,6 +2136,7 @@ export function RegisterRoutes(app: express.Router) {
             response.set(name, headers[name]);
         });
         if (data && typeof data.pipe === 'function' && data.readable && typeof data._read === 'function') {
+            response.status(statusCode || 200)
             data.pipe(response);
         } else if (data !== null && data !== undefined) {
             response.status(statusCode || 200).json(data);
@@ -1970,6 +2164,8 @@ export function RegisterRoutes(app: express.Router) {
                     return request;
                 case 'query':
                     return validationService.ValidateParam(args[key], request.query[name], name, fieldErrors, undefined, {"noImplicitAdditionalProperties":"throw-on-extras"});
+                case 'queries':
+                    return validationService.ValidateParam(args[key], request.query, name, fieldErrors, undefined, {"noImplicitAdditionalProperties":"throw-on-extras"});
                 case 'path':
                     return validationService.ValidateParam(args[key], request.params[name], name, fieldErrors, undefined, {"noImplicitAdditionalProperties":"throw-on-extras"});
                 case 'header':

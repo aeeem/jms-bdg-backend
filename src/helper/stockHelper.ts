@@ -57,3 +57,11 @@ export const stockDeductor: I_StockDeductor = async ( stock_id, amount, is_gudan
     stock
   }
 }
+
+export const parseSKU = ( skuStockId: string ) => {
+  const [sku, stockId] = skuStockId.split( '@' )
+  return {
+    sku,
+    stockId
+  }
+}
