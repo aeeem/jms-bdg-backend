@@ -13,7 +13,7 @@ export const getDailyReportService = async ( date: Dayjs, typeCash: string = E_C
   const flowType = typeCash === E_CashFlowType.CashIn ? typeCash : E_CashFlowType.CashOut
   const cashFlow = await CashFlow.find( {
     relations: ['transaction', 'transaction.customer'],
-    where    : { created_at: Raw( alias => `${alias} >= current_date - 1` ), type: flowType },
+    where    : { created_at: Raw( alias => `${alias} >= '${date.format()}'::timestamp - INTERVAL '1 DAY'` ), type: flowType },
     order    : { created_at: 'DESC' }
   } )
 
