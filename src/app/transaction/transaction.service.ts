@@ -237,16 +237,16 @@ export const deletePendingTransactionItemService = async ( payload: DeleteTransa
 
 export const searchTransactionService = async ( query?: string, id?: string ) => {
   try {
-    const transactions = await await Transaction.find( {
-      relations: [
-        'customer',
-        'transactionDetails',
-        'transactionDetails.product',
-        'transactionDetails.product.stock',
-        'transactionDetails.product.stock.vendor'
-      ],
-      where: id ? { id } : {}
-    } )
+    const transactions = await Transaction.createQueryBuilder( 'transaction' )
+      .where( 'transaction.transaction_id LIKE :query', { query: `%${id ?? ''}%` } )
+      .leftJoinAndSelect( 'transaction.customer', 'customer' )
+      .leftJoinAndSelect( 'transaction.cashier', 'cashier' )
+      .leftJoinAndSelect( 'transaction.transactionDetails', 'transactionDetails' )
+      .leftJoinAndSelect( 'transactionDetails.stock', 'stock' )
+      .leftJoinAndSelect( 'stock.product', 'product' )
+      .leftJoinAndSelect( 'product.vendor', 'vendor' )
+      .orderBy( 'transaction.transaction_id', 'ASC' )
+      .getMany()
     if ( _.isEmpty( transactions ) ) throw E_ERROR.TRANSACTION_NOT_FOUND
     return transactions
   } catch ( error: any ) {

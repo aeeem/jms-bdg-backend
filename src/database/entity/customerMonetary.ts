@@ -45,4 +45,7 @@ export class CustomerMonetary extends BaseEntity {
 
   @UpdateDateColumn()
     updated_at: Date
+
+  @Column( { nullable: true } )
+    description?: string
 }

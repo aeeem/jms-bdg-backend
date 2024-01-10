@@ -83,6 +83,9 @@
 					},
 					"is_transfer": {
 						"type": "boolean"
+					},
+					"description": {
+						"type": "string"
 					}
 				},
 				"required": [
