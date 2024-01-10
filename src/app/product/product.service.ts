@@ -117,8 +117,15 @@ export const updateProductService = async ( id: number, payload: ProductRequestP
 
 export const deleteProductService = async ( { id }: { id: number } ) => {
   try {
-    const _deletedProduct = await Product.findOne( { where: { id }, withDeleted: true } )
+    const _deletedProduct = await Product.findOne( {
+      where: { id }, withDeleted: true, relations: ['stocks']
+    } )
     if ( _deletedProduct == null ) throw E_ERROR.PRODUCT_NOT_FOUND
+
+    await Promise.all( _deletedProduct.stocks.map( async item => {
+      await item.softRemove()
+    } ) )
+
     await _deletedProduct.softRemove()
     return { message: 'Product is deleted!' }
   } catch ( e: any ) {

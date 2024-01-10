@@ -18,7 +18,7 @@ export class Product extends BaseEntity {
   @Column( { nullable: true } )
     arrival_date: Date
 
-  @OneToMany( () => Stock, stock => stock.product, { cascade: true } )
+  @OneToMany( () => Stock, stock => stock.product, { cascade: true, onDelete: 'CASCADE' } )
     stocks: Stock[]
 
   @ManyToOne( () => Vendor, vendor => vendor.products, { onDelete: 'CASCADE' } )
