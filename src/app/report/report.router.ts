@@ -17,6 +17,7 @@ export class ReportController extends Controller {
   public async getDailyReport ( @Query() date_param?: string, @Query() type_cash?: string ) {
     try {
       const date = date_param ? dayjs( date_param, DateFormat ) : dayjs()
+      
       const data = await getDailyReportService( date, type_cash )
       return makeResponse.success( { data } )
     } catch ( error ) {

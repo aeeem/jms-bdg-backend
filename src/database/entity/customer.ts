@@ -3,6 +3,7 @@ import {
 } from 'typeorm'
 import { CustomerMonetary } from './customerMonetary'
 import { Transaction } from './transaction'
+import { CashFlow } from './cashFlow'
 
 @Entity( 'customer' )
 export class Customer extends BaseEntity {
@@ -21,6 +22,10 @@ export class Customer extends BaseEntity {
   @OneToMany( () => Transaction, ( transaction: Transaction ) => transaction.customer, { onDelete: 'CASCADE' } )
   @JoinTable()
     transactions: Transaction[]
+
+  @OneToMany( () => CashFlow, ( transaction: Transaction ) => transaction.customer, { onDelete: 'CASCADE' } )
+  @JoinTable()
+    cashFlows: CashFlow[]
 
   @CreateDateColumn()
     created_at: Date

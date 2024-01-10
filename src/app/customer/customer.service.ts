@@ -112,8 +112,8 @@ export const payDebtService = async ( {
     cashFlow.code = E_CashFlowCode.IN_PAY_DEBT
     cashFlow.type = E_CashFlowType.CashIn
     cashFlow.cash_type = is_transfer ? E_CashType.TRANSFER : E_CashType.CASH
-    cashFlow.note = `${customer.name} Bayar Kasbon` // temporary harcode
-    
+    cashFlow.note = `Pembayaran Hutang : ${customer.name}` // temporary harcode
+    cashFlow.customer = customer
     await cashFlow.save()
 
     return customerMonetary

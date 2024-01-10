@@ -2,6 +2,7 @@ node_modules/
 build/
 logs/
 .env
+dist
 db.sqlite
 
 src/app/.notes

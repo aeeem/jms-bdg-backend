@@ -1,10 +1,11 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import {
   E_CashFlowCode, E_CashFlowType, E_CashType
 } from '../enum/cashFlow'
 import { Transaction } from './transaction'
+import { Customer } from './customer'
 
 @Entity( 'CashFlow' )
 export class CashFlow extends BaseEntity {
@@ -38,6 +39,13 @@ export class CashFlow extends BaseEntity {
     
   @Column( { nullable: true } )
     note: string
+
+  @ManyToOne( () => Customer, { nullable: true } )
+  @JoinColumn( { name: 'customer_id' } )
+    customer: Customer
+
+  @Column( { nullable: true } )
+    customer_id: number
 
   @CreateDateColumn()
     created_at: Date
