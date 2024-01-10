@@ -7,6 +7,7 @@ import makeResponse from 'src/helper/response'
 import {
   addReturItemCustomerService, addReturItemVendorService, getListReturService
 } from './retur.service'
+import { Errors } from '../../errorHandler'
 
 @Tags( 'Return' )
 @Route( '/api/retur' )
@@ -19,11 +20,10 @@ export class ReturController extends Controller {
       const result = await getListReturService()
       return makeResponse.success( {
         data     : result,
-        stat_code: 200,
-        stat_msg : 'BEGE'
+        stat_code: 200
       } )
     } catch ( error: any ) {
-      return makeResponse.error( error )
+      throw new Errors( error )
     }
   }
 
@@ -34,11 +34,10 @@ export class ReturController extends Controller {
       const result = await addReturItemVendorService( payload )
       return makeResponse.success( {
         data     : result,
-        stat_code: 200,
-        stat_msg : 'oyey'
+        stat_code: 200
       } )
     } catch ( error: any ) {
-      return makeResponse.error( error )
+      throw new Errors( error )
     }
   }
 
@@ -53,7 +52,7 @@ export class ReturController extends Controller {
         stat_msg : 'oyey'
       } )
     } catch ( error: any ) {
-      return makeResponse.error( error )
+      throw new Errors( error )
     }
   }
 }

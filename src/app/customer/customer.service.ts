@@ -63,7 +63,7 @@ export const getCustomerDebtService = async ( id: number ) => {
 }
 
 export const addDepositService = async ( {
-  amount, customer_id, is_transfer
+  amount, customer_id, is_transfer, description
 }: AddDepositRequestParameter ) => {
   try {
     const customer = await Customer.findOne( { where: { id: customer_id } } )
@@ -73,6 +73,9 @@ export const addDepositService = async ( {
     customerMonetary.amount = amount
     customerMonetary.type = E_Recievables.DEPOSIT
     customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT_TRANSFER : E_MONET_SOURCE.DEP_ADD_CASH_DEPOSIT
+    if ( description ) {
+      customerMonetary.description = description
+    }
     await customerMonetary.save()
 
     const cashFlow = new CashFlow()
@@ -89,7 +92,7 @@ export const addDepositService = async ( {
 }
 
 export const payDebtService = async ( {
-  amount, customer_id, is_transfer
+  amount, customer_id, is_transfer, description
 }: AddDebtRequestParameter ) => {
   try {
     const customer = await Customer.findOne( { where: { id: customer_id } } )
@@ -99,6 +102,9 @@ export const payDebtService = async ( {
     customerMonetary.amount = amount
     customerMonetary.type = E_Recievables.DEBT
     customerMonetary.source = is_transfer ? E_MONET_SOURCE.DEBT_SUB_PAY_WITH_TRANSFER : E_MONET_SOURCE.DEBT_SUB_PAY_WITH_CASH
+    if ( description ) {
+      customerMonetary.description = description
+    }
     await customerMonetary.save()
 
     const cashFlow = new CashFlow()

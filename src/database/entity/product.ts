@@ -1,5 +1,5 @@
 import {
-  Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn
+  Entity, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn, DeleteDateColumn
 } from 'typeorm'
 import { Stock } from './stock'
 import { Vendor } from './vendor'
@@ -33,4 +33,7 @@ export class Product extends BaseEntity {
 
   @UpdateDateColumn()
     updated_at: Date
+
+  @DeleteDateColumn( { type: 'timestamp', nullable: true } )
+    deleted_at: Date
 }

@@ -78,6 +78,7 @@ const models: TsoaRoute.Models = {
             "customer_id": {"dataType":"double","required":true},
             "amount": {"dataType":"double","required":true},
             "is_transfer": {"dataType":"boolean","required":true},
+            "description": {"dataType":"string"},
         },
         "additionalProperties": false,
     },

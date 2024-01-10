@@ -19,7 +19,7 @@ export const getListReturService = async () => {
 export const addReturItemVendorService = async ( payload: ReturRequestParameter ) => {
   const stock = await Stock.findOne( { where: { id: payload.stock_id } } )
   if ( !stock ) throw E_ERROR.STOCK_NOT_FOUND
-  if ( stock.stock_gudang - payload.amount < 1 ) throw E_ERROR.INSUFFICIENT_STOCK_GDG
+  if ( stock.stock_gudang - payload.amount <= -1 ) throw E_ERROR.INSUFFICIENT_STOCK_GDG
   
   const record_gudang = new StockGudang() // membuat entry baru pada table stock gudang
   stock.stock_gudang -= payload.amount // kurangi stock gudang pada master stock
@@ -34,8 +34,8 @@ export const addReturItemVendorService = async ( payload: ReturRequestParameter 
 export const addReturItemCustomerService = async ( payload: ReturCustomerRequestParameter ) => {
   const stock = await Stock.findOne( { where: { id: payload.stock_id } } )
   if ( !stock ) throw E_ERROR.STOCK_NOT_FOUND
-  if ( payload.is_gudang && stock.stock_gudang - payload.amount < 1 ) throw E_ERROR.INSUFFICIENT_STOCK_GDG
-  if ( !payload.is_gudang && stock.stock_toko - payload.amount < 1 ) throw E_ERROR.INSUFFICIENT_STOCK
+  if ( payload.is_gudang && stock.stock_gudang - payload.amount <= -1 ) throw E_ERROR.INSUFFICIENT_STOCK_GDG
+  if ( !payload.is_gudang && stock.stock_toko - payload.amount <= -1 ) throw E_ERROR.INSUFFICIENT_STOCK
   
   if ( payload.is_gudang ) {
     const record_gudang = new StockGudang() // membuat entry baru pada table stock gudang
