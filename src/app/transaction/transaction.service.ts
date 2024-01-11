@@ -32,9 +32,10 @@ export const getAllTransactionService = async ( sort: string = 'DESC' ) => {
   try {
     const order = sort as T_Sort
     const transactions = await Transaction.find( {
-      order    : { updated_at: order },
-      where    : { status: E_TransactionStatus.FINISHED },
-      relations: [
+      withDeleted: true,
+      order      : { updated_at: order },
+      where      : { status: E_TransactionStatus.FINISHED },
+      relations  : [
         'customer',
         'cashier',
         'transactionDetails',
@@ -45,6 +46,7 @@ export const getAllTransactionService = async ( sort: string = 'DESC' ) => {
     } )
     return formatTransaction( transactions )
   } catch ( error: any ) {
+    console.log( error, 'ini error bos' )
     return await Promise.reject( new Errors( error ) )
   }
 }
