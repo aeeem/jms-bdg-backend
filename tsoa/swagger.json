@@ -577,6 +577,55 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"UpdateUserParameter": {
+				"properties": {
+					"noInduk": {
+						"type": "string"
+					},
+					"roles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"name": {
+						"type": "string"
+					},
+					"birthDate": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"phoneNumber": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"noInduk",
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ChangePasswordParameter": {
+				"properties": {
+					"newPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"newPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"VendorRequestParameter": {
 				"properties": {
 					"name": {
@@ -2677,7 +2726,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -2690,22 +2739,52 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"roles": {
-										"items": {
-											"type": "string"
-										},
-										"type": "array"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"roles",
-									"email"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/UpdateUserParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user-permission/change-password/{id}": {
+			"put": {
+				"operationId": "ChangePassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User Permission"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ChangePasswordParameter"
 							}
 						}
 					}
