@@ -1,5 +1,5 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, OneToMany
+  Entity, PrimaryGeneratedColumn, Column, BaseEntity, JoinColumn, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn
 } from 'typeorm'
 import { Role } from './role'
 import { Transaction } from './transaction'
@@ -13,7 +13,7 @@ export class User extends BaseEntity {
   @Column( { unique: true, nullable: true } )
     email?: string
 
-  @Column( { unique: true } )
+  @Column( { unique: true, nullable: true } )
     noInduk: string
 
   @Column()
@@ -40,4 +40,10 @@ export class User extends BaseEntity {
   
   @OneToMany( () => Opname, opname => opname.operator )
     opnames: Opname[]
+
+  @CreateDateColumn()
+    created_at: Date
+
+  @UpdateDateColumn()
+    updated_at: Date
 }

@@ -35,12 +35,14 @@ export const loginService = async ( payload: LoginRequestParameter ) => {
 
     return makeResponse.success( {
       data: {
-        token  : api_token,
-        id     : user.id,
-        noInduk: user.noInduk,
-        name   : user.name,
-        role   : user.role.role,
-        scopes : userScope
+        token      : api_token,
+        id         : user.id,
+        noInduk    : user.noInduk,
+        name       : user.name,
+        role       : user.role.role,
+        scopes     : userScope,
+        phoneNumber: user?.phone_number,
+        birthDate  : user?.birth_date
       },
       stat_code: HTTP_CODE.OK,
       stat_msg : SUCCESS_MESSAGE.LOGIN_SUCCESS

@@ -46,7 +46,6 @@ export const getAllTransactionService = async ( sort: string = 'DESC' ) => {
     } )
     return formatTransaction( transactions )
   } catch ( error: any ) {
-    console.log( error, 'ini error bos' )
     return await Promise.reject( new Errors( error ) )
   }
 }

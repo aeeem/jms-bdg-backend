@@ -24,3 +24,11 @@ export interface MixedProductRequestParameter{
   selectedStockID: number
   stock: StockMixProduct[]
 }
+
+export interface UpdateProductParameter {
+  name: string
+  vendorId: number
+  tanggalMasuk: Date
+  hargaModal: number
+  hargaJual: number
+}

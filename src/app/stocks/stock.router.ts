@@ -1,9 +1,10 @@
 import makeResponse from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Patch, Path, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { StockRequestParameter } from './stock.interfaces'
+import { AddStockBulkParameter, UpdateStockParameter } from './stock.interfaces'
 import {
+  addStockBulkService,
   findStockService, getAllStocksService, getStockTokoService, updateStockService
 } from './stock.service'
 
@@ -30,7 +31,7 @@ export class StockController extends Controller {
 
   @Put( '/{id}' )
   @Security( 'api_key', ['update:stock'] )
-  public async updateStock ( @Path() id: string, @Body() body: StockRequestParameter ) {
+  public async updateStock ( @Path() id: string, @Body() body: UpdateStockParameter ) {
     return await updateStockService( body, id )
   }
 
@@ -39,15 +40,21 @@ export class StockController extends Controller {
   public async deleteStock ( @Query( 'id' ) id: string ) {
   }
 
-  @Patch( '/{id}/' )
-  @Security( 'api_key', ['update:stock'] )
-  public async patchStock ( @Path() id: string, @Body() body: StockRequestParameter ) {
-    return await updateStockService( body, id )
-  }
+  // @Patch( '/{id}/' )
+  // @Security( 'api_key', ['update:stock'] )
+  // public async patchStock ( @Path() id: string, @Body() body: StockRequestParameter ) {
+  //   return await updateStockService( body, id )
+  // }
 
   @Get( '/search/:query' )
   @Security( 'api_key', ['read:stock'] )
   public async findStock ( @Query( 'query' ) query: string ) {
     return await findStockService( query )
+  }
+
+  @Post( '/bulk/{id}' )
+  @Security( 'api_key' )
+  public async addStockBulk ( @Path() id: number, @Body() body: AddStockBulkParameter ) {
+    return await addStockBulkService( id, body )
   }
 }

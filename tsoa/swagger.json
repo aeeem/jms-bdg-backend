@@ -303,6 +303,38 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"UpdateProductParameter": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"vendorId": {
+						"type": "number",
+						"format": "double"
+					},
+					"tanggalMasuk": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"hargaModal": {
+						"type": "number",
+						"format": "double"
+					},
+					"hargaJual": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"name",
+					"vendorId",
+					"tanggalMasuk",
+					"hargaModal",
+					"hargaJual"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"StockMixProduct": {
 				"properties": {
 					"stock_id": {
@@ -381,29 +413,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"StockRequestParameter": {
+			"UpdateStockParameter": {
 				"properties": {
-					"total_stock": {
+					"amountBox": {
 						"type": "number",
 						"format": "double"
 					},
-					"buy_price": {
-						"type": "number",
-						"format": "double"
-					},
-					"sell_price": {
-						"type": "number",
-						"format": "double"
-					},
-					"productId": {
-						"type": "number",
-						"format": "double"
-					},
-					"vendorId": {
+					"weight": {
 						"type": "number",
 						"format": "double"
 					}
 				},
+				"required": [
+					"amountBox",
+					"weight"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AddStockBulkParameter": {
+				"properties": {
+					"stocks": {
+						"items": {
+							"$ref": "#/components/schemas/UpdateStockParameter"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"stocks"
+				],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -573,6 +612,55 @@
 				},
 				"required": [
 					"detail"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UpdateUserParameter": {
+				"properties": {
+					"noInduk": {
+						"type": "string"
+					},
+					"roles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"name": {
+						"type": "string"
+					},
+					"birthDate": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"phoneNumber": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"noInduk",
+					"name",
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ChangePasswordParameter": {
+				"properties": {
+					"newPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"newPassword"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1584,7 +1672,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ProductRequestParameter"
+								"$ref": "#/components/schemas/UpdateProductParameter"
 							}
 						}
 					}
@@ -2085,7 +2173,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/StockRequestParameter"
+								"$ref": "#/components/schemas/UpdateStockParameter"
 							}
 						}
 					}
@@ -2118,49 +2206,6 @@
 						}
 					}
 				]
-			},
-			"patch": {
-				"operationId": "PatchStock",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Stock"
-				],
-				"security": [
-					{
-						"api_key": [
-							"update:stock"
-						]
-					}
-				],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"$ref": "#/components/schemas/StockRequestParameter"
-							}
-						}
-					}
-				}
 			}
 		},
 		"/api/stock/search/{query}": {
@@ -2196,6 +2241,50 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/stock/bulk/{id}": {
+			"post": {
+				"operationId": "AddStockBulk",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Stock"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddStockBulkParameter"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/transaction": {
@@ -2677,7 +2766,7 @@
 				],
 				"parameters": [
 					{
-						"in": "query",
+						"in": "path",
 						"name": "id",
 						"required": true,
 						"schema": {
@@ -2690,22 +2779,52 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"properties": {
-									"roles": {
-										"items": {
-											"type": "string"
-										},
-										"type": "array"
-									},
-									"email": {
-										"type": "string"
-									}
-								},
-								"required": [
-									"roles",
-									"email"
-								],
-								"type": "object"
+								"$ref": "#/components/schemas/UpdateUserParameter"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/user-permission/change-password/{id}": {
+			"put": {
+				"operationId": "ChangePassword",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"User Permission"
+				],
+				"security": [
+					{
+						"api_key": [
+							"update:user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ChangePasswordParameter"
 							}
 						}
 					}
