@@ -8,7 +8,9 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import makeResponse from 'src/helper/response'
 import { E_TOKO_CODE_KEY, E_GUDANG_CODE_KEY } from 'src/interface/StocksCode'
 import { Errors } from '../../errorHandler'
-import { MixedProductRequestParameter, ProductRequestParameter } from './product.interfaces'
+import {
+  MixedProductRequestParameter, ProductRequestParameter, UpdateProductParameter
+} from './product.interfaces'
 
 export const getAllProductsService = async () => {
   try {
@@ -93,20 +95,23 @@ export const searchProductService = async ( { query }: { query: string } ) => {
   }
 }
 
-export const updateProductService = async ( id: number, payload: ProductRequestParameter ) => {
+export const updateProductService = async ( id: number, payload: UpdateProductParameter ) => {
   try {
     const _updatedProduct = await Product.findOne( { where: { id } } )
-    // const _updatedStock = await Stock.findOne( { where: { productId: id } } )
-    // if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
-    // _updatedStock.buy_price = payload.hargaModal
-    // _updatedStock.sell_price = payload.hargaJual
 
     if ( _updatedProduct == null ) { throw E_ERROR.PRODUCT_NOT_FOUND }
     _updatedProduct.name = payload.name
-    _updatedProduct.sku = payload.sku
     _updatedProduct.arrival_date = payload.tanggalMasuk
     _updatedProduct.vendorId = payload.vendorId
-    // _updatedProduct.stocks = [_updatedStock]
+
+    const _updatedStock = await Stock.find( { where: { productId: id } } )
+    if ( _updatedStock == null ) { throw E_ERROR.STOCK_NOT_FOUND }
+    
+    await Promise.all( _updatedStock.map( async it => {
+      it.buy_price = payload.hargaModal
+      it.sell_price = payload.hargaJual
+      await it.save()
+    } ) )
   
     await _updatedProduct.save()
     return await Product.findOne( { where: { id } } )

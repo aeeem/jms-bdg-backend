@@ -177,6 +177,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UpdateProductParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "name": {"dataType":"string","required":true},
+            "vendorId": {"dataType":"double","required":true},
+            "tanggalMasuk": {"dataType":"datetime","required":true},
+            "hargaModal": {"dataType":"double","required":true},
+            "hargaJual": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "StockMixProduct": {
         "dataType": "refObject",
         "properties": {
@@ -214,14 +226,19 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "StockRequestParameter": {
+    "UpdateStockParameter": {
         "dataType": "refObject",
         "properties": {
-            "total_stock": {"dataType":"double"},
-            "buy_price": {"dataType":"double"},
-            "sell_price": {"dataType":"double"},
-            "productId": {"dataType":"double"},
-            "vendorId": {"dataType":"double"},
+            "amountBox": {"dataType":"double","required":true},
+            "weight": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AddStockBulkParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "stocks": {"dataType":"array","array":{"dataType":"refObject","ref":"UpdateStockParameter"},"required":true},
         },
         "additionalProperties": false,
     },
@@ -1030,7 +1047,7 @@ export function RegisterRoutes(app: Router) {
             function ProductsController_updateProduct(request: any, response: any, next: any) {
             const args = {
                     id: {"in":"query","name":"id","required":true,"dataType":"string"},
-                    payload: {"in":"body","name":"payload","required":true,"ref":"ProductRequestParameter"},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"UpdateProductParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -1417,7 +1434,7 @@ export function RegisterRoutes(app: Router) {
             function StockController_updateStock(request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","required":true,"ref":"StockRequestParameter"},
+                    body: {"in":"body","name":"body","required":true,"ref":"UpdateStockParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -1462,33 +1479,6 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.patch('/api/stock/:id',
-            authenticateMiddleware([{"api_key":["update:stock"]}]),
-            ...(fetchMiddlewares<RequestHandler>(StockController)),
-            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.patchStock)),
-
-            function StockController_patchStock(request: any, response: any, next: any) {
-            const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","required":true,"ref":"StockRequestParameter"},
-            };
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = getValidatedArgs(args, request, response);
-
-                const controller = new StockController();
-
-
-              const promise = controller.patchStock.apply(controller, validatedArgs as any);
-              promiseHandler(controller, promise, response, undefined, next);
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/api/stock/search/:query',
             authenticateMiddleware([{"api_key":["read:stock"]}]),
             ...(fetchMiddlewares<RequestHandler>(StockController)),
@@ -1509,6 +1499,33 @@ export function RegisterRoutes(app: Router) {
 
 
               const promise = controller.findStock.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, undefined, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.post('/api/stock/bulk/:id',
+            authenticateMiddleware([{"api_key":[]}]),
+            ...(fetchMiddlewares<RequestHandler>(StockController)),
+            ...(fetchMiddlewares<RequestHandler>(StockController.prototype.addStockBulk)),
+
+            function StockController_addStockBulk(request: any, response: any, next: any) {
+            const args = {
+                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    body: {"in":"body","name":"body","required":true,"ref":"AddStockBulkParameter"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new StockController();
+
+
+              const promise = controller.addStockBulk.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

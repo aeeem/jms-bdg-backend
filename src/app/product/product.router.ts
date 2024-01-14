@@ -2,7 +2,9 @@ import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { MixedProductRequestParameter, ProductRequestParameter } from './product.interfaces'
+import {
+  MixedProductRequestParameter, ProductRequestParameter, UpdateProductParameter
+} from './product.interfaces'
 import {
   addMixedProductService,
   createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService
@@ -30,7 +32,7 @@ export class ProductsController extends Controller {
 
   @Put( '/' )
   @Security( 'api_key', ['update:product'] )
-  public async updateProduct ( @Query( 'id' ) id: string, @Body() payload: ProductRequestParameter ) {
+  public async updateProduct ( @Query( 'id' ) id: string, @Body() payload: UpdateProductParameter ) {
     return await updateProductService( Number( id ), payload )
   }
 

@@ -6,3 +6,12 @@ export interface StockRequestParameter {
   productId?: number
   vendorId?: number
 }
+
+export interface UpdateStockParameter {
+  amountBox: number
+  weight: number
+}
+
+export interface AddStockBulkParameter {
+  stocks: UpdateStockParameter[]
+}
