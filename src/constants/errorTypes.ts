@@ -35,7 +35,9 @@ export const E_ERROR = {
   USER_NOT_FOUND                                  : { message: 'User not found', status: HTTP_CODE.NO_CONTENT },
   USER_IS_NOT_AUTHORIZED                          : { message: 'User is not authorized', status: HTTP_CODE.UNAUTHORIZED },
   TOKEN_EXPIRED                                   : { message: 'Token expired', status: HTTP_CODE.UNAUTHORIZED },
-  PRODUCT_NOT_FOUND_ONDB                          : { message: 'Product tidak ada, silahkan membuat produk terlebih dahulu', status: HTTP_CODE.BAD_REQUEST }
+  PRODUCT_NOT_FOUND_ONDB                          : { message: 'Product tidak ada, silahkan membuat produk terlebih dahulu', status: HTTP_CODE.BAD_REQUEST },
+  CASHFLOW_NOT_FOUND                              : { message: 'Cashflow not found', status: HTTP_CODE.BAD_REQUEST },
+  STATISTIC_NOT_FOUND                             : { message: 'Statistic not found', status: HTTP_CODE.BAD_REQUEST }
 } as const
 
 export type ErrorKeys = keyof typeof E_ERROR
