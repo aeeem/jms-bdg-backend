@@ -19,7 +19,7 @@ export const getDashboardStatsService = async () => {
       .getRawOne()
 
     const balance = await CashFlow.createQueryBuilder( 'cashflow' )
-      .where( 'cashflow.created_at::Date=current_date' )
+      .where( 'cashflow.created_at::Date=current_date and cashflow.cash_type=\'cash\'' )
       .select( 'sum(case when cashflow.type = \'cash-in\' then cashflow.amount else 0 end) - sum(case when cashflow.type = \'cash-out\' then cashflow.amount else 0 end) ', 'balance' )
       .getRawOne()
 
