@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node'
+
 import { CashFlow } from '@entity/cashFlow'
 import { Customer } from '@entity/customer'
 import { CustomerMonetary } from '@entity/customerMonetary'
@@ -113,6 +115,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       }
     }
   } catch ( error: any ) {
+    Sentry.captureException( error )
     await queryRunner.rollbackTransaction()
     return await Promise.reject( new Errors( error ) )
   } finally {
