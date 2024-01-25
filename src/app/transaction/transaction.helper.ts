@@ -271,7 +271,8 @@ export class TransactionProcessor {
         this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
         this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
         // TODO temporary, needed proper code
-        this.transaction.outstanding_amount = this.calculated_price - ( this.payload.amount_paid + this.total_deposit )
+        const is_debt = this.payload.amount_paid + this.total_deposit < this.calculated_price
+        this.transaction.outstanding_amount = is_debt ? this.calculated_price - ( this.payload.amount_paid + this.total_deposit ) : 0
       }
       if ( this.pay_debt ) {
         this.transaction.pay_debt_amount = this.pay_debt_amount
