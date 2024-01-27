@@ -230,18 +230,24 @@ export class TransactionProcessor {
 
   payWithDepositAndCash = async ( ): Promise<void> => {
     try {
+      const currentPaid = this.payload.amount_paid + this.total_deposit
       // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
       // jika ya check apakah customer ingin menjadikan deposit atau kembalian
-      if ( this.payload.amount_paid + this.total_deposit > this.calculated_price && this.payload.deposit ) {
+      if ( currentPaid > this.calculated_price && this.payload.deposit ) {
         await this.subDeposit( this.total_deposit )
         return await this.makeDeposit( this.payload.deposit )
       }
       // [4] amount_paid + total_deposit < actual_price ==> customer bayar dengan deposit dan uang tunai namun dana tidak cukup
-      if ( this.payload.amount_paid + this.total_deposit < this.calculated_price ) {
-        const debtAmt = this.calculated_price - ( this.payload.amount_paid + this.total_deposit )
+      if ( currentPaid < this.calculated_price ) {
+        const debtAmt = this.calculated_price - ( currentPaid )
         await this.makeDebt( debtAmt )
         return await this.subDeposit( this.total_deposit )
       }
+
+      if ( currentPaid > this.calculated_price && !this.payload.deposit ) {
+        this.change = currentPaid - this.calculated_price
+      }
+      
       return await this.subDeposit( this.total_deposit )
     } catch ( error ) {
       return await Promise.reject( error )
