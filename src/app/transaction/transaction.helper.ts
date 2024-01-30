@@ -13,6 +13,7 @@ import { E_CODE_KEY } from 'src/interface/AccountCode'
 import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { TransactionRequestParameter } from './transaction.interface'
 import { getCustomerDebtService } from '../customer/customer.service'
+import { QueryRunner } from 'typeorm'
 
 export const restoreStocks = async ( items: TransactionDetail[] ) => {
   const queryRunner = db.queryRunner()
@@ -117,7 +118,7 @@ export class TransactionProcessor {
   public customer: Customer | undefined
   public transaction_details: TransactionDetail[] = []
   public expected_total_price: number
-  public queryRunner = db.queryRunner()
+  public queryRunner: QueryRunner
   public total_deposit: number = 0
   private change: number
   public transaction: Transaction
@@ -137,6 +138,7 @@ export class TransactionProcessor {
     total_deposit: number,
     isPending: boolean,
     pay_debt: boolean = false,
+    queryRunner: QueryRunner,
     user?: User
   ) {
     this.payload = payload
@@ -149,6 +151,7 @@ export class TransactionProcessor {
     this.user = user
     this.pay_debt = pay_debt
     this.calculateTotalPrice()
+    this.queryRunner = queryRunner
   }
 
   calculateTotalPrice = () => {

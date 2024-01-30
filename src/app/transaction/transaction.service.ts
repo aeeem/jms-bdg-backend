@@ -54,17 +54,18 @@ export const getAllTransactionService = async ( sort: string = 'DESC' ) => {
 
 export const createTransactionService = async ( payload: TransactionRequestParameter, isPending: boolean = false, user?: User ) => {
   const queryRunner = db.queryRunner()
+  await queryRunner.connect()
+  await queryRunner.startTransaction()
   try {
-    await queryRunner.startTransaction()
-    const customer = await Customer.findOne( { where: { id: payload.customer_id } } )
+    const customer = await queryRunner.manager.findOne( Customer, { where: { id: payload.customer_id } } )
     const customerDeposit = customer ? ( await getCustomerDepositService( customer.id ) ).total_deposit : 0
     // getCustomerDebtService with condition is_pay_debt
 
-    const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
+    const stocks = await queryRunner.manager.find( Stock, { relations: ['product', 'product.vendor'] } )
 
     const expected_total_price = 0
 
-    const transactionDetails = await Promise.all( payload.detail.map( async transactionDetail => {
+    const transactionDetails = payload.detail.map( transactionDetail => {
       const stock = stocks.find( product => product.id === transactionDetail.stock_id )
       if ( stock == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
@@ -75,7 +76,7 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       detail.stock = stock
       detail.is_box = transactionDetail.box
       return detail
-    } ) )
+    } )
 
     const stockSync = await Promise.all( payload.detail.map( async detail => {
       const stockHelper = await stockDeductor( detail.stock_id, detail.amount, detail.box )
@@ -87,10 +88,9 @@ export const createTransactionService = async ( payload: TransactionRequestParam
 
     // passing customer debt here
     const transactionProcess = new TransactionProcessor(
-      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, payload.pay_debt, user
+      payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, payload.pay_debt, queryRunner, user
     )
- 
-    await queryRunner.manager.save( stockSync )
+   
     await transactionProcess.start()
 
     if ( payload.amount_paid ) {
@@ -103,7 +103,8 @@ export const createTransactionService = async ( payload: TransactionRequestParam
       cashFlow.note = 'Penjualan produk' + `${payload.pay_debt ? ' & Bayar Kasbon' : ''}` // temporary harcode
       await queryRunner.manager.save( cashFlow )
     }
-
+    
+    await queryRunner.manager.save( stockSync )
     await queryRunner.commitTransaction()
 
     return {

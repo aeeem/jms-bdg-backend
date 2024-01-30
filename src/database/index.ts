@@ -6,12 +6,14 @@ import doSeeding from './seeds'
 import { StockGudangSubscriber } from './subscriber/stockGudang'
 import { StockTokoSubscriber } from './subscriber/stockToko'
 import { TransactionsSubscriber } from './subscriber/transactions'
+import { Pool } from 'pg'
 
 dotenv.config( {} )
 export default class Database {
   public connection: Connection
 
   public async connectToDB (): Promise<void> {
+    const pg = new Pool( { connectionTimeoutMillis: 2000 } )
     await createConnection( {
       type       : 'postgres',
       host       : 'localhost',
@@ -24,13 +26,16 @@ export default class Database {
       synchronize: true,
       logger     : 'advanced-console',
       extra      : {
-        connectionLimit: 40, max: 100, idleTimeoutMillis: 15000, connectionTimeoutMillis: 1000
-      },
-      subscribers: [
-        StockGudangSubscriber,
-        StockTokoSubscriber,
-        TransactionsSubscriber
-      ]
+        max                    : 20,
+        allowExitOnIdle        : true,
+        idleTimeoutMillis      : 2000,
+        connectionTimeoutMillis: 2000
+      }
+      // subscribers: [
+      //   StockGudangSubscriber,
+      //   StockTokoSubscriber,
+      //   TransactionsSubscriber
+      // ]
     } ).then( _con => {
       this.connection = _con
       console.log( 'Connected to db!!' )
@@ -49,12 +54,12 @@ export default class Database {
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       dropSchema : true,
       synchronize: true,
-      logging    : false,
-      subscribers: [
-        StockGudangSubscriber,
-        StockTokoSubscriber,
-        TransactionsSubscriber
-      ]
+      logging    : false
+      // subscribers: [
+      //   StockGudangSubscriber,
+      //   StockTokoSubscriber,
+      //   TransactionsSubscriber
+      // ]
 
     } ).then( async _con => {
       this.connection = _con
