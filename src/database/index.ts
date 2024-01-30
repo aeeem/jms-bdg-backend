@@ -22,6 +22,10 @@ export default class Database {
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       logging    : false,
       synchronize: true,
+      logger     : 'advanced-console',
+      extra      : {
+        connectionLimit: 40, max: 100, idleTimeoutMillis: 15000, connectionTimeoutMillis: 1000
+      },
       subscribers: [
         StockGudangSubscriber,
         StockTokoSubscriber,
