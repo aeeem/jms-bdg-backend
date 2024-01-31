@@ -3052,6 +3052,9 @@
 							"application/json": {
 								"schema": {
 									"properties": {
+										"version": {
+											"type": "string"
+										},
 										"serverTime": {
 											"type": "string"
 										},
@@ -3060,6 +3063,7 @@
 										}
 									},
 									"required": [
+										"version",
 										"serverTime",
 										"status"
 									],

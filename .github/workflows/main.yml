@@ -1,32 +1,28 @@
-name: deployment
+name: cd
 
 on:
   push:
     branches:
-      - main
-
+      - master
 
 jobs:
-  build-and-deploy:
-
+  cd:
     runs-on: ubuntu-latest
-
-    env:
-      SSH_KEY: $
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+
+      - name: Deploy Using ssh
+        uses: appleboy/ssh-action@master
         with:
-          node-version: 16
-          cache: 'yarn'
-      - run: yarn install
-      - run: yarn build
-      - run: mkdir ~/.ssh
-      - run: 'echo "${{secrets.SSH_PRIVATE_KEY}}" >> ~/.ssh/github-action'
-      - run: chmod 400 ~/.ssh/github-action
-      - run: echo -e "Host devjms\n\tUser devjms\n\tHostname jmsbdg.com\n\tIdentityFile ~/.ssh/github-action\n\tStrictHostKeyChecking No" >> ~/.ssh/config
-      - run: ls -lah
-      - run: rsync -a dist/ devjms:~/jms-bdg-backend/dist
-      - run: ssh devjms "pm2 reload all"
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd ~/jms-bdg-backend
+            git pull origin master
+            git status
+            yarn install
+            pm2 reload all
+            

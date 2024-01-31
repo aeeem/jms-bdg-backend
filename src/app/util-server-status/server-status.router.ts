@@ -7,9 +7,10 @@ import { getRoutes } from './server.status.service'
 @Route( '/api/server-status' )
 export class ServerStatusController extends Controller {
   @Get( '/' )
-  public async getServerStatus (): Promise<{ status: string, serverTime: string }> {
+  public async getServerStatus (): Promise<{ status: string, serverTime: string, version: string }> {
     return {
       status    : 'server is running',
+      version   : '1.0.0',
       serverTime: new Date().toISOString()
     }
   }
