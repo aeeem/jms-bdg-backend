@@ -88,7 +88,6 @@ if ( process.env.SENTRY_ENV === 'production' ) {
 }
 
 app.use( ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
-  console.log( 'HERE <><>', err )
   if ( err instanceof ValidateError ) {
     // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
     const error = new Errors( err )

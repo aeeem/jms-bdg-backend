@@ -5,7 +5,6 @@ import { Errors } from 'src/errorHandler'
 import { ValidateError } from 'tsoa'
 
 const errorResponder = ( err: unknown, req: express.Request, res: express.Response, next: express.NextFunction ) => {
-  console.log( 'here' )
   if ( err instanceof ValidateError ) {
     // console.error( `Caught Validation Error for ${req.path}:`, err.fields )
     return res.status( 422 ).json( {
@@ -21,8 +20,6 @@ const errorResponder = ( err: unknown, req: express.Request, res: express.Respon
     } )
   }
   if ( err instanceof Error ) {
-    console.log( 'here' )
-
     return res.status( 500 ).json( {
       
       errorName: err.name,
