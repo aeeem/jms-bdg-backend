@@ -17,7 +17,7 @@ export const getDailyReportService = async ( date: Dayjs, typeCash: string = E_C
       'transaction.customer',
       'customer'
     ],
-    where: { created_at: Raw( alias => `${alias} >= current_date - 1` ), type: flowType },
+    where: { created_at: Raw( alias => `date(${alias}) BETWEEN '${date.subtract( 1, 'day' ).format( 'YYYY-MM-DD' )}' AND '${date.format( 'YYYY-MM-DD' )}'` ), type: flowType },
     order: { created_at: 'DESC' }
   } )
 

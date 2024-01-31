@@ -58,7 +58,7 @@ app.use( express.urlencoded( { extended: true } ) )
 // Handle logs in console during development
 if ( process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development' ) {
   app.use( morgan( 'dev' ) )
-  app.use( cors( { origin: 'https://jmsbdg.com' } ) )
+  app.use( cors( { origin: ['https://jmsbdg.com', 'http://localhost:3000'] } ) )
 }
 
 // Handle security and origin in production
