@@ -524,13 +524,18 @@
 					},
 					"pay_debt": {
 						"type": "boolean"
+					},
+					"sub_total": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
 					"expected_total_price",
 					"actual_total_price",
 					"amount_paid",
-					"detail"
+					"detail",
+					"sub_total"
 				],
 				"type": "object",
 				"additionalProperties": false

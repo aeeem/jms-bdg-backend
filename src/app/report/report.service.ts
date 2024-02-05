@@ -27,6 +27,7 @@ export const getDailyReportService = async ( date: Dayjs, typeCash: string = E_C
   const todayCashFlow: CashFlowResponseItem[] = rawTodayCashFlow.map( cf => {
     const payDebtAmount = cf.transaction ? cf.transaction_id ? cf.transaction.pay_debt_amount : 0 : 0
     const customerName = cf.customer ? cf.customer_id ? cf.customer.name : cf.transaction.customer?.name : ''
+    console.log( cf.customer )
     return {
       id                : cf.id,
       note              : cf.note,

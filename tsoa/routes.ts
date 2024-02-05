@@ -270,6 +270,7 @@ const models: TsoaRoute.Models = {
             "packaging_cost": {"dataType":"double"},
             "is_transfer": {"dataType":"boolean"},
             "pay_debt": {"dataType":"boolean"},
+            "sub_total": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },

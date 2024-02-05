@@ -89,4 +89,7 @@ export class Transaction extends BaseEntity {
 
   @UpdateDateColumn()
     updated_at: Date
+
+  @Column( { nullable: true } )
+    sub_total: number
 }

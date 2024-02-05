@@ -26,6 +26,7 @@ export interface TransactionRequestParameter {
   packaging_cost?: number
   is_transfer?: boolean
   pay_debt?: boolean
+  sub_total: number
 }
 export interface TransactionUpdateRequestParameter {
   expected_total_price?: number

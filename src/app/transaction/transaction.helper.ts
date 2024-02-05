@@ -96,7 +96,8 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
       transaction_id   : transaction.transaction_id,
       remaining_deposit: transaction.remaining_deposit,
       usage_deposit    : transaction.usage_deposit,
-      pay_debt_amount  : transaction.pay_debt_amount
+      pay_debt_amount  : transaction.pay_debt_amount,
+      sub_total        : transaction.sub_total
     }
   } )
 }
@@ -162,9 +163,9 @@ export class TransactionProcessor {
     }
     // check if there is packaging cost added
     if ( this.payload.packaging_cost ) {
-      totalPrice -= this.payload.packaging_cost
+      totalPrice += this.payload.packaging_cost
     }
-    
+
     this.calculated_price = totalPrice
   }
 
@@ -273,6 +274,7 @@ export class TransactionProcessor {
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
       this.transaction.is_transfer = this.payload.is_transfer
+      this.transaction.sub_total = this.payload.sub_total
       if ( this.payload.amount_paid < this.calculated_price ) {
         this.transaction.outstanding_amount = this.calculated_price - this.payload.amount_paid
       }
