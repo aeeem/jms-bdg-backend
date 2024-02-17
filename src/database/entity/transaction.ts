@@ -1,6 +1,9 @@
 import {
   BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
+import dayjs from 'dayjs'
+
+import { padLeft } from 'src/helper/number'
 import { Customer } from './customer'
 import { CustomerMonetary } from './customerMonetary'
 import { TransactionDetail } from './transactionDetail'
@@ -9,8 +12,15 @@ import { User } from './user'
 @Entity( { name: 'transaction' } )
 export class Transaction extends BaseEntity {
   @BeforeInsert()
-  generateTransactionId () {
-    // console.log( this )
+  async generateTransactionId () {
+    const currentMonth = dayjs().format( 'YYMM' )
+    const transactions: Transaction[] = await Transaction.createQueryBuilder( 'transaction' )
+      .where( 'extract(month from transaction.transaction_date) = extract(month from NOW()) and extract(year from transaction.transaction_date) = extract(year from now())' )
+      .getMany()
+    const lengthTransaction = transactions.length
+    const padded = padLeft( lengthTransaction + 1, 6 )
+    const no_nota = `${currentMonth}${padded}`
+    this.transaction_id = no_nota
   }
 
   @PrimaryGeneratedColumn()
