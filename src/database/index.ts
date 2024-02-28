@@ -1,4 +1,3 @@
-/* eslint-disable n/no-path-concat */
 /* eslint-disable no-console */
 import { Connection, createConnection } from 'typeorm'
 import dotenv from 'dotenv'

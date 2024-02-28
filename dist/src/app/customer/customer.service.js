@@ -18,6 +18,8 @@ const hutangPiutang_1 = require("src/database/enum/hutangPiutang");
 const errorHandler_1 = require("src/errorHandler");
 const monetaryHelper_1 = require("src/helper/monetaryHelper");
 const AccountCode_1 = require("src/interface/AccountCode");
+const cashFlow_1 = require("@entity/cashFlow");
+const cashFlow_2 = require("src/database/enum/cashFlow");
 const getAllCustomerService = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return yield customer_1.Customer.find({ relations: ['transactions', 'monetary'] });
@@ -70,7 +72,7 @@ const getCustomerDebtService = (id) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.getCustomerDebtService = getCustomerDebtService;
-const addDepositService = ({ amount, customer_id }) => __awaiter(void 0, void 0, void 0, function* () {
+const addDepositService = ({ amount, customer_id, is_transfer, description }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customer = yield customer_1.Customer.findOne({ where: { id: customer_id } });
         if (!customer)
@@ -79,8 +81,17 @@ const addDepositService = ({ amount, customer_id }) => __awaiter(void 0, void 0,
         customerMonetary.customer_id = customer.id;
         customerMonetary.amount = amount;
         customerMonetary.type = hutangPiutang_1.E_Recievables.DEPOSIT;
-        customerMonetary.source = AccountCode_1.E_CODE_KEY.DEP_ADD_CASH_DEPOSIT;
+        customerMonetary.source = is_transfer ? AccountCode_1.E_CODE_KEY.DEP_ADD_CASH_DEPOSIT_TRANSFER : AccountCode_1.E_CODE_KEY.DEP_ADD_CASH_DEPOSIT;
+        if (description) {
+            customerMonetary.description = description;
+        }
         yield customerMonetary.save();
+        const cashFlow = new cashFlow_1.CashFlow();
+        cashFlow.amount = amount;
+        cashFlow.code = cashFlow_2.E_CashFlowCode.IN_ADD_DEPOSIT;
+        cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
+        cashFlow.cash_type = is_transfer ? cashFlow_2.E_CashType.TRANSFER : cashFlow_2.E_CashType.CASH;
+        cashFlow.note = `${customer.name} Tambah Deposit`; // temporary harcode
         return customerMonetary;
     }
     catch (error) {
@@ -88,7 +99,7 @@ const addDepositService = ({ amount, customer_id }) => __awaiter(void 0, void 0,
     }
 });
 exports.addDepositService = addDepositService;
-const payDebtService = ({ amount, customer_id }) => __awaiter(void 0, void 0, void 0, function* () {
+const payDebtService = ({ amount, customer_id, is_transfer, description }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const customer = yield customer_1.Customer.findOne({ where: { id: customer_id } });
         if (!customer)
@@ -97,8 +108,19 @@ const payDebtService = ({ amount, customer_id }) => __awaiter(void 0, void 0, vo
         customerMonetary.customer_id = customer.id;
         customerMonetary.amount = amount;
         customerMonetary.type = hutangPiutang_1.E_Recievables.DEBT;
-        customerMonetary.source = AccountCode_1.E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH;
+        customerMonetary.source = is_transfer ? AccountCode_1.E_CODE_KEY.DEBT_SUB_PAY_WITH_TRANSFER : AccountCode_1.E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH;
+        if (description) {
+            customerMonetary.description = description;
+        }
         yield customerMonetary.save();
+        const cashFlow = new cashFlow_1.CashFlow();
+        cashFlow.amount = amount;
+        cashFlow.code = cashFlow_2.E_CashFlowCode.IN_PAY_DEBT;
+        cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
+        cashFlow.cash_type = is_transfer ? cashFlow_2.E_CashType.TRANSFER : cashFlow_2.E_CashType.CASH;
+        cashFlow.note = `Pembayaran Hutang : ${customer.name}`; // temporary harcode
+        cashFlow.customer = customer;
+        yield cashFlow.save();
         return customerMonetary;
     }
     catch (error) {
@@ -122,12 +144,13 @@ const searchCustomerService = (query) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.searchCustomerService = searchCustomerService;
 const createCustomerService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const queryRunner = app_1.db.queryRunner();
     try {
         yield queryRunner.startTransaction();
         const _newCustomer = new customer_1.Customer();
         _newCustomer.name = payload.name;
-        _newCustomer.contact_number = payload.contact_number;
+        _newCustomer.contact_number = (_a = payload.contact_number) !== null && _a !== void 0 ? _a : '';
         yield queryRunner.manager.save(_newCustomer);
         const _customerMonet = new customerMonetary_1.CustomerMonetary();
         _customerMonet.customer = _newCustomer;

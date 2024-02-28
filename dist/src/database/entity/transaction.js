@@ -8,23 +8,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var Transaction_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transaction = void 0;
 const typeorm_1 = require("typeorm");
+const dayjs_1 = __importDefault(require("dayjs"));
+const number_1 = require("src/helper/number");
 const customer_1 = require("./customer");
 const customerMonetary_1 = require("./customerMonetary");
 const transactionDetail_1 = require("./transactionDetail");
 const user_1 = require("./user");
-let Transaction = class Transaction extends typeorm_1.BaseEntity {
+let Transaction = Transaction_1 = class Transaction extends typeorm_1.BaseEntity {
     generateTransactionId() {
-        // console.log( this )
+        return __awaiter(this, void 0, void 0, function* () {
+            const currentMonth = (0, dayjs_1.default)().format('YYMM');
+            const transactions = yield Transaction_1.createQueryBuilder('transaction')
+                .where('extract(month from transaction.transaction_date) = extract(month from NOW()) and extract(year from transaction.transaction_date) = extract(year from now())')
+                .getMany();
+            const lengthTransaction = transactions.length;
+            const padded = (0, number_1.padLeft)(lengthTransaction + 1, 6);
+            const no_nota = `${currentMonth}${padded}`;
+            this.transaction_id = no_nota;
+        });
     }
 };
 __decorate([
     (0, typeorm_1.BeforeInsert)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], Transaction.prototype, "generateTransactionId", null);
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
@@ -108,6 +132,18 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Transaction.prototype, "is_transfer", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "remaining_deposit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "usage_deposit", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "pay_debt_amount", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], Transaction.prototype, "created_at", void 0);
@@ -115,7 +151,11 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Transaction.prototype, "updated_at", void 0);
-Transaction = __decorate([
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transaction.prototype, "sub_total", void 0);
+Transaction = Transaction_1 = __decorate([
     (0, typeorm_1.Entity)({ name: 'transaction' })
 ], Transaction);
 exports.Transaction = Transaction;

@@ -19,7 +19,8 @@
     "start:service": "pm2 start npm --name 'jms-backend' -- run 'start'",
     "eslint": "eslint --ext .ts --fix ./src -c .eslintrc.js",
     "prepare": "husky install",
-    "watch:test": "yarn jest --watch"
+    "watch:test": "yarn jest --watch",
+    "build:bin": "esbuild ./src/index.ts --bundle --platform=node --outfile=server-out.js"
   },
   "husky": {
     "hooks": {
@@ -82,6 +83,7 @@
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "env-cmd": "^10.1.0",
+    "esbuild": "^0.20.1",
     "express": "^4.18.1",
     "fs": "^0.0.1-security",
     "helmet": "^7.1.0",

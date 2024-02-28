@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCashInService = exports.createCashOutService = exports.getCashFlowService = void 0;
 const cashFlow_1 = require("@entity/cashFlow");
 const cashFlow_2 = require("src/database/enum/cashFlow");
+const errorHandler_1 = require("src/errorHandler");
 const getCashFlowService = (year, month, week) => __awaiter(void 0, void 0, void 0, function* () {
     // Monthly
     if (month && !week) {
@@ -34,23 +35,40 @@ const getCashFlowService = (year, month, week) => __awaiter(void 0, void 0, void
 });
 exports.getCashFlowService = getCashFlowService;
 const createCashOutService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const cashFlow = new cashFlow_1.CashFlow();
-    cashFlow.amount = payload.amount;
-    cashFlow.code = cashFlow_2.E_CashFlowCode.OUT_MISC;
-    cashFlow.type = cashFlow_2.E_CashFlowType.CashOut;
-    cashFlow.cash_type = payload.cash_type;
-    cashFlow.note = payload.note;
-    yield cashFlow.save();
-    return cashFlow;
+    try {
+        const cashFlow = new cashFlow_1.CashFlow();
+        cashFlow.amount = payload.amount;
+        cashFlow.code = cashFlow_2.E_CashFlowCode.OUT_MISC;
+        cashFlow.type = cashFlow_2.E_CashFlowType.CashOut;
+        cashFlow.cash_type = payload.cash_type;
+        cashFlow.note = payload.note;
+        if (payload.transaction_date) {
+            cashFlow.created_at = payload.transaction_date;
+        }
+        yield cashFlow.save();
+        return cashFlow;
+    }
+    catch (error) {
+        return yield Promise.reject(new errorHandler_1.Errors(error));
+    }
 });
 exports.createCashOutService = createCashOutService;
 const createCashInService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const cashFlow = new cashFlow_1.CashFlow();
-    cashFlow.amount = payload.amount;
-    cashFlow.code = cashFlow_2.E_CashFlowCode.IN_ADJUSTMENT;
-    cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
-    cashFlow.note = payload.note;
-    yield cashFlow.save();
-    return cashFlow;
+    try {
+        const cashFlow = new cashFlow_1.CashFlow();
+        cashFlow.amount = payload.amount;
+        cashFlow.code = cashFlow_2.E_CashFlowCode.IN_ADJUSTMENT;
+        cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
+        cashFlow.note = payload.note;
+        cashFlow.cash_type = payload.cash_type;
+        if (payload.transaction_date) {
+            cashFlow.created_at = payload.transaction_date;
+        }
+        yield cashFlow.save();
+        return cashFlow;
+    }
+    catch (error) {
+        return yield Promise.reject(new errorHandler_1.Errors(error));
+    }
 });
 exports.createCashInService = createCashInService;

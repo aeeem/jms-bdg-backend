@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.E_ERROR = void 0;
 const enums_1 = require("src/constants/enums");
 exports.E_ERROR = {
+    CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT: { message: 'Jumlah kembalian tidak cukup untuk membayar hutang dan menambahkan deposit', status: enums_1.HTTP_CODE.BAD_REQUEST },
+    CANT_PAY_DEBT_FOR_UNREGISERED_CUSTOMER: { message: 'Pelanggan tidak terdaftar tidak dapat melakukan pembayaran hutang', status: enums_1.HTTP_CODE.BAD_REQUEST },
     CANT_MAKE_DEBT_FOR_UNREGISTERED_CUSTOMER: { message: 'Pelanggan yang tidak terdaftar tidak dapat melakukan transaksi hutang.', status: enums_1.HTTP_CODE.BAD_REQUEST },
     CUSTOMER_NO_DEPOSIT: { message: 'Pelanggan tidak memiliki deposit.', status: enums_1.HTTP_CODE.OK },
     TRANSACTION_NOT_FOUND: { message: 'Transaksi tidak ditemukan.', status: enums_1.HTTP_CODE.NOT_FOUND },
@@ -35,5 +37,7 @@ exports.E_ERROR = {
     USER_NOT_FOUND: { message: 'User not found', status: enums_1.HTTP_CODE.NO_CONTENT },
     USER_IS_NOT_AUTHORIZED: { message: 'User is not authorized', status: enums_1.HTTP_CODE.UNAUTHORIZED },
     TOKEN_EXPIRED: { message: 'Token expired', status: enums_1.HTTP_CODE.UNAUTHORIZED },
-    PRODUCT_NOT_FOUND_ONDB: { message: 'Product tidak ada, silahkan membuat produk terlebih dahulu', status: enums_1.HTTP_CODE.BAD_REQUEST }
+    PRODUCT_NOT_FOUND_ONDB: { message: 'Product tidak ada, silahkan membuat produk terlebih dahulu', status: enums_1.HTTP_CODE.BAD_REQUEST },
+    CASHFLOW_NOT_FOUND: { message: 'Cashflow not found', status: enums_1.HTTP_CODE.BAD_REQUEST },
+    STATISTIC_NOT_FOUND: { message: 'Statistic not found', status: enums_1.HTTP_CODE.BAD_REQUEST }
 };

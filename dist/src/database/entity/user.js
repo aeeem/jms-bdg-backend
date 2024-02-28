@@ -13,6 +13,7 @@ exports.User = void 0;
 const typeorm_1 = require("typeorm");
 const role_1 = require("./role");
 const transaction_1 = require("./transaction");
+const opname_1 = require("./opname");
 let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -24,7 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: true, nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "noInduk", void 0);
 __decorate([
@@ -56,6 +57,18 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], User.prototype, "role_id", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => opname_1.Opname, opname => opname.operator),
+    __metadata("design:type", Array)
+], User.prototype, "opnames", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", Date)
+], User.prototype, "created_at", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", Date)
+], User.prototype, "updated_at", void 0);
 User = __decorate([
     (0, typeorm_1.Entity)({ name: 'user' })
 ], User);

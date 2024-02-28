@@ -20,6 +20,7 @@ const hutangPiutang_1 = require("src/database/enum/hutangPiutang");
 const transaction_2 = require("src/database/enum/transaction");
 const AccountCode_1 = require("src/interface/AccountCode");
 const StocksCode_1 = require("src/interface/StocksCode");
+const customer_service_1 = require("../customer/customer.service");
 const restoreStocks = (items) => __awaiter(void 0, void 0, void 0, function* () {
     const queryRunner = app_1.db.queryRunner();
     try {
@@ -72,16 +73,17 @@ const formatTransaction = (transactions) => {
                 noInduk: (_f = transaction.cashier) === null || _f === void 0 ? void 0 : _f.noInduk
             },
             items: transaction.transactionDetails.map(detail => {
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
                 return {
                     id: detail.id,
                     amount: detail.amount,
                     product: {
-                        id: detail.stock.product.id,
+                        id: ((_b = (_a = detail.stock) === null || _a === void 0 ? void 0 : _a.product) === null || _b === void 0 ? void 0 : _b.id) || null,
                         stockId: detail.stock.id,
-                        name: detail.stock.product.name,
-                        vendorId: detail.stock.product.vendorId,
-                        vendorName: detail.stock.product.vendor.name,
-                        sku: detail.stock.product.sku,
+                        name: ((_d = (_c = detail.stock) === null || _c === void 0 ? void 0 : _c.product) === null || _d === void 0 ? void 0 : _d.name) || '',
+                        vendorId: ((_f = (_e = detail.stock) === null || _e === void 0 ? void 0 : _e.product) === null || _f === void 0 ? void 0 : _f.vendorId) || null,
+                        vendorName: (_j = (_h = (_g = detail.stock) === null || _g === void 0 ? void 0 : _g.product) === null || _h === void 0 ? void 0 : _h.vendor.name) !== null && _j !== void 0 ? _j : '',
+                        sku: ((_l = (_k = detail.stock) === null || _k === void 0 ? void 0 : _k.product) === null || _l === void 0 ? void 0 : _l.sku) || '',
                         stock_toko: detail.stock.stock_toko,
                         stock_gudang: detail.stock.stock_gudang,
                         sell_price: detail.stock.sell_price,
@@ -95,30 +97,50 @@ const formatTransaction = (transactions) => {
             status: transaction.status,
             is_transfer: transaction.is_transfer,
             created_at: transaction.created_at,
-            updated_at: transaction.updated_at
+            updated_at: transaction.updated_at,
+            transaction_id: transaction.transaction_id,
+            remaining_deposit: transaction.remaining_deposit,
+            usage_deposit: transaction.usage_deposit,
+            pay_debt_amount: transaction.pay_debt_amount,
+            sub_total: transaction.sub_total
         };
     });
 };
 exports.formatTransaction = formatTransaction;
 class TransactionProcessor {
-    constructor(payload, customer, transactionDetails, expected_total_price, total_deposit, isPending, user) {
+    constructor(payload, customer, transactionDetails, expected_total_price, total_deposit, isPending, pay_debt = false, queryRunner, user) {
         this.transaction_details = [];
-        this.queryRunner = app_1.db.queryRunner();
         this.total_deposit = 0;
+        this.calculateTotalPrice = () => {
+            let totalPrice = this.payload.actual_total_price;
+            // check if there is discount
+            if (this.payload.optional_discount) {
+                totalPrice -= this.payload.optional_discount;
+            }
+            // check if there is packaging cost added
+            if (this.payload.packaging_cost) {
+                totalPrice += this.payload.packaging_cost;
+            }
+            this.calculated_price = totalPrice;
+        };
         this.payWithCash = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 // process transaction
-                const hasChange = this.payload.amount_paid > this.payload.actual_total_price;
-                const change = hasChange ? this.payload.amount_paid - this.payload.actual_total_price : 0;
+                const hasChange = this.payload.amount_paid > this.calculated_price;
+                const change = hasChange ? this.payload.amount_paid - this.calculated_price : 0;
+                this.change = change;
                 // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
                 if (hasChange && this.payload.deposit) {
                     return yield this.makeDeposit(change);
                 }
-                // [8] customer bayar dengan cash namun dana tidak cukup
-                if (this.payload.amount_paid < this.payload.actual_total_price) {
-                    return yield this.makeDebt(this.payload.actual_total_price - this.payload.amount_paid);
+                // [9] customer bayar hutang dengan kembalian tanpa menjadikan deposit
+                if (hasChange && this.pay_debt) {
+                    return yield this.subDebt();
                 }
-                this.change = change;
+                // [8] customer bayar dengan cash namun dana tidak cukup
+                if (this.payload.amount_paid < this.calculated_price) {
+                    return yield this.makeDebt(this.calculated_price - this.payload.amount_paid);
+                }
             }
             catch (error) {
                 return yield Promise.reject(error);
@@ -130,13 +152,13 @@ class TransactionProcessor {
                     return yield this.payWithDepositAndCash();
                 }
                 // [2] customer bayar dengan deposit dan deposit cukup untuk membayar
-                if (this.total_deposit >= this.payload.actual_total_price) {
-                    return yield this.subDeposit(this.payload.actual_total_price);
+                if (this.total_deposit >= this.calculated_price) {
+                    return yield this.subDeposit(this.calculated_price);
                 }
                 // [5] customer bayar dengan deposit namun dana tidak cukup dan sisa bayar jadi hutang
-                if (this.total_deposit <= this.payload.actual_total_price) {
+                if (this.total_deposit <= this.calculated_price) {
                     yield this.subDeposit(this.total_deposit);
-                    return yield this.makeDebt(this.payload.actual_total_price - this.total_deposit);
+                    return yield this.makeDebt(this.calculated_price - this.total_deposit);
                 }
             }
             catch (error) {
@@ -145,17 +167,21 @@ class TransactionProcessor {
         });
         this.payWithDepositAndCash = () => __awaiter(this, void 0, void 0, function* () {
             try {
+                const currentPaid = this.payload.amount_paid + this.total_deposit;
                 // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
                 // jika ya check apakah customer ingin menjadikan deposit atau kembalian
-                if (this.payload.amount_paid + this.total_deposit > this.payload.actual_total_price && this.payload.deposit) {
+                if (currentPaid > this.calculated_price && this.payload.deposit) {
                     yield this.subDeposit(this.total_deposit);
                     return yield this.makeDeposit(this.payload.deposit);
                 }
                 // [4] amount_paid + total_deposit < actual_price ==> customer bayar dengan deposit dan uang tunai namun dana tidak cukup
-                if (this.payload.amount_paid + this.total_deposit < this.payload.actual_total_price) {
-                    const debtAmt = this.payload.actual_total_price - (this.payload.amount_paid + this.total_deposit);
+                if (currentPaid < this.calculated_price) {
+                    const debtAmt = this.calculated_price - (currentPaid);
                     yield this.makeDebt(debtAmt);
                     return yield this.subDeposit(this.total_deposit);
+                }
+                if (currentPaid > this.calculated_price && !this.payload.deposit) {
+                    this.change = currentPaid - this.calculated_price;
                 }
                 return yield this.subDeposit(this.total_deposit);
             }
@@ -169,7 +195,7 @@ class TransactionProcessor {
                 this.transaction.customer = this.customer;
                 this.transaction.transactionDetails = this.transaction_details;
                 this.transaction.expected_total_price = this.expected_total_price;
-                this.transaction.actual_total_price = this.payload.optional_discount ? this.payload.actual_total_price - this.payload.optional_discount : this.payload.actual_total_price;
+                this.transaction.actual_total_price = this.calculated_price;
                 this.transaction.transaction_date = this.payload.transaction_date;
                 this.transaction.amount_paid = this.payload.amount_paid;
                 this.transaction.status = this.isPending ? transaction_2.E_TransactionStatus.PENDING : transaction_2.E_TransactionStatus.FINISHED;
@@ -180,6 +206,20 @@ class TransactionProcessor {
                 this.transaction.cashier = this.user;
                 this.transaction.deposit = this.payload.deposit;
                 this.transaction.is_transfer = this.payload.is_transfer;
+                this.transaction.sub_total = this.payload.sub_total;
+                if (this.payload.amount_paid < this.calculated_price) {
+                    this.transaction.outstanding_amount = this.calculated_price - this.payload.amount_paid;
+                }
+                if (this.payload.use_deposit) {
+                    this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price;
+                    this.transaction.remaining_deposit = Number(this.payload.deposit) + Number(this.remainingDeposit);
+                    // TODO temporary, needed proper code
+                    const is_debt = this.payload.amount_paid + this.total_deposit < this.calculated_price;
+                    this.transaction.outstanding_amount = is_debt ? this.calculated_price - (this.payload.amount_paid + this.total_deposit) : 0;
+                }
+                if (this.pay_debt) {
+                    this.transaction.pay_debt_amount = this.pay_debt_amount;
+                }
                 yield this.queryRunner.manager.save(this.transaction);
                 return;
             }
@@ -205,15 +245,57 @@ class TransactionProcessor {
             }
         });
         this.makeDeposit = (amount) => __awaiter(this, void 0, void 0, function* () {
+            var _b, _c;
             try {
                 const customerMonet = new customerMonetary_1.CustomerMonetary();
+                let remainingMoney = 0;
+                if (this.pay_debt) {
+                    if (!this.customer)
+                        throw errorTypes_1.E_ERROR.CANT_PAY_DEBT_FOR_UNREGISERED_CUSTOMER;
+                    const { total_debt } = yield (0, customer_service_1.getCustomerDebtService)(this.customer.id);
+                    // tidak bisa melakukan bayar hutang + deposit jika dia masih memiliki hutang setelah bayar dengan kembalian
+                    if (total_debt - this.change > 0)
+                        throw errorTypes_1.E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT;
+                    const payDebtMonet = new customerMonetary_1.CustomerMonetary();
+                    remainingMoney = this.change - total_debt;
+                    payDebtMonet.customer = this.customer;
+                    payDebtMonet.amount = remainingMoney;
+                    payDebtMonet.type = hutangPiutang_1.E_Recievables.DEBT;
+                    payDebtMonet.transaction_id = this.transaction.id;
+                    payDebtMonet.source = AccountCode_1.E_CODE_KEY.DEBT_SUB_PAY_WITH_CHANGE;
+                    yield this.queryRunner.manager.save(payDebtMonet);
+                }
                 customerMonet.customer = this.customer;
-                customerMonet.amount = amount;
+                customerMonet.amount = this.pay_debt ? remainingMoney : Number((_b = this.payload.deposit) !== null && _b !== void 0 ? _b : 0);
                 customerMonet.type = hutangPiutang_1.E_Recievables.DEPOSIT;
                 customerMonet.transaction_id = this.transaction.id;
                 customerMonet.source = AccountCode_1.E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE;
-                yield this.queryRunner.manager.save(customerMonet);
                 this.transaction_status = transaction_2.E_TransactionStatus.FINISHED;
+                yield this.queryRunner.manager.save(customerMonet);
+                this.change = amount - Number((_c = this.payload.deposit) !== null && _c !== void 0 ? _c : 0);
+            }
+            catch (error) {
+                return yield Promise.reject(error);
+            }
+        });
+        this.subDebt = () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (this.change < 1)
+                    throw errorTypes_1.E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT;
+                if (this.customer) {
+                    const customerMonet = new customerMonetary_1.CustomerMonetary();
+                    const { total_debt } = yield (0, customer_service_1.getCustomerDebtService)(this.customer.id);
+                    const pay_debt = (total_debt - this.change) < 0 ? total_debt : this.change;
+                    customerMonet.customer = this.customer;
+                    customerMonet.amount = pay_debt;
+                    customerMonet.type = hutangPiutang_1.E_Recievables.DEBT;
+                    customerMonet.transaction_id = this.transaction.id;
+                    customerMonet.source = AccountCode_1.E_CODE_KEY.DEBT_SUB_PAY_WITH_CASH;
+                    yield this.queryRunner.manager.save(customerMonet);
+                    this.transaction_status = transaction_2.E_TransactionStatus.FINISHED;
+                    this.pay_debt_amount = pay_debt;
+                    this.change = this.change - pay_debt;
+                }
             }
             catch (error) {
                 return yield Promise.reject(error);
@@ -229,6 +311,7 @@ class TransactionProcessor {
                 customerMonet.source = AccountCode_1.E_CODE_KEY.DEP_SUB_PAID_WITH_DEPOSIT;
                 yield this.queryRunner.manager.save(customerMonet);
                 this.transaction_status = transaction_2.E_TransactionStatus.FINISHED;
+                this.remainingDeposit = this.total_deposit - amount;
             }
             catch (error) {
                 return yield Promise.reject(error);
@@ -242,6 +325,9 @@ class TransactionProcessor {
         this.transaction = new transaction_1.Transaction();
         this.isPending = isPending;
         this.user = user;
+        this.pay_debt = pay_debt;
+        this.calculateTotalPrice();
+        this.queryRunner = queryRunner;
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {

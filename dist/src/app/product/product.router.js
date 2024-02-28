@@ -116,7 +116,7 @@ __decorate([
     (0, tsoa_1.Security)('api_key', ['create:product']),
     __param(0, (0, tsoa_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "createMixedProduct", null);
 ProductsController = __decorate([

@@ -24,7 +24,7 @@ __decorate([
     __metadata("design:type", String)
 ], Product.prototype, "sku", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: false }),
     __metadata("design:type", String)
 ], Product.prototype, "name", void 0);
 __decorate([
@@ -32,7 +32,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Product.prototype, "arrival_date", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => stock_1.Stock, stock => stock.product, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => stock_1.Stock, stock => stock.product, { cascade: true, onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], Product.prototype, "stocks", void 0);
 __decorate([
@@ -52,6 +52,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Product.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], Product.prototype, "deleted_at", void 0);
 Product = __decorate([
     (0, typeorm_1.Entity)({ name: 'product' })
 ], Product);

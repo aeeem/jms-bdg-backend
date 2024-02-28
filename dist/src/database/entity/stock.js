@@ -20,7 +20,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Stock.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)('decimal', {
+        nullable: true, precision: 6, scale: 2
+    }),
     __metadata("design:type", Number)
 ], Stock.prototype, "stock_toko", void 0);
 __decorate([
@@ -36,7 +38,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Stock.prototype, "sell_price", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
+    (0, typeorm_1.Column)('decimal', {
+        precision: 6, scale: 2, nullable: true
+    }),
     __metadata("design:type", Number)
 ], Stock.prototype, "weight", void 0);
 __decorate([
@@ -60,6 +64,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], Stock.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.DeleteDateColumn)({ type: 'timestamp', nullable: true }),
+    __metadata("design:type", Date)
+], Stock.prototype, "deleted_at", void 0);
 Stock = __decorate([
     (0, typeorm_1.Entity)({ name: 'stock' })
 ], Stock);

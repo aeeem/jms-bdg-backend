@@ -26,17 +26,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportController = void 0;
 const dayjs_1 = __importDefault(require("dayjs"));
-const date_1 = require("src/constants/date");
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const cashflow_service_1 = require("../cashflow/cashflow.service");
 const report_service_1 = require("./report.service");
 let ReportController = class ReportController extends tsoa_1.Controller {
-    getDailyReport(date_param) {
+    getDailyReport(date_param, type_cash) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const date = date_param ? (0, dayjs_1.default)(date_param, date_1.DateFormat) : (0, dayjs_1.default)();
-                const data = yield (0, report_service_1.getDailyReportService)(date);
+                const date = date_param ? (0, dayjs_1.default)(date_param) : (0, dayjs_1.default)();
+                const data = yield (0, report_service_1.getDailyReportService)(date, type_cash);
                 return response_1.default.success({ data });
             }
             catch (error) {
@@ -84,8 +83,9 @@ __decorate([
     (0, tsoa_1.Security)('api_key'),
     (0, tsoa_1.Get)('/daily'),
     __param(0, (0, tsoa_1.Query)()),
+    __param(1, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], ReportController.prototype, "getDailyReport", null);
 __decorate([

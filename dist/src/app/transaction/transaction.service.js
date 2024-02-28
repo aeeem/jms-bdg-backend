@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -13,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTransactionService = exports.getTransactionByIdService = exports.updateTransactionService = exports.searchTransactionService = exports.deletePendingTransactionItemService = exports.deletePendingTransactionService = exports.updatePendingTransactionService = exports.createTransactionService = exports.getAllTransactionService = void 0;
+const Sentry = __importStar(require("@sentry/node"));
 const cashFlow_1 = require("@entity/cashFlow");
 const customer_1 = require("@entity/customer");
 const customerMonetary_1 = require("@entity/customerMonetary");
@@ -36,6 +60,7 @@ const getAllTransactionService = (sort = 'DESC') => __awaiter(void 0, void 0, vo
     try {
         const order = sort;
         const transactions = yield transaction_1.Transaction.find({
+            withDeleted: true,
             order: { updated_at: order },
             where: { status: transaction_2.E_TransactionStatus.FINISHED },
             relations: [
@@ -57,13 +82,15 @@ exports.getAllTransactionService = getAllTransactionService;
 const createTransactionService = (payload, isPending = false, user) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     const queryRunner = app_1.db.queryRunner();
+    yield queryRunner.connect();
+    yield queryRunner.startTransaction();
     try {
-        yield queryRunner.startTransaction();
-        const customer = yield customer_1.Customer.findOne({ where: { id: payload.customer_id } });
+        const customer = yield queryRunner.manager.findOne(customer_1.Customer, { where: { id: payload.customer_id } });
         const customerDeposit = customer ? (yield (0, customer_service_1.getCustomerDepositService)(customer.id)).total_deposit : 0;
-        const stocks = yield stock_1.Stock.find({ relations: ['product', 'product.vendor'] });
+        // getCustomerDebtService with condition is_pay_debt
+        const stocks = yield queryRunner.manager.find(stock_1.Stock, { relations: ['product', 'product.vendor'] });
         const expected_total_price = 0;
-        const transactionDetails = yield Promise.all(payload.detail.map((transactionDetail) => __awaiter(void 0, void 0, void 0, function* () {
+        const transactionDetails = payload.detail.map(transactionDetail => {
             const stock = stocks.find(product => product.id === transactionDetail.stock_id);
             if (stock == null)
                 throw errorTypes_1.E_ERROR.PRODUCT_NOT_FOUND;
@@ -74,21 +101,29 @@ const createTransactionService = (payload, isPending = false, user) => __awaiter
             detail.stock = stock;
             detail.is_box = transactionDetail.box;
             return detail;
-        })));
+        });
         const stockSync = yield Promise.all(payload.detail.map((detail) => __awaiter(void 0, void 0, void 0, function* () {
             const stockHelper = yield (0, stockHelper_1.stockDeductor)(detail.stock_id, detail.amount, detail.box);
             yield queryRunner.manager.save(stockHelper.entity);
             return stockHelper.stock;
         })));
-        const transactionProcess = new transaction_helper_1.TransactionProcessor(payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, user);
-        yield queryRunner.manager.save(stockSync);
+        // passing customer debt here
+        const transactionProcess = new transaction_helper_1.TransactionProcessor(payload, customer, transactionDetails, expected_total_price, customerDeposit, isPending, payload.pay_debt, queryRunner, user);
         yield transactionProcess.start();
-        const cashFlow = new cashFlow_1.CashFlow();
-        cashFlow.amount = payload.actual_total_price;
-        cashFlow.code = cashFlow_2.E_CashFlowCode.IN_TRANSACTION;
-        cashFlow.transaction_id = transactionProcess.transaction.id;
-        cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
-        yield queryRunner.manager.save(cashFlow);
+        if (payload.amount_paid) {
+            const cashFlow = new cashFlow_1.CashFlow();
+            cashFlow.amount = payload.amount_paid < payload.actual_total_price ? payload.amount_paid : payload.actual_total_price;
+            cashFlow.code = cashFlow_2.E_CashFlowCode.IN_TRANSACTION;
+            cashFlow.transaction_id = transactionProcess.transaction.id;
+            cashFlow.type = cashFlow_2.E_CashFlowType.CashIn;
+            cashFlow.cash_type = payload.is_transfer ? cashFlow_2.E_CashType.TRANSFER : cashFlow_2.E_CashType.CASH;
+            if (payload.customer_id) {
+                cashFlow.customer_id = payload.customer_id;
+            }
+            cashFlow.note = 'Penjualan produk' + `${payload.pay_debt ? ' & Bayar Kasbon' : ''}`; // temporary harcode
+            yield queryRunner.manager.save(cashFlow);
+        }
+        yield queryRunner.manager.save(stockSync);
         yield queryRunner.commitTransaction();
         return {
             transaction: (0, transaction_helper_1.formatTransaction)([transactionProcess.transaction]),
@@ -96,6 +131,7 @@ const createTransactionService = (payload, isPending = false, user) => __awaiter
         };
     }
     catch (error) {
+        Sentry.captureException(error);
         yield queryRunner.rollbackTransaction();
         return yield Promise.reject(new errorHandler_1.Errors(error));
     }
@@ -206,16 +242,16 @@ const deletePendingTransactionItemService = (payload) => __awaiter(void 0, void 
 exports.deletePendingTransactionItemService = deletePendingTransactionItemService;
 const searchTransactionService = (query, id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const transactions = yield yield transaction_1.Transaction.find({
-            relations: [
-                'customer',
-                'transactionDetails',
-                'transactionDetails.product',
-                'transactionDetails.product.stock',
-                'transactionDetails.product.stock.vendor'
-            ],
-            where: id ? { id } : {}
-        });
+        const transactions = yield transaction_1.Transaction.createQueryBuilder('transaction')
+            .where('transaction.transaction_id LIKE :query', { query: `%${id !== null && id !== void 0 ? id : ''}%` })
+            .leftJoinAndSelect('transaction.customer', 'customer')
+            .leftJoinAndSelect('transaction.cashier', 'cashier')
+            .leftJoinAndSelect('transaction.transactionDetails', 'transactionDetails')
+            .leftJoinAndSelect('transactionDetails.stock', 'stock')
+            .leftJoinAndSelect('stock.product', 'product')
+            .leftJoinAndSelect('product.vendor', 'vendor')
+            .orderBy('transaction.transaction_id', 'ASC')
+            .getMany();
         if (lodash_1.default.isEmpty(transactions))
             throw errorTypes_1.E_ERROR.TRANSACTION_NOT_FOUND;
         return transactions;

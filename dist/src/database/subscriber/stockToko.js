@@ -30,19 +30,23 @@ let StockTokoSubscriber = class StockTokoSubscriber {
     /**
        * Called before post insertion.
        */
-    afterinsert(event) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const stock = yield stock_1.Stock.findOne(event.entity.stock_id);
+    afterInsert(event) {
+        stock_1.Stock.findOne(event.entity.stock_id).then((stock) => __awaiter(this, void 0, void 0, function* () {
             if (stock &&
                 (event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_ADD_BRG_MASUK ||
-                    event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_BRG_RETUR)) {
-                stock.stock_toko = stock.stock_toko + event.entity.amount;
+                    event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_BRG_RETUR ||
+                    event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_ADD_MIX)) {
+                stock.stock_toko = Number(stock.stock_toko) + Number(event.entity.amount);
                 yield stock.save();
             }
-            if (stock && event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_TRANSAKSI) {
-                stock.stock_toko = stock.stock_toko - event.entity.amount;
+            if (stock && (event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_TRANSAKSI ||
+                event.entity.code === StocksCode_1.E_TOKO_CODE_KEY.TOK_SUB_MIX)) {
+                stock.stock_toko = Number(stock.stock_toko) - Number(event.entity.amount);
                 yield stock.save();
             }
+        }))
+            .catch(error => {
+            return error;
         });
     }
 };

@@ -62,8 +62,11 @@ const pindahStockGudangService = (payload) => __awaiter(void 0, void 0, void 0, 
         // } ) )
         const updateStockValue = yield Promise.all(payload.map((item) => __awaiter(void 0, void 0, void 0, function* () {
             const stockData = yield stock_1.Stock.findOneOrFail(item.stock_id);
+            const amountStock = item.amount * stockData.weight;
+            const currentStockToko = stockData.stock_toko;
+            const resultStockToko = Number(currentStockToko !== null && currentStockToko !== void 0 ? currentStockToko : 0) + amountStock;
             stockData.stock_gudang -= item.amount;
-            stockData.stock_toko += item.amount * stockData.weight;
+            stockData.stock_toko = resultStockToko;
             return stockData;
         })));
         const hasMinusStock = updateStockValue.some(stock => stock.stock_gudang < 0);

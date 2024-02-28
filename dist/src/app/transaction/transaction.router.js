@@ -28,11 +28,6 @@ exports.TransactionController = void 0;
 const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const transaction_service_1 = require("./transaction.service");
-// export interface I_FILTER_PARAM {
-//   sort?: {
-//     order: 'ASC' | 'DESC'
-//   }
-// }
 let TransactionController = class TransactionController extends tsoa_1.Controller {
     getAllTransaction(sort) {
         return __awaiter(this, void 0, void 0, function* () {

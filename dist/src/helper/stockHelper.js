@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stockDeductor = exports.CalculateTotalStock = exports.isSubtraction = void 0;
+exports.parseSKU = exports.stockDeductor = exports.CalculateTotalStock = exports.isSubtraction = void 0;
 const stock_1 = require("@entity/stock");
 const stockGudang_1 = require("@entity/stockGudang");
 const stockToko_1 = require("@entity/stockToko");
@@ -34,8 +34,6 @@ exports.CalculateTotalStock = CalculateTotalStock;
 const stockDeductor = (stock_id, amount, is_gudang) => __awaiter(void 0, void 0, void 0, function* () {
     const stock = yield stock_1.Stock.findOneOrFail(stock_id);
     if (is_gudang && stock.stock_gudang - amount < 0)
-        throw errorTypes_1.E_ERROR.INSUFFICIENT_STOCK;
-    if (stock.stock_toko - amount < 0)
         throw errorTypes_1.E_ERROR.INSUFFICIENT_STOCK;
     if (is_gudang) {
         const stock_gudang = new stockGudang_1.StockGudang();
@@ -62,3 +60,11 @@ const stockDeductor = (stock_id, amount, is_gudang) => __awaiter(void 0, void 0,
     };
 });
 exports.stockDeductor = stockDeductor;
+const parseSKU = (skuStockId) => {
+    const [sku, stockId] = skuStockId.split('@');
+    return {
+        sku,
+        stockId
+    };
+};
+exports.parseSKU = parseSKU;

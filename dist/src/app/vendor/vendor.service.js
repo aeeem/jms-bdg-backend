@@ -42,11 +42,12 @@ const findVendorService = (query) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.findVendorService = findVendorService;
 const addVendorService = (body) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const _newVendor = new vendor_1.Vendor();
         _newVendor.name = body.name;
         _newVendor.code = body.code;
-        _newVendor.shipping_cost = body.shipping_cost;
+        _newVendor.shipping_cost = (_a = body.shipping_cost) !== null && _a !== void 0 ? _a : 0;
         _newVendor.address = body.address;
         _newVendor.pic_name = body.pic_name;
         _newVendor.pic_phone_number = body.pic_phone_number;
@@ -59,12 +60,13 @@ const addVendorService = (body) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.addVendorService = addVendorService;
 const updateVendorService = (id, body) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     try {
         const vendor = yield vendor_1.Vendor.findOneOrFail({ where: { id } });
         vendor.address = body.address;
         vendor.name = body.name;
         vendor.code = body.code;
-        vendor.shipping_cost = body.shipping_cost;
+        vendor.shipping_cost = (_b = body.shipping_cost) !== null && _b !== void 0 ? _b : 0;
         vendor.pic_name = body.pic_name;
         vendor.pic_phone_number = body.pic_phone_number;
         yield vendor.save();

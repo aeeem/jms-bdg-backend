@@ -20,7 +20,9 @@ __decorate([
     __metadata("design:type", Number)
 ], TransactionDetail.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)('decimal', {
+        precision: 6, scale: 2, nullable: true
+    }),
     __metadata("design:type", Number)
 ], TransactionDetail.prototype, "amount", void 0);
 __decorate([

@@ -65,6 +65,10 @@ __decorate([
     (0, typeorm_1.UpdateDateColumn)(),
     __metadata("design:type", Date)
 ], CustomerMonetary.prototype, "updated_at", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], CustomerMonetary.prototype, "description", void 0);
 CustomerMonetary = __decorate([
     (0, typeorm_1.Entity)('customer_monetary')
 ], CustomerMonetary);
