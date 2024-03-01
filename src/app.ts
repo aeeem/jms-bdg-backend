@@ -45,8 +45,7 @@ export const db = new Database()
 app.on( 'ready', async () => {
   if ( process.env.NODE_ENV === 'test' ) {
     await db.connectToDBTest()
-  }
-  if ( process.env.NODE_ENV === 'development' ) {
+  }else {
     await db.connectToDB()
   }
 } )
