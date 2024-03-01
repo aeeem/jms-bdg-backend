@@ -50,20 +50,25 @@ app.on( 'ready', async () => {
   }
 } )
 
+// Handle security and origin in production
+if ( process.env.NODE_ENV === 'production' ) {
+  app.use( helmet() )
+  app.use( cors( { origin: 'https://jmsbdg.com' } ) )
+}
+
 app.set( 'json spaces', 2 )
 app.use( express.json() )
 app.use( express.urlencoded( { extended: true } ) )
-app.use( cors( { origin: ['https://jmsbdg.com', 'http://localhost:3000'] } ) )
+
 
 // Handle logs in console during development
-if ( process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'development' ) {
+if ( process.env.NODE_ENV === 'development') {
   app.use( morgan( 'dev' ) )
+  app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Response ) => {
+    return res.send( swaggerUi.generateHTML( await import( '../tsoa/swagger.json' ) ) )
+  } )
 }
 
-// Handle security and origin in production
-if ( process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production' ) {
-  app.use( helmet() )
-}
 
 app.get( '/ping', ( req, res ) => {
   res.send( { msg: 'pong' } ).status( 200 )
@@ -73,10 +78,6 @@ app.get( '/ping', ( req, res ) => {
  ***********************************************************************************/
 
 RegisterRoutes( app )
-
-app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Response ) => {
-  return res.send( swaggerUi.generateHTML( await import( '../tsoa/swagger.json' ) ) )
-} )
 
 /************************************************************************************
  *                               Express Error Handling
