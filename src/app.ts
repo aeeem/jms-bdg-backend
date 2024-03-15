@@ -45,30 +45,29 @@ export const db = new Database()
 app.on( 'ready', async () => {
   if ( process.env.NODE_ENV === 'test' ) {
     await db.connectToDBTest()
-  }else {
+  } else {
     await db.connectToDB()
   }
 } )
-
 // Handle security and origin in production
 if ( process.env.NODE_ENV === 'production' ) {
   app.use( helmet() )
-  app.use( cors( { origin: 'https://jmsbdg.com' } ) )
+  app.use( cors( { origin: 'http://localhost:3000' } ) )
+} else {
+  app.use( cors( ) )
 }
 
 app.set( 'json spaces', 2 )
 app.use( express.json() )
 app.use( express.urlencoded( { extended: true } ) )
 
-
 // Handle logs in console during development
-if ( process.env.NODE_ENV === 'development') {
+if ( process.env.NODE_ENV === 'development' ) {
   app.use( morgan( 'dev' ) )
   app.use( '/docs', swaggerUi.serve, async ( req: express.Request, res: express.Response ) => {
     return res.send( swaggerUi.generateHTML( await import( '../tsoa/swagger.json' ) ) )
   } )
 }
-
 
 app.get( '/ping', ( req, res ) => {
   res.send( { msg: 'pong' } ).status( 200 )
