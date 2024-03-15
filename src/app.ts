@@ -52,7 +52,7 @@ app.on( 'ready', async () => {
 // Handle security and origin in production
 if ( process.env.NODE_ENV === 'production' ) {
   app.use( helmet() )
-  app.use( cors( { origin: 'http://localhost:3000' } ) )
+  app.use( cors( { origin: 'https://jmsbdg.com' } ) )
 } else {
   app.use( cors( ) )
 }
