@@ -274,7 +274,7 @@ export class TransactionProcessor {
       this.transaction.cashier = this.user
       this.transaction.deposit = this.payload.deposit
       this.transaction.is_transfer = this.payload.is_transfer
-      this.transaction.sub_total = this.payload.sub_total
+      this.transaction.sub_total = await this.calcSubtotal()
       if ( this.payload.amount_paid < this.calculated_price ) {
         this.transaction.outstanding_amount = this.calculated_price - this.payload.amount_paid
       }
@@ -294,6 +294,21 @@ export class TransactionProcessor {
     } catch ( error ) {
       return await Promise.reject( error )
     }
+  }
+
+  calcSubtotal = async () => {
+    const stock_details = await Promise.all( this.payload.detail.map( async item => {
+      const stock = await Stock.findOneOrFail( item.stock_id )
+      if ( item.box ) {
+        return ( stock.weight * item.amount ) * item.sub_total
+      } else {
+        return item.sub_total * item.amount
+      }
+    } ) )
+
+    const sum = stock_details.reduce( ( prev, current ) => prev + current, 0 )
+
+    return sum
   }
 
   makeDebt = async ( amount: number ): Promise<void> => {
