@@ -3,7 +3,7 @@ import {
   Body, Controller, Delete, Get, Patch, Path, Post, Put, Query, Request, Route, Security, Tags
 } from 'tsoa'
 import {
-  DeleteTransactionItemRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
+  DeleteTransactionItemRequestParameter, TransactionPendingUpdateRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
 import {
   createTransactionService, deletePendingTransactionItemService, deletePendingTransactionService, deleteTransactionService, getAllTransactionService, getTransactionByIdService, searchTransactionService, updatePendingTransactionService, updateTransactionService
@@ -84,7 +84,7 @@ export class TransactionController extends Controller {
 
   @Put( '/pending/{transaction_id}' )
   @Security( 'api_key', ['update:transaction'] )
-  public async updatePendingTransaction ( @Path() transaction_id: string, @Body() payload: TransactionRequestParameter ) {
+  public async updatePendingTransaction ( @Path() transaction_id: string, @Body() payload: TransactionPendingUpdateRequestParameter ) {
     try {
       const deletedTransaction = await updatePendingTransactionService( transaction_id, payload.detail )
       return makeResponse.success( { data: deletedTransaction } )

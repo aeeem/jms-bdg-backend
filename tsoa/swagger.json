@@ -515,10 +515,6 @@
 						},
 						"type": "array"
 					},
-					"transaction_id": {
-						"type": "number",
-						"format": "double"
-					},
 					"packaging_cost": {
 						"type": "number",
 						"format": "double"
@@ -540,6 +536,79 @@
 					"amount_paid",
 					"detail",
 					"sub_total"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TransactionPendingUpdateRequestParameter": {
+				"properties": {
+					"expected_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"actual_total_price": {
+						"type": "number",
+						"format": "double"
+					},
+					"customer_id": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"amount_paid": {
+						"type": "number",
+						"format": "double"
+					},
+					"deposit": {
+						"type": "number",
+						"format": "double"
+					},
+					"transaction_date": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"use_deposit": {
+						"type": "boolean"
+					},
+					"optional_discount": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"detail": {
+						"items": {
+							"$ref": "#/components/schemas/TransactionDetailRequestParameter"
+						},
+						"type": "array"
+					},
+					"packaging_cost": {
+						"type": "number",
+						"format": "double"
+					},
+					"is_transfer": {
+						"type": "boolean"
+					},
+					"pay_debt": {
+						"type": "boolean"
+					},
+					"sub_total": {
+						"type": "number",
+						"format": "double"
+					},
+					"id_transaction": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"expected_total_price",
+					"actual_total_price",
+					"amount_paid",
+					"detail",
+					"sub_total",
+					"id_transaction"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -2635,7 +2704,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/TransactionRequestParameter"
+								"$ref": "#/components/schemas/TransactionPendingUpdateRequestParameter"
 							}
 						}
 					}

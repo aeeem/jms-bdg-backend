@@ -267,11 +267,32 @@ const models: TsoaRoute.Models = {
             "optional_discount": {"dataType":"double"},
             "description": {"dataType":"string"},
             "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
-            "transaction_id": {"dataType":"double"},
             "packaging_cost": {"dataType":"double"},
             "is_transfer": {"dataType":"boolean"},
             "pay_debt": {"dataType":"boolean"},
             "sub_total": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TransactionPendingUpdateRequestParameter": {
+        "dataType": "refObject",
+        "properties": {
+            "expected_total_price": {"dataType":"double","required":true},
+            "actual_total_price": {"dataType":"double","required":true},
+            "customer_id": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}]},
+            "amount_paid": {"dataType":"double","required":true},
+            "deposit": {"dataType":"double"},
+            "transaction_date": {"dataType":"datetime"},
+            "use_deposit": {"dataType":"boolean"},
+            "optional_discount": {"dataType":"double"},
+            "description": {"dataType":"string"},
+            "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
+            "packaging_cost": {"dataType":"double"},
+            "is_transfer": {"dataType":"boolean"},
+            "pay_debt": {"dataType":"boolean"},
+            "sub_total": {"dataType":"double","required":true},
+            "id_transaction": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
@@ -1700,7 +1721,7 @@ export function RegisterRoutes(app: Router) {
             function TransactionController_updatePendingTransaction(request: any, response: any, next: any) {
             const args = {
                     transaction_id: {"in":"path","name":"transaction_id","required":true,"dataType":"string"},
-                    payload: {"in":"body","name":"payload","required":true,"ref":"TransactionRequestParameter"},
+                    payload: {"in":"body","name":"payload","required":true,"ref":"TransactionPendingUpdateRequestParameter"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

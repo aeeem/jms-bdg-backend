@@ -19,7 +19,7 @@ import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { Errors } from 'src/errorHandler'
 import { stockDeductor } from 'src/helper/stockHelper'
-import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
+import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { getCustomerDebtService, getCustomerDepositService } from '../customer/customer.service'
 import {
   formatTransaction, restoreStocks, TransactionProcessor
@@ -27,6 +27,7 @@ import {
 import {
   DeleteTransactionItemRequestParameter, TransactionDetailRequestParameter, TransactionRequestParameter, TransactionUpdateRequestParameter
 } from './transaction.interface'
+import { StockGudang } from '@entity/stockGudang';
 
 export type T_Sort = 'DESC' | 'ASC' | 1 | -1 | undefined
 
@@ -143,26 +144,48 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
         const masterStock = await Stock.findOneOrFail( transactionDetail.stock_id )
         const payload = items.find( item => item.stock_id === transactionDetail.stock_id )
         const stockToko = new StockToko()
+        const stockGudang = new StockGudang()
+
         if ( !payload ) throw E_ERROR.STOCK_NOT_FOUND
 
-        if ( payload.amount === transactionDetail.amount ) return transactionDetail
+        if ( Number(payload.amount) === Number(transactionDetail.amount) ) return transactionDetail
 
-        if ( payload.amount > transactionDetail.amount ) {
-          masterStock.stock_toko -= payload.amount - transactionDetail.amount
-          stockToko.amount = payload.amount - transactionDetail.amount
-          stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
+        console.log({payload, transactionDetail})
+        // Kalau payload amount lebih besar (pertambahan item transaksi)
+        if ( Number(payload.amount) > Number(transactionDetail.amount) ) {
+          if( payload.box ){
+            masterStock.stock_gudang = masterStock.stock_gudang - ( Number(payload.amount) - Number(transactionDetail.amount))
+            stockGudang.amount = Number(payload.amount) - Number(transactionDetail.amount)
+            stockToko.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_PENDING_TRANSAKSI
+          }else{
+            masterStock.stock_toko = masterStock.stock_toko - ( payload.amount - transactionDetail.amount )
+            stockToko.amount = Number(payload.amount) - Number(transactionDetail.amount)
+            stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
+          }
         }
         
-        if ( payload.amount < transactionDetail.amount ) {
-          masterStock.stock_toko += transactionDetail.amount - payload.amount
-          stockToko.amount = transactionDetail.amount - payload.amount
-          stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+        if ( payload.amount < +transactionDetail.amount ) {
+          if( payload.box ){
+            masterStock.stock_gudang = masterStock.stock_gudang + (Number(transactionDetail.amount) - Number(payload.amount))
+            stockGudang.amount = Number(transactionDetail.amount) - Number(payload.amount)
+            stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
+          }else{
+            masterStock.stock_toko = masterStock.stock_toko + ( Number(transactionDetail.amount) - Number(payload.amount) )
+            stockToko.amount = Number(transactionDetail.amount) - Number(payload.amount)
+            stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+          }
         }
 
         transactionDetail.amount = payload.amount
         transactionDetail.sub_total = payload.sub_total
-        stockToko.stock_id = payload.stock_id
-        await queryRunner.manager.save( stockToko )
+
+        if(transactionDetail.is_box){
+          stockGudang.stock_id = transactionDetail.stock_id
+          await queryRunner.manager.save( stockGudang )
+        }else{
+          stockToko.stock_id = transactionDetail.stock_id
+          await queryRunner.manager.save( stockToko )
+        }
         await queryRunner.manager.save( masterStock )
         return transactionDetail
       }
@@ -185,17 +208,26 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
 
     const insertData = await Promise.all( items.filter( item => !transactionDetailsIds.includes( item.stock_id ) ).map( async item => {
       const transactionDetail = new TransactionDetail()
-      transactionDetail.amount = item.amount
+      transactionDetail.transaction_id = Number(transaction_id)
+      transactionDetail.amount = Number(item.amount)
       transactionDetail.sub_total = item.sub_total
       transactionDetail.stock_id = item.stock_id
       const masterStock = await Stock.findOneOrFail( item.stock_id )
-      masterStock.stock_toko -= item.amount
-      const stockToko = new StockToko()
-      stockToko.amount = item.amount
-      stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
-      stockToko.stock_id = item.stock_id
-
-      await queryRunner.manager.save( stockToko )
+      if(item.box){
+        masterStock.stock_gudang -= Number(item.amount)
+        const stockGudang = new StockGudang()
+        stockGudang.amount = Number(item.amount)
+        stockGudang.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_PENDING_TRANSAKSI
+        stockGudang.stock_id = item.stock_id
+        await queryRunner.manager.save( stockGudang )
+      }else{
+        masterStock.stock_toko -= Number(item.amount)
+        const stockToko = new StockToko()
+        stockToko.amount = Number(item.amount)
+        stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
+        stockToko.stock_id = item.stock_id
+        await queryRunner.manager.save( stockToko )
+      }
       await queryRunner.manager.save( masterStock )
       return transactionDetail
     } ) )
@@ -205,8 +237,10 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
     await queryRunner.manager.save( insertData )
 
     await queryRunner.commitTransaction()
+    return {updateData, deleteData, insertData}
   } catch ( error: any ) {
     await queryRunner.rollbackTransaction()
+    console.log(error)
     return await Promise.reject( new Errors( error ) )
   } finally {
     await queryRunner.release()

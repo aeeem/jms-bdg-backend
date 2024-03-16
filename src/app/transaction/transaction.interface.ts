@@ -23,11 +23,28 @@ export interface TransactionRequestParameter {
   optional_discount?: number
   description?: string
   detail: TransactionDetailRequestParameter[]
-  transaction_id?: number
   packaging_cost?: number
   is_transfer?: boolean
   pay_debt?: boolean
   sub_total: number
+}
+
+export interface TransactionPendingUpdateRequestParameter {
+  expected_total_price: number
+  actual_total_price: number
+  customer_id?: number | null
+  amount_paid: number
+  deposit?: number
+  transaction_date?: Date
+  use_deposit?: boolean
+  optional_discount?: number
+  description?: string
+  detail: TransactionDetailRequestParameter[]
+  packaging_cost?: number
+  is_transfer?: boolean
+  pay_debt?: boolean
+  sub_total: number
+  id_transaction: number
 }
 export interface TransactionUpdateRequestParameter {
   expected_total_price?: number
