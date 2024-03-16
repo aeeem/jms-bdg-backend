@@ -214,7 +214,9 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
 }
 
 export const deletePendingTransactionService = async ( id: string ) => {
-  const transaction = await Transaction.findOne( id )
+  const transaction = await Transaction.findOneOrFail( id , {
+    relations: ['transactionDetails']
+  })
   if ( !transaction ) throw E_ERROR.TRANSACTION_NOT_FOUND
 
   const transactionItems = transaction.transactionDetails

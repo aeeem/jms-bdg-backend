@@ -267,6 +267,7 @@ const models: TsoaRoute.Models = {
             "optional_discount": {"dataType":"double"},
             "description": {"dataType":"string"},
             "detail": {"dataType":"array","array":{"dataType":"refObject","ref":"TransactionDetailRequestParameter"},"required":true},
+            "transaction_id": {"dataType":"double"},
             "packaging_cost": {"dataType":"double"},
             "is_transfer": {"dataType":"boolean"},
             "pay_debt": {"dataType":"boolean"},

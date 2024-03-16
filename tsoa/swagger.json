@@ -515,6 +515,10 @@
 						},
 						"type": "array"
 					},
+					"transaction_id": {
+						"type": "number",
+						"format": "double"
+					},
 					"packaging_cost": {
 						"type": "number",
 						"format": "double"

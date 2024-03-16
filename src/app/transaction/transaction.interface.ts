@@ -23,6 +23,7 @@ export interface TransactionRequestParameter {
   optional_discount?: number
   description?: string
   detail: TransactionDetailRequestParameter[]
+  transaction_id?: number
   packaging_cost?: number
   is_transfer?: boolean
   pay_debt?: boolean

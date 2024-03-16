@@ -10,10 +10,11 @@ import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { E_TransactionStatus } from 'src/database/enum/transaction'
 import { E_CODE_KEY } from 'src/interface/AccountCode'
-import { E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
+import { E_GUDANG_CODE_KEY, E_TOKO_CODE_KEY } from 'src/interface/StocksCode'
 import { TransactionRequestParameter } from './transaction.interface'
 import { getCustomerDebtService } from '../customer/customer.service'
 import { QueryRunner } from 'typeorm'
+import { StockGudang } from '@entity/stockGudang';
 
 export const restoreStocks = async ( items: TransactionDetail[] ) => {
   const queryRunner = db.queryRunner()
@@ -21,19 +22,35 @@ export const restoreStocks = async ( items: TransactionDetail[] ) => {
   try {
     await queryRunner.startTransaction()
 
-    for ( const item of items ) {
-      const stockItem = await Stock.findOneOrFail( item.stock_id, { relations: ['product'] } )
-      stockItem.stock_toko += item.amount
-      
-      const stockToko = new StockToko()
-      stockToko.amount = item.amount
-      stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
-      stockToko.stock_id = item.stock_id
+    let restoredStock:any = []
 
-      await queryRunner.manager.save( stockItem )
-      await queryRunner.manager.save( stockToko )
+    const stocks = await Promise.all( items.map( async(item)=> {
+      const stock = await Stock.findOneOrFail( item.stock_id )
+      if(item.is_box){
+        stock.stock_gudang = Number(stock.stock_gudang) + Number(item.amount)
+        const stockGudang = new StockGudang()
+        stockGudang.amount = Number(item.amount)
+        stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
+        stockGudang.stock_id = item.stock_id
+        restoredStock.push(stockGudang)
+      }else{
+        stock.stock_toko =  Number(stock.stock_toko) + Number(item.amount)
+        const stockToko = new StockToko()
+        stockToko.amount = Number(item.amount)
+        stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+        stockToko.stock_id = item.stock_id
+        restoredStock.push(stockToko)
+      }
       await queryRunner.manager.softRemove( item )
-    }
+      return stock
+    }))
+    await queryRunner.manager.save( stocks )
+    await queryRunner.manager.save( restoredStock )
+    
+   await Promise.all(stocks.map(async(stock)=>{
+    await queryRunner.manager.save( stock )
+    return stock
+   }))
 
     await queryRunner.commitTransaction()
   } catch ( error ) {
