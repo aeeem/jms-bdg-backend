@@ -91,17 +91,17 @@ export const formatTransaction = ( transactions: Transaction[] ) => {
           amount : detail.amount,
           product: {
             id          : detail.stock?.product?.id || null,
-            stockId     : detail.stock.id,
+            stockId     : detail.stock?.id,
             name        : detail.stock?.product?.name || '',
             vendorId    : detail.stock?.product?.vendorId || null,
             vendorName  : detail.stock?.product?.vendor.name ?? '',
             sku         : detail.stock?.product?.sku || '',
-            stock_toko  : detail.stock.stock_toko,
-            stock_gudang: detail.stock.stock_gudang,
-            sell_price  : detail.stock.sell_price,
-            buy_price   : detail.stock.buy_price,
-            box         : detail.is_box,
-            weight      : detail.stock.weight
+            stock_toko  : detail.stock?.stock_toko,
+            stock_gudang: detail.stock?.stock_gudang,
+            sell_price  : detail.stock?.sell_price,
+            buy_price   : detail.stock?.buy_price,
+            box         : detail?.is_box,
+            weight      : detail?.stock?.weight
           },
           sub_total: detail.sub_total
         }
