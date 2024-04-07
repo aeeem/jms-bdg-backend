@@ -292,7 +292,7 @@ export const searchTransactionService = async ( query?: string, id?: string ) =>
       .orderBy( 'transaction.transaction_id', 'ASC' )
       .getMany()
     if ( _.isEmpty( transactions ) ) throw E_ERROR.TRANSACTION_NOT_FOUND
-    return transactions
+    return formatTransaction( transactions )
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
