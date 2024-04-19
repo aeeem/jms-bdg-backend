@@ -96,17 +96,24 @@ export const updateExistingStockService = async ( { id, body }: {id: string, bod
   }
 }
 
-export const updateStockService = async ( body: UpdateStockParameter, id: string ) => {
+export const updateStockService = async ( body: {
+  is_gudang: boolean
+  amountBox: number
+  weight: number
+}, id: string ) => {
   try {
     const existingStock = await Stock.findOne( { where: { id } } )
     if ( existingStock != null ) {
-      // existingStock.productId = body.productId ? body.productId : existingStock.productId
-      // existingStock.buy_price = body.buy_price ? body.buy_price : existingStock.buy_price
-      // existingStock.stock_gudang = body.total_stock ? body.total_stock : existingStock.stock_gudang
-      // existingStock.sell_price = body.sell_price ? body.sell_price : existingStock.sell_price
-      existingStock.stock_gudang = body.amountBox
-      existingStock.weight = body.weight
+      if ( body.is_gudang ) {
+        existingStock.stock_gudang = body.amountBox
+        existingStock.weight = body.weight
+      } else {
+        existingStock.stock_toko = body.weight
+        console.log( 'here' )
+      }
+     
       await existingStock.save()
+      
       const stock = await Stock.findOne( { where: { id: existingStock.id } } )
       if ( stock != null ) {
         return makeResponse.success( {
@@ -117,6 +124,7 @@ export const updateStockService = async ( body: UpdateStockParameter, id: string
 
     throw E_ERROR.PRODUCT_OR_VENDOR_NOT_FOUND
   } catch ( error: any ) {
+    console.log( error )
     return new Errors( error )
   }
 }

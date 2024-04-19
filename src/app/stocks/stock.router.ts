@@ -31,7 +31,11 @@ export class StockController extends Controller {
 
   @Put( '/{id}' )
   @Security( 'api_key', ['update:stock'] )
-  public async updateStock ( @Path() id: string, @Body() body: UpdateStockParameter ) {
+  public async updateStock ( @Path() id: string, @Body() body: {
+    is_gudang: boolean
+    amountBox: number
+    weight: number
+  } ) {
     return await updateStockService( body, id )
   }
 

@@ -415,6 +415,9 @@
 			},
 			"UpdateStockParameter": {
 				"properties": {
+					"isGudang": {
+						"type": "boolean"
+					},
 					"amountBox": {
 						"type": "number",
 						"format": "double"
@@ -425,6 +428,7 @@
 					}
 				},
 				"required": [
+					"isGudang",
 					"amountBox",
 					"weight"
 				],
@@ -2256,7 +2260,25 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/UpdateStockParameter"
+								"properties": {
+									"weight": {
+										"type": "number",
+										"format": "double"
+									},
+									"amountBox": {
+										"type": "number",
+										"format": "double"
+									},
+									"is_gudang": {
+										"type": "boolean"
+									}
+								},
+								"required": [
+									"weight",
+									"amountBox",
+									"is_gudang"
+								],
+								"type": "object"
 							}
 						}
 					}

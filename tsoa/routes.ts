@@ -229,6 +229,7 @@ const models: TsoaRoute.Models = {
     "UpdateStockParameter": {
         "dataType": "refObject",
         "properties": {
+            "isGudang": {"dataType":"boolean","required":true},
             "amountBox": {"dataType":"double","required":true},
             "weight": {"dataType":"double","required":true},
         },
@@ -1457,7 +1458,7 @@ export function RegisterRoutes(app: Router) {
             function StockController_updateStock(request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"string"},
-                    body: {"in":"body","name":"body","required":true,"ref":"UpdateStockParameter"},
+                    body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"weight":{"dataType":"double","required":true},"amountBox":{"dataType":"double","required":true},"is_gudang":{"dataType":"boolean","required":true}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

@@ -8,6 +8,7 @@ export interface StockRequestParameter {
 }
 
 export interface UpdateStockParameter {
+  isGudang: boolean
   amountBox: number
   weight: number
 }
