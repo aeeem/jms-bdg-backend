@@ -144,19 +144,28 @@ export const addMixedProductService = async ( payload: MixedProductRequestParame
     await queryRunner.startTransaction()
     
     const sumStock = payload.stock.reduce( ( prev, next ) => prev + next.amount, 0 )
+    
+    const stock_all: Stock[] = []
 
     const stocks = await Promise.all( payload.stock.map( async item => {
-      const isProductExist = await Stock.findOne( { where: { id: item.stock_id } } )
-      if ( isProductExist ) {
+      const stock = await Stock.findOne( { where: { id: item.stock_id } } )
+      if ( stock ) {
         const stock_toko = new StockToko()
         stock_toko.stock_id = item.stock_id
         stock_toko.amount = item.stock_id === payload.selectedStockID ? sumStock : item.amount
         stock_toko.code = item.stock_id === payload.selectedStockID ? E_TOKO_CODE_KEY.TOK_ADD_MIX : E_TOKO_CODE_KEY.TOK_SUB_MIX
 
+        stock.stock_toko = item.stock_id === payload.selectedStockID
+          ? sumStock
+          : stock.stock_toko - item.amount
+        stock_all.push( stock )
         return stock_toko
       }
     } ) )
+
     await queryRunner.manager.save( stocks )
+    await queryRunner.manager.save( stock_all )
+
     await queryRunner.commitTransaction()
 
     return stocks

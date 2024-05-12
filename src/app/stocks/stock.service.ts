@@ -1,7 +1,5 @@
 import { Stock } from '@entity/stock'
-import {
-  AddStockBulkParameter, StockRequestParameter, UpdateStockParameter
-} from './stock.interfaces'
+import { AddStockBulkParameter, StockRequestParameter } from './stock.interfaces'
 import _ from 'lodash'
 import makeResponse from 'src/helper/response'
 import { E_ERROR } from 'src/constants/errorTypes'
