@@ -150,7 +150,6 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
 
         if ( Number(payload.amount) === Number(transactionDetail.amount) ) return transactionDetail
 
-        console.log({payload, transactionDetail})
         // Kalau payload amount lebih besar (pertambahan item transaksi)
         if ( Number(payload.amount) > Number(transactionDetail.amount) ) {
           if( payload.box ){
@@ -158,7 +157,7 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
             stockGudang.amount = Number(payload.amount) - Number(transactionDetail.amount)
             stockToko.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_PENDING_TRANSAKSI
           }else{
-            masterStock.stock_toko = masterStock.stock_toko - ( payload.amount - transactionDetail.amount )
+            masterStock.stock_toko = Number( masterStock.stock_toko ) - ( payload.amount - transactionDetail.amount )
             stockToko.amount = Number(payload.amount) - Number(transactionDetail.amount)
             stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
           }
@@ -166,11 +165,11 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
         
         if ( payload.amount < +transactionDetail.amount ) {
           if( payload.box ){
-            masterStock.stock_gudang = masterStock.stock_gudang + (Number(transactionDetail.amount) - Number(payload.amount))
+            masterStock.stock_gudang = Number(masterStock.stock_gudang) + (Number(transactionDetail.amount) - Number(payload.amount))
             stockGudang.amount = Number(transactionDetail.amount) - Number(payload.amount)
             stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
           }else{
-            masterStock.stock_toko = masterStock.stock_toko + ( Number(transactionDetail.amount) - Number(payload.amount) )
+            masterStock.stock_toko = Number(masterStock.stock_toko) + ( Number(transactionDetail.amount) - Number(payload.amount) )
             stockToko.amount = Number(transactionDetail.amount) - Number(payload.amount)
             stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
           }
@@ -194,7 +193,7 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
     const deleteData = await Promise.all( transaction.transactionDetails.filter( detail => !payloadStockIds.includes( detail.stock_id ) ).map(
       async transactionDetail => {
         const masterStock = await Stock.findOneOrFail( transactionDetail.stock_id )
-        masterStock.stock_toko += transactionDetail.amount
+        masterStock.stock_toko = Number(masterStock.stock_toko) + transactionDetail.amount
         const stockToko = new StockToko()
         stockToko.amount = transactionDetail.amount
         stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
@@ -221,7 +220,7 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
         stockGudang.stock_id = item.stock_id
         await queryRunner.manager.save( stockGudang )
       }else{
-        masterStock.stock_toko -= Number(item.amount)
+        masterStock.stock_toko = Number(masterStock.stock_toko) - Number(item.amount)
         const stockToko = new StockToko()
         stockToko.amount = Number(item.amount)
         stockToko.code = E_TOKO_CODE_KEY.TOK_SUB_BRG_PENDING_TRANSAKSI
