@@ -532,6 +532,10 @@
 					"sub_total": {
 						"type": "number",
 						"format": "double"
+					},
+					"id_transaction": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [

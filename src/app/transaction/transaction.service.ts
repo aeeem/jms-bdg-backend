@@ -80,7 +80,19 @@ export const createTransactionService = async ( payload: TransactionRequestParam
     } )
 
     const stockSync = await Promise.all( payload.detail.map( async detail => {
-      const stockHelper = await stockDeductor( detail.stock_id, detail.amount, detail.box )
+      let isPendingUpdate = false
+      let existStock = 0
+      if ( payload.id_transaction ) {
+        const transactionDetail = await TransactionDetail.find( { where: { transaction_id: payload.id_transaction }, relations: ['stock'] } )
+        if ( !transactionDetail ) throw E_ERROR.TRANSACTION_NOT_FOUND
+    
+        const findTransactionDetail = transactionDetail.find( item => item.stock_id === detail.stock_id )
+        if ( findTransactionDetail ) {
+          isPendingUpdate = true
+          existStock = findTransactionDetail.amount
+        }
+      }
+      const stockHelper = await stockDeductor( detail.stock_id, detail.amount, detail.box, isPendingUpdate, existStock )
 
       await queryRunner.manager.save( stockHelper.entity )
 
@@ -165,7 +177,7 @@ export const updatePendingTransactionService = async ( transaction_id: string, i
         
         if ( payload.amount < +transactionDetail.amount ) {
           if( payload.box ){
-            masterStock.stock_gudang = Number(masterStock.stock_gudang) + (Number(transactionDetail.amount) - Number(payload.amount))
+            masterStock.stock_gudang = masterStock.stock_gudang + (Number(transactionDetail.amount) - Number(payload.amount))
             stockGudang.amount = Number(transactionDetail.amount) - Number(payload.amount)
             stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
           }else{

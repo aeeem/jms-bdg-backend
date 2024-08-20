@@ -272,6 +272,7 @@ const models: TsoaRoute.Models = {
             "is_transfer": {"dataType":"boolean"},
             "pay_debt": {"dataType":"boolean"},
             "sub_total": {"dataType":"double","required":true},
+            "id_transaction": {"dataType":"double"},
         },
         "additionalProperties": false,
     },

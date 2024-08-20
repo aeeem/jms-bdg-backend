@@ -9,7 +9,7 @@ interface I_StockDeductorReturn {
   stock: Stock
 }
 
-type I_StockDeductor = ( stock_id: number, amount: number, is_gudang?: boolean ) => Promise<I_StockDeductorReturn>
+type I_StockDeductor = ( stock_id: number, amount: number, is_gudang?: boolean, isPendingUpdate?: boolean, existStock?: number ) => Promise<I_StockDeductorReturn>
 
 const isAddition = ( source: string ) => {
   return source.includes( '_ADD_' )
@@ -27,25 +27,37 @@ export const CalculateTotalStock = ( stock: StockGudang[] | StockToko[] ): numbe
   return total
 }
 
-export const stockDeductor: I_StockDeductor = async ( stock_id, amount, is_gudang ) => {
+const getDeductedStock = ( stock: number, isPendingUpdate?: boolean, existStock?: number ): number => {
+  if ( isPendingUpdate ) {
+    return Number( stock ) + Number( existStock ?? 0 )
+  }
+
+  return Number( stock )
+}
+
+export const stockDeductor: I_StockDeductor = async ( stock_id, amount, is_gudang, isPendingUpdate, existStock ) => {
   const stock = await Stock.findOneOrFail( stock_id )
   
-  if ( is_gudang && stock.stock_gudang - amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
+  if ( is_gudang && getDeductedStock( stock.stock_gudang, isPendingUpdate, existStock ) - amount < 0 ) {
+    throw E_ERROR.INSUFFICIENT_STOCK
+  }
 
   if ( is_gudang ) {
     const stock_gudang = new StockGudang()
     stock_gudang.amount = amount
     stock_gudang.code = E_GUDANG_CODE_KEY.GUD_SUB_BRG_TRANSAKSI
     stock_gudang.stock_id = stock_id
-    stock.stock_gudang -= amount
+    stock.stock_gudang = getDeductedStock( stock.stock_gudang, isPendingUpdate, existStock ) - amount
     return {
       entity: stock_gudang,
       stock
     }
   }
 
-  if ( stock.stock_toko - amount < 0 ) throw E_ERROR.INSUFFICIENT_STOCK
-  stock.stock_toko -= amount
+  if ( getDeductedStock( stock.stock_toko, isPendingUpdate, existStock ) - Number( amount ) < 0 ) {
+    throw E_ERROR.INSUFFICIENT_STOCK
+  }
+  stock.stock_toko = getDeductedStock( stock.stock_toko, isPendingUpdate, existStock ) - amount
     
   // Add deduction record into stock_toko
   const stock_toko = new StockToko()

@@ -27,6 +27,7 @@ export interface TransactionRequestParameter {
   is_transfer?: boolean
   pay_debt?: boolean
   sub_total: number
+  id_transaction?: number
 }
 
 export interface TransactionPendingUpdateRequestParameter {
