@@ -54,7 +54,7 @@ if ( process.env.NODE_ENV === 'production' ) {
   app.use( helmet() )
   app.use( cors( { origin: 'https://jmsbdg.com' } ) )
 } else {
-  app.use( cors( {} ) )
+  app.use( cors( {origin: '*' } ) )
 }
 
 app.set( 'json spaces', 2 )
