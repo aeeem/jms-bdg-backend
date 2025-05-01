@@ -1,10 +1,23 @@
-version: '3'
+version: "3"
 services:
   dev_database:
+    container_name: dev_database
     image: postgres
     restart: always
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: dev_jms
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  staging_db:
+    container_name: dev_database
+    image: postgres
+    restart: always
+    ports:
+      - "5435:5432"
     environment:
       POSTGRES_DB: dev_jms
       POSTGRES_USER: dev_user
@@ -12,5 +25,17 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
 
+  dev_pg_admin:
+    container_name: dev_pg_admin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: arifmaulanaa@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+networks:
+  traefik-network:
+    external: true
 volumes:
   postgres:
