@@ -16,7 +16,7 @@
     "test": "NODE_ENV=test node runtest.js",
     "db:seed": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
     "build:dev": "yarn build && scp -r ./dist/* devjms@jmsbdg.com:/home/devjms/jms-bdg-backend",
-    "start:service": "pm2 start npm --name 'jms-backend' -- run 'start'",
+    "start:service": "pm2 start npm --name 'jms-backend-dev' -- run 'start'",
     "eslint": "eslint --ext .ts --fix ./src -c .eslintrc.js",
     "prepare": "husky install",
     "watch:test": "yarn jest --watch",
