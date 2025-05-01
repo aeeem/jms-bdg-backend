@@ -72,6 +72,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "QueryParams": {
+        "dataType": "refObject",
+        "properties": {
+            "page": {"dataType":"double","required":true},
+            "limit": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "AddDepositRequestParameter": {
         "dataType": "refObject",
         "properties": {
@@ -474,6 +483,7 @@ export function RegisterRoutes(app: Router) {
 
             function CustomerController_getAllCustomer(request: any, response: any, next: any) {
             const args = {
+                    queries: {"in":"queries","name":"queries","required":true,"ref":"QueryParams"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

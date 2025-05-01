@@ -15,9 +15,18 @@ import {
   E_CashFlowCode, E_CashFlowType, E_CashType
 } from 'src/database/enum/cashFlow'
 
-export const getAllCustomerService = async () => {
+export const getAllCustomerService = async ( offset: number, limit: number ) => {
   try {
-    return await Customer.find( { relations: ['transactions', 'monetary'] } )
+    const customers = await Customer.find( {
+      skip: offset,
+      take: limit
+    } )
+    const count_data = await Customer.count()
+
+    return {
+      count_data,
+      customers
+    }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
@@ -28,6 +37,7 @@ export const getCustomerByIdService = async ( id: number ) => {
     const customer = await Customer.findOne( {
       where    : { id },
       relations: ['transactions', 'monetary']
+
     } )
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer

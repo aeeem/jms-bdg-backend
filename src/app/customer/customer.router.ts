@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Path, Post, Put, Queries, Query, Route, Security, Tags
 } from 'tsoa'
 import {
   payDebtService,
@@ -9,18 +9,32 @@ import {
 import {
   AddDepositRequestParameter, CustomerRequestParameter, CustomerUpdateRequestParameter
 } from './customer.interface'
-import makeResponse from 'src/helper/response'
+import makeResponse, { OffsetFromPage } from 'src/helper/response'
 
+interface QueryParams {
+  page: number
+  limit: number
+}
 @Tags( 'Customer' )
 @Route( '/api/customer' )
 
 export class CustomerController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:customer'] )
-  public async getAllCustomer () {
+  public async getAllCustomer (
+  @Queries() queries: QueryParams
+  ) {
     try {
-      const customer = await getAllCustomerService()
-      return makeResponse.success( { data: customer } )
+      const {customers, count_data } = await getAllCustomerService( OffsetFromPage( queries.page, queries.limit ), queries.limit )
+      const total_page = Math.ceil( count_data / queries.limit )
+      return makeResponse.successWithPagination( {
+        data     : customers,
+        page     : queries.page,
+        totalData: count_data,
+        limit    : queries.limit,
+        totalPage: total_page,
+        stat_msg : 'SUCCESS'
+      } )
     } catch ( error: any ) {
       return error
     }
