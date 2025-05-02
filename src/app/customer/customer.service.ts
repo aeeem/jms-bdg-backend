@@ -4,7 +4,6 @@ import { db } from 'src/app'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { E_Recievables } from 'src/database/enum/hutangPiutang'
 import { Errors } from 'src/errorHandler'
-import { CalculateTotalBalance } from 'src/helper/monetaryHelper'
 import { E_CODE_KEY as E_MONET_SOURCE } from 'src/interface/AccountCode'
 import {
   AddDebtRequestParameter,
@@ -24,7 +23,7 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     // end) as "debt",customer_monetary.customer_id from "customer_monetary" group by customer_monetary.customer_id
     // )
     let queryBuilder = await Customer.getRepository().createQueryBuilder( 'customer' )
-      .select( ['customer.*,cm.debt AS debt,cm.deposit AS deposit'] )
+      .select( ['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
       .leftJoin( selecQueryBuilder => selecQueryBuilder
         .select( [
 `sum( case
@@ -53,7 +52,7 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     const count_data = await Customer.count()
     queryBuilder = queryBuilder.limit( limit )
     const customers = await queryBuilder.getRawMany()
-
+    
     return {
       count_data,
       customers
@@ -67,7 +66,7 @@ export const getCustomerByIdService = async ( id: number ) => {
   try {
     const queryBuilder = await Customer.getRepository()
       .createQueryBuilder( 'customer' )
-      .select( ['customer.*,cm.debt AS debt,cm.deposit AS deposit'] )
+      .select( ['customer.*,coalasce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
       .leftJoin(
         selecQueryBuilder =>
           selecQueryBuilder
@@ -97,7 +96,9 @@ export const getCustomerByIdService = async ( id: number ) => {
       .where( 'c2.id IS NULL' )
       .addSelect( 'c1.created_at', 'last_transaction_date' )
       .where( 'customer.id=:id', { id } )
+    console.log( queryBuilder.getSql() )
     const customer = await queryBuilder.getRawOne()
+    
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer
   } catch ( error: any ) {
@@ -105,14 +106,36 @@ export const getCustomerByIdService = async ( id: number ) => {
   }
 }
 
-export const getCustomerDepositService = async ( id: number ) => {
+export const getCustomerDepositService = async ( id: number, offset?: number, limit?: number ) => {
   try {
-    const customer_deposit = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEPOSIT } } )
-    const total_deposit = CalculateTotalBalance( customer_deposit )
+    let queryBuilder = await CustomerMonetary.createQueryBuilder( 'customer_monetary' )
+      .select( ['customer_monetary.*'] )
+      .where( 'customer_monetary.customer_id=:id', { id } )
+      .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
+    const qb_deposit = await CustomerMonetary.createQueryBuilder(
+      'customer_monetary'
+    )
+      .select( ['coalesce(sum(customer_monetary.amount),0) as total_deposit'] )
+      .where( 'customer_monetary.customer_id=:id', { id } )
+      .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
+      
+    
+    const total_deposit_obj = await qb_deposit.getRawOne()
+    const count_data = await queryBuilder.getCount()
+    // If a limit is provided, set the maximum number of records to retrieve
+    if ( limit ) {
+      queryBuilder = queryBuilder.limit( limit )
+    }
+    // If a offset is provided, set the maximum number of records to retrieve
+    if ( offset ) {
+      queryBuilder = queryBuilder.offset( offset )
+    }
+    const total_deposit: number = total_deposit_obj.total_deposit
+    const customer_deposit_list = await queryBuilder.getRawMany()
     return {
+      count_data,
       total_deposit,
-      deposits: customer_deposit
-
+      customer_deposit_list
     }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
@@ -133,8 +156,9 @@ export const getCustomerDebtService = async (
     const total_debt_obj = await CustomerMonetary.createQueryBuilder(
       'customer_monetary'
     )
-      .select( ['sum(customer_monetary.amount) as total_debt'] )
+      .select( ['coalesce(sum(customer_monetary.amount)) as total_debt'] )
       .where( 'customer_monetary.customer_id=:id', { id } )
+      .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEBT } )
       .getRawOne()
 
     const count_data = await queryBuilder.getCount()

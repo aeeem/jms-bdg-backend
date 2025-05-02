@@ -100,10 +100,30 @@ export class CustomerController extends Controller {
 
   @Get( '/deposit/{id}/' )
   @Security( 'api_key', ['read:customer'] )
-  public async getDeposit ( @Path() id: string ) {
+  public async getDeposit (
+  @Path() id: string,
+    @Queries() queries: QueryListParams
+  ) {
     try {
-      const customer = await getCustomerDepositService( + id )
-      return makeResponse.successWithPagination( { data: customer } )
+      const {
+        count_data, total_deposit, customer_deposit_list
+      } =
+        await getCustomerDepositService(
+          + id,
+          OffsetFromPage( queries.page, queries.limit ),
+          queries.limit
+        )
+      return makeResponse.successWithPagination( {
+        data: {
+          debt         : customer_deposit_list,
+          total_deposit: + total_deposit
+        },
+        page     : queries.page,
+        totalData: count_data,
+        limit    : queries.limit,
+        totalPage: TotalPage( count_data, queries.limit ),
+        stat_msg : 'SUCCESS'
+      } )
     } catch ( error: any ) {
       return error
     }
@@ -148,7 +168,7 @@ export class CustomerController extends Controller {
           description   : null
         }
       ],
-      total_debt: '18287450'
+      total_debt: 18287450
     },
     page     : 1,
     totalData: 13,
@@ -170,12 +190,11 @@ export class CustomerController extends Controller {
           OffsetFromPage( queries.page, queries.limit ),
           queries.limit
         )
-   
 
       return makeResponse.successWithPagination( {
         data: {
-          debt: customer_debt_list,
-          total_debt
+          debt      : customer_debt_list,
+          total_debt: + total_debt
         },
         page     : queries.page,
         totalData: count_data,
