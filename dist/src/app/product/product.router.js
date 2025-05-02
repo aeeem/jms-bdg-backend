@@ -11,15 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -29,46 +20,34 @@ const response_1 = __importDefault(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const product_service_1 = require("./product.service");
 let ProductsController = class ProductsController extends tsoa_1.Controller {
-    getAllProducts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, product_service_1.getAllProductsService)();
-        });
+    async getAllProducts() {
+        return await (0, product_service_1.getAllProductsService)();
     }
-    createProduct(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield (0, product_service_1.createProductService)(payload);
-            }
-            catch (error) {
-                return error;
-            }
-        });
+    async createProduct(payload) {
+        try {
+            return await (0, product_service_1.createProductService)(payload);
+        }
+        catch (error) {
+            return error;
+        }
     }
-    updateProduct(id, payload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, product_service_1.updateProductService)(Number(id), payload);
-        });
+    async updateProduct(id, payload) {
+        return await (0, product_service_1.updateProductService)(Number(id), payload);
     }
-    deleteProduct(id) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, product_service_1.deleteProductService)({ id: Number(id) });
-        });
+    async deleteProduct(id) {
+        return await (0, product_service_1.deleteProductService)({ id: Number(id) });
     }
-    searchProduct(query) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield (0, product_service_1.searchProductService)({ query });
-        });
+    async searchProduct(query) {
+        return await (0, product_service_1.searchProductService)({ query });
     }
-    createMixedProduct(payload) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const addCampur = yield (0, product_service_1.addMixedProductService)(payload);
-                return response_1.default.success({ data: addCampur, stat_code: 200 });
-            }
-            catch (error) {
-                return error;
-            }
-        });
+    async createMixedProduct(payload) {
+        try {
+            const addCampur = await (0, product_service_1.addMixedProductService)(payload);
+            return response_1.default.success({ data: addCampur, stat_code: 200 });
+        }
+        catch (error) {
+            return error;
+        }
     }
 };
 __decorate([

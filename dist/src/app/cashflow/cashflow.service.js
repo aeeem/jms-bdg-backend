@@ -1,22 +1,13 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createCashInService = exports.createCashOutService = exports.getCashFlowService = void 0;
 const cashFlow_1 = require("@entity/cashFlow");
 const cashFlow_2 = require("src/database/enum/cashFlow");
 const errorHandler_1 = require("src/errorHandler");
-const getCashFlowService = (year, month, week) => __awaiter(void 0, void 0, void 0, function* () {
+const getCashFlowService = async (year, month, week) => {
     // Monthly
     if (month && !week) {
-        return yield cashFlow_1.CashFlow
+        return await cashFlow_1.CashFlow
             .createQueryBuilder()
             .leftJoinAndSelect('CashFlow.transaction', 'transaction')
             .where('extract(month from CashFlow.created_at)= :month', { month })
@@ -25,16 +16,16 @@ const getCashFlowService = (year, month, week) => __awaiter(void 0, void 0, void
     }
     // Weekly
     if (!month && week) {
-        return yield cashFlow_1.CashFlow
+        return await cashFlow_1.CashFlow
             .createQueryBuilder()
             .leftJoinAndSelect('CashFlow.transaction', 'transaction')
             .where('extract(week from CashFlow.created_at)=:week', { week })
             .andWhere('extract(year from CashFlow.created_at)=:year', { year })
             .getMany();
     }
-});
+};
 exports.getCashFlowService = getCashFlowService;
-const createCashOutService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const createCashOutService = async (payload) => {
     try {
         const cashFlow = new cashFlow_1.CashFlow();
         cashFlow.amount = payload.amount;
@@ -45,15 +36,15 @@ const createCashOutService = (payload) => __awaiter(void 0, void 0, void 0, func
         if (payload.transaction_date) {
             cashFlow.created_at = payload.transaction_date;
         }
-        yield cashFlow.save();
+        await cashFlow.save();
         return cashFlow;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.createCashOutService = createCashOutService;
-const createCashInService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const createCashInService = async (payload) => {
     try {
         const cashFlow = new cashFlow_1.CashFlow();
         cashFlow.amount = payload.amount;
@@ -64,11 +55,11 @@ const createCashInService = (payload) => __awaiter(void 0, void 0, void 0, funct
         if (payload.transaction_date) {
             cashFlow.created_at = payload.transaction_date;
         }
-        yield cashFlow.save();
+        await cashFlow.save();
         return cashFlow;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.createCashInService = createCashInService;

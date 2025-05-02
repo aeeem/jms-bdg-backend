@@ -8,15 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -31,18 +22,41 @@ const customerMonetary_1 = require("./customerMonetary");
 const transactionDetail_1 = require("./transactionDetail");
 const user_1 = require("./user");
 let Transaction = Transaction_1 = class Transaction extends typeorm_1.BaseEntity {
-    generateTransactionId() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const currentMonth = (0, dayjs_1.default)().format('YYMM');
-            const transactions = yield Transaction_1.createQueryBuilder('transaction')
-                .where('extract(month from transaction.transaction_date) = extract(month from NOW()) and extract(year from transaction.transaction_date) = extract(year from now())')
-                .getMany();
-            const lengthTransaction = transactions.length;
-            const padded = (0, number_1.padLeft)(lengthTransaction + 1, 6);
-            const no_nota = `${currentMonth}${padded}`;
-            this.transaction_id = no_nota;
-        });
+    async generateTransactionId() {
+        const currentMonth = (0, dayjs_1.default)().format('YYMM');
+        const transactions = await Transaction_1.createQueryBuilder('transaction')
+            .where('extract(month from transaction.transaction_date) = extract(month from NOW()) and extract(year from transaction.transaction_date) = extract(year from now())')
+            .getMany();
+        const lengthTransaction = transactions.length;
+        const padded = (0, number_1.padLeft)(lengthTransaction + 1, 6);
+        const no_nota = `${currentMonth}${padded}`;
+        this.transaction_id = no_nota;
     }
+    id;
+    transaction_id;
+    expected_total_price;
+    actual_total_price;
+    amount_paid;
+    change;
+    outstanding_amount;
+    optional_discount;
+    description;
+    customer;
+    transactionDetails;
+    packaging_cost;
+    status;
+    customer_id;
+    transaction_date;
+    customerMonetary;
+    cashier;
+    deposit;
+    is_transfer;
+    remaining_deposit;
+    usage_deposit;
+    pay_debt_amount;
+    created_at;
+    updated_at;
+    sub_total;
 };
 __decorate([
     (0, typeorm_1.BeforeInsert)(),

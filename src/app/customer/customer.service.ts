@@ -17,8 +17,26 @@ import {
 
 export const getAllCustomerService = async ( offset: number, limit: number, orderByColumn: string, Order?: string, search?: string ) => {
   try {
+    //     LEFT JOIN (select  sum(
+    // case
+    // when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+    // else 0
+    // end) as "debt",customer_monetary.customer_id from "customer_monetary" group by customer_monetary.customer_id
+    // )
     let queryBuilder = await Customer.getRepository().createQueryBuilder( 'customer' )
-      .select( ['customer.*'] )
+      .select( ['customer.*,cm.debt AS debt,cm.deposit AS deposit'] )
+      .leftJoin( selecQueryBuilder => selecQueryBuilder
+        .select( [`sum( case
+     when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+     else 0
+     end) as "debt"`,
+        'customer_monetary.customer_id as customer_id',
+     `sum( case
+     when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+     else 0
+     end) as "deposit"`] ).from( 'customer_monetary', 'customer_monetary' )
+        .groupBy( 'customer_monetary.customer_id' ), 'cm', 'cm.customer_id = customer.id' )
+     
       .leftJoin( 'customer_monetary', 'c1', 'c1.customer_id = customer.id' )
       .leftJoin( 'customer_monetary', 'c2',
         'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))' )
@@ -30,6 +48,8 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     if ( search ) {
       queryBuilder = queryBuilder.andWhere( 'customer.name ILIKE :search', { search: `%${search}%` } )
     }
+    const query = queryBuilder.getQuery()
+    console.log( query )
     const customers = await queryBuilder.getRawMany()
     const count_data = await Customer.count()
 

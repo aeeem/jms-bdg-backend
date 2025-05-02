@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteCustomerService = exports.updateCustomerService = exports.createCustomerService = exports.searchCustomerService = exports.payDebtService = exports.addDepositService = exports.getCustomerDebtService = exports.getCustomerDepositService = exports.getCustomerByIdService = exports.getAllCustomerService = void 0;
 const customer_1 = require("@entity/customer");
@@ -20,18 +11,47 @@ const monetaryHelper_1 = require("src/helper/monetaryHelper");
 const AccountCode_1 = require("src/interface/AccountCode");
 const cashFlow_1 = require("@entity/cashFlow");
 const cashFlow_2 = require("src/database/enum/cashFlow");
-const getAllCustomerService = () => __awaiter(void 0, void 0, void 0, function* () {
+const getAllCustomerService = async (offset, limit, orderByColumn, Order, search) => {
     try {
-        return yield customer_1.Customer.find({ relations: ['transactions', 'monetary'] });
+        //     LEFT JOIN (select  sum(
+        // case
+        // when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+        // else 0
+        // end) as "debt",customer_monetary.customer_id from "customer_monetary" group by customer_monetary.customer_id
+        // )
+        let queryBuilder = await customer_1.Customer.getRepository().createQueryBuilder('customer')
+            .select(['customer.*,cm.debt AS debt'])
+            .leftJoin('customer_monetary', 'c1', 'c1.customer_id = customer.id')
+            .leftJoin(selecQueryBuilder => selecQueryBuilder
+            .select([`select  sum( case
+     when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+     else 0
+     end) as "debt"`, 'customer_monetary.customer_id']).from('customer_monetary', 'customer_monetary')
+            .groupBy('customer_monetary.customer_id'), 'cm', 'cm.customer_id = customer.id')
+            .leftJoin('customer_monetary', 'c2', 'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))')
+            .where('c2.id IS NULL')
+            .addSelect('c1.created_at', 'last_transaction_date')
+            .orderBy(orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC')
+            .offset(offset)
+            .limit(limit);
+        if (search) {
+            queryBuilder = queryBuilder.andWhere('customer.name ILIKE :search', { search: `%${search}%` });
+        }
+        const customers = await queryBuilder.getRawMany();
+        const count_data = await customer_1.Customer.count();
+        return {
+            count_data,
+            customers
+        };
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.getAllCustomerService = getAllCustomerService;
-const getCustomerByIdService = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getCustomerByIdService = async (id) => {
     try {
-        const customer = yield customer_1.Customer.findOne({
+        const customer = await customer_1.Customer.findOne({
             where: { id },
             relations: ['transactions', 'monetary']
         });
@@ -40,13 +60,13 @@ const getCustomerByIdService = (id) => __awaiter(void 0, void 0, void 0, functio
         return customer;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.getCustomerByIdService = getCustomerByIdService;
-const getCustomerDepositService = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getCustomerDepositService = async (id) => {
     try {
-        const customer_deposit = yield customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEPOSIT } });
+        const customer_deposit = await customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEPOSIT } });
         const total_deposit = (0, monetaryHelper_1.CalculateTotalBalance)(customer_deposit);
         return {
             total_deposit,
@@ -54,13 +74,13 @@ const getCustomerDepositService = (id) => __awaiter(void 0, void 0, void 0, func
         };
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.getCustomerDepositService = getCustomerDepositService;
-const getCustomerDebtService = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const getCustomerDebtService = async (id) => {
     try {
-        const customer_debt = yield customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEBT } });
+        const customer_debt = await customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEBT } });
         const total_debt = (0, monetaryHelper_1.CalculateTotalBalance)(customer_debt);
         return {
             total_debt,
@@ -68,13 +88,13 @@ const getCustomerDebtService = (id) => __awaiter(void 0, void 0, void 0, functio
         };
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.getCustomerDebtService = getCustomerDebtService;
-const addDepositService = ({ amount, customer_id, is_transfer, description }) => __awaiter(void 0, void 0, void 0, function* () {
+const addDepositService = async ({ amount, customer_id, is_transfer, description }) => {
     try {
-        const customer = yield customer_1.Customer.findOne({ where: { id: customer_id } });
+        const customer = await customer_1.Customer.findOne({ where: { id: customer_id } });
         if (!customer)
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;
         const customerMonetary = new customerMonetary_1.CustomerMonetary();
@@ -85,7 +105,7 @@ const addDepositService = ({ amount, customer_id, is_transfer, description }) =>
         if (description) {
             customerMonetary.description = description;
         }
-        yield customerMonetary.save();
+        await customerMonetary.save();
         const cashFlow = new cashFlow_1.CashFlow();
         cashFlow.amount = amount;
         cashFlow.code = cashFlow_2.E_CashFlowCode.IN_ADD_DEPOSIT;
@@ -95,13 +115,13 @@ const addDepositService = ({ amount, customer_id, is_transfer, description }) =>
         return customerMonetary;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.addDepositService = addDepositService;
-const payDebtService = ({ amount, customer_id, is_transfer, description }) => __awaiter(void 0, void 0, void 0, function* () {
+const payDebtService = async ({ amount, customer_id, is_transfer, description }) => {
     try {
-        const customer = yield customer_1.Customer.findOne({ where: { id: customer_id } });
+        const customer = await customer_1.Customer.findOne({ where: { id: customer_id } });
         if (!customer)
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;
         const customerMonetary = new customerMonetary_1.CustomerMonetary();
@@ -112,7 +132,7 @@ const payDebtService = ({ amount, customer_id, is_transfer, description }) => __
         if (description) {
             customerMonetary.description = description;
         }
-        yield customerMonetary.save();
+        await customerMonetary.save();
         const cashFlow = new cashFlow_1.CashFlow();
         cashFlow.amount = amount;
         cashFlow.code = cashFlow_2.E_CashFlowCode.IN_PAY_DEBT;
@@ -120,17 +140,17 @@ const payDebtService = ({ amount, customer_id, is_transfer, description }) => __
         cashFlow.cash_type = is_transfer ? cashFlow_2.E_CashType.TRANSFER : cashFlow_2.E_CashType.CASH;
         cashFlow.note = `Pembayaran Hutang : ${customer.name}`; // temporary harcode
         cashFlow.customer = customer;
-        yield cashFlow.save();
+        await cashFlow.save();
         return customerMonetary;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.payDebtService = payDebtService;
-const searchCustomerService = (query) => __awaiter(void 0, void 0, void 0, function* () {
+const searchCustomerService = async (query) => {
     try {
-        const customer = yield customer_1.Customer.createQueryBuilder('customer')
+        const customer = await customer_1.Customer.createQueryBuilder('customer')
             .where('UPPER(customer.name) LIKE UPPER(:query)', { query: `%${query}%` })
             .leftJoinAndSelect('customer.monetary', 'monetary')
             .leftJoinAndSelect('customer.transactions', 'transactions')
@@ -139,19 +159,18 @@ const searchCustomerService = (query) => __awaiter(void 0, void 0, void 0, funct
         return customer;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.searchCustomerService = searchCustomerService;
-const createCustomerService = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const createCustomerService = async (payload) => {
     const queryRunner = app_1.db.queryRunner();
     try {
-        yield queryRunner.startTransaction();
+        await queryRunner.startTransaction();
         const _newCustomer = new customer_1.Customer();
         _newCustomer.name = payload.name;
-        _newCustomer.contact_number = (_a = payload.contact_number) !== null && _a !== void 0 ? _a : '';
-        yield queryRunner.manager.save(_newCustomer);
+        _newCustomer.contact_number = payload.contact_number ?? '';
+        await queryRunner.manager.save(_newCustomer);
         const _customerMonet = new customerMonetary_1.CustomerMonetary();
         _customerMonet.customer = _newCustomer;
         // if ( payload.hutang ) {
@@ -164,47 +183,47 @@ const createCustomerService = (payload) => __awaiter(void 0, void 0, void 0, fun
         // if ( payload.hutang ?? payload.piutang ) {
         //   await queryRunner.manager.save( _customerMonet )
         // }
-        yield queryRunner.commitTransaction();
-        const customer = yield customer_1.Customer.findOne({ where: { id: _newCustomer.id } });
+        await queryRunner.commitTransaction();
+        const customer = await customer_1.Customer.findOne({ where: { id: _newCustomer.id } });
         return customer;
     }
     catch (error) {
-        yield queryRunner.rollbackTransaction();
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        await queryRunner.rollbackTransaction();
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
     finally {
-        yield queryRunner.release();
+        await queryRunner.release();
     }
-});
+};
 exports.createCustomerService = createCustomerService;
-const updateCustomerService = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateCustomerService = async (id, payload) => {
     try {
-        const customer = yield customer_1.Customer.findOne({ where: { id } });
+        const customer = await customer_1.Customer.findOne({ where: { id } });
         if (customer != null) {
             customer.name = payload.name ? payload.name : customer.name;
             customer.contact_number = payload.contact_number ? payload.contact_number : customer.contact_number;
-            yield customer.save();
+            await customer.save();
         }
         else
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;
-        return yield customer_1.Customer.findOne({ where: { id } });
+        return await customer_1.Customer.findOne({ where: { id } });
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.updateCustomerService = updateCustomerService;
-const deleteCustomerService = (id) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteCustomerService = async (id) => {
     try {
-        const customer = yield customer_1.Customer.findOne({ where: { id } });
+        const customer = await customer_1.Customer.findOne({ where: { id } });
         if (customer != null) {
-            yield customer.remove();
+            await customer.remove();
         }
         else
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;
     }
     catch (error) {
-        return yield Promise.reject(new errorHandler_1.Errors(error));
+        return await Promise.reject(new errorHandler_1.Errors(error));
     }
-});
+};
 exports.deleteCustomerService = deleteCustomerService;

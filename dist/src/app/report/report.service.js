@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -22,10 +13,9 @@ const date_1 = require("src/constants/date");
 const cashFlow_2 = require("src/database/enum/cashFlow");
 const typeorm_1 = require("typeorm");
 const report_helper_1 = require("./report.helper");
-const getDailyReportService = (date, typeCash = cashFlow_2.E_CashFlowType.CashIn) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+const getDailyReportService = async (date, typeCash = cashFlow_2.E_CashFlowType.CashIn) => {
     const flowType = typeCash === cashFlow_2.E_CashFlowType.CashIn ? typeCash : cashFlow_2.E_CashFlowType.CashOut;
-    const cashFlow = yield cashFlow_1.CashFlow.find({
+    const cashFlow = await cashFlow_1.CashFlow.find({
         relations: [
             'transaction',
             'transaction.customer',
@@ -34,13 +24,11 @@ const getDailyReportService = (date, typeCash = cashFlow_2.E_CashFlowType.CashIn
         where: { created_at: (0, typeorm_1.Raw)(alias => `date(${alias}) BETWEEN '${date.subtract(1, 'day').format('YYYY-MM-DD')}' AND '${date.format('YYYY-MM-DD')}'`), type: flowType },
         order: { created_at: 'DESC' }
     });
-    const rawTodayCashFlow = cashFlow.filter(cf => (0, dayjs_1.default)(cf === null || cf === void 0 ? void 0 : cf.created_at).format(date_1.DateFormat) === date.format(date_1.DateFormat));
-    const rawYesterdayCashFlow = cashFlow.filter(cf => (0, dayjs_1.default)(cf === null || cf === void 0 ? void 0 : cf.created_at).format(date_1.DateFormat) === date.subtract(1, 'day').format(date_1.DateFormat));
+    const rawTodayCashFlow = cashFlow.filter(cf => (0, dayjs_1.default)(cf?.created_at).format(date_1.DateFormat) === date.format(date_1.DateFormat));
+    const rawYesterdayCashFlow = cashFlow.filter(cf => (0, dayjs_1.default)(cf?.created_at).format(date_1.DateFormat) === date.subtract(1, 'day').format(date_1.DateFormat));
     const todayCashFlow = rawTodayCashFlow.map(cf => {
-        var _a;
         const payDebtAmount = cf.transaction ? cf.transaction_id ? cf.transaction.pay_debt_amount : 0 : 0;
-        const customerName = cf.customer ? cf.customer_id ? cf.customer.name : (_a = cf.transaction.customer) === null || _a === void 0 ? void 0 : _a.name : '';
-        console.log(cf.customer);
+        const customerName = cf.customer ? cf.customer_id ? cf.customer.name : cf.transaction.customer?.name : '';
         return {
             id: cf.id,
             note: cf.note,
@@ -52,9 +40,8 @@ const getDailyReportService = (date, typeCash = cashFlow_2.E_CashFlowType.CashIn
         };
     });
     const yesterdayCashflow = rawYesterdayCashFlow.length
-        ? (_a = rawYesterdayCashFlow.map(cf => {
-            var _a;
-            const payDebtAmount = (_a = cf.transaction.pay_debt_amount) !== null && _a !== void 0 ? _a : 0;
+        ? rawYesterdayCashFlow.map(cf => {
+            const payDebtAmount = cf.transaction ? cf.transaction_id ? cf.transaction.pay_debt_amount : 0 : 0;
             return {
                 id: cf.id,
                 note: 'Sistem Stock Tunai (Total transaksi H-1)',
@@ -63,7 +50,7 @@ const getDailyReportService = (date, typeCash = cashFlow_2.E_CashFlowType.CashIn
                 sub_total_transfer: cf.cash_type === cashFlow_2.E_CashType.TRANSFER ? cf.amount + payDebtAmount : 0,
                 flow_type: cf.type
             };
-        })) === null || _a === void 0 ? void 0 : _a.reduceRight((acc, curr) => {
+        })?.reduceRight((acc, curr) => {
             return {
                 id: curr.id,
                 note: curr.note,
@@ -78,16 +65,16 @@ const getDailyReportService = (date, typeCash = cashFlow_2.E_CashFlowType.CashIn
         todayCashFlow,
         yesterdayCashflow
     };
-});
+};
 exports.getDailyReportService = getDailyReportService;
-const getCashReportService = () => __awaiter(void 0, void 0, void 0, function* () {
-    const transactions = yield transaction_1.Transaction.find({ relations: ['customer'] });
-    const cashFlows = yield cashFlow_1.CashFlow.find();
+const getCashReportService = async () => {
+    const transactions = await transaction_1.Transaction.find({ relations: ['customer'] });
+    const cashFlows = await cashFlow_1.CashFlow.find();
     return (0, report_helper_1.reportFormatter)(cashFlows, transactions);
-});
+};
 exports.getCashReportService = getCashReportService;
-const getVendorReportService = (month) => __awaiter(void 0, void 0, void 0, function* () {
-    const vendor = yield vendor_1.Vendor.find({
+const getVendorReportService = async (month) => {
+    const vendor = await vendor_1.Vendor.find({
         relations: [
             'products',
             'products.stocks',
@@ -95,5 +82,5 @@ const getVendorReportService = (month) => __awaiter(void 0, void 0, void 0, func
         ]
     });
     return vendor;
-});
+};
 exports.getVendorReportService = getVendorReportService;

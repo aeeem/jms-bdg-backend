@@ -13,6 +13,13 @@ exports.StockToko = void 0;
 const typeorm_1 = require("typeorm");
 const stock_1 = require("./stock");
 let StockToko = class StockToko extends typeorm_1.BaseEntity {
+    id;
+    amount;
+    code;
+    stock;
+    stock_id;
+    created_at;
+    updated_at;
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

@@ -16,6 +16,17 @@ const hutangPiutang_1 = require("../enum/hutangPiutang");
 const customer_1 = require("./customer");
 const transaction_1 = require("./transaction");
 let CustomerMonetary = class CustomerMonetary extends typeorm_1.BaseEntity {
+    id;
+    type;
+    amount;
+    source;
+    transaction_id;
+    customer_id;
+    customer;
+    transaction;
+    created_at;
+    updated_at;
+    description;
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

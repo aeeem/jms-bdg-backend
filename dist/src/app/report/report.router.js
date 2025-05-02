@@ -11,15 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -31,52 +22,44 @@ const tsoa_1 = require("tsoa");
 const cashflow_service_1 = require("../cashflow/cashflow.service");
 const report_service_1 = require("./report.service");
 let ReportController = class ReportController extends tsoa_1.Controller {
-    getDailyReport(date_param, type_cash) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const date = date_param ? (0, dayjs_1.default)(date_param) : (0, dayjs_1.default)();
-                const data = yield (0, report_service_1.getDailyReportService)(date, type_cash);
-                return response_1.default.success({ data });
-            }
-            catch (error) {
-                console.log(error);
-                return error;
-            }
-        });
+    async getDailyReport(date_param, type_cash) {
+        try {
+            const date = date_param ? (0, dayjs_1.default)(date_param) : (0, dayjs_1.default)();
+            const data = await (0, report_service_1.getDailyReportService)(date, type_cash);
+            return response_1.default.success({ data });
+        }
+        catch (error) {
+            console.log(error);
+            return error;
+        }
     }
-    getCashFlow(year, month, week) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const data = yield (0, cashflow_service_1.getCashFlowService)(year, month, week);
-                return response_1.default.success({ data });
-            }
-            catch (error) {
-                return error;
-            }
-        });
+    async getCashFlow(year, month, week) {
+        try {
+            const data = await (0, cashflow_service_1.getCashFlowService)(year, month, week);
+            return response_1.default.success({ data });
+        }
+        catch (error) {
+            return error;
+        }
     }
-    getCashReport() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const data = yield (0, report_service_1.getCashReportService)();
-                return response_1.default.success({ data });
-            }
-            catch (error) {
-                return error;
-            }
-        });
+    async getCashReport() {
+        try {
+            const data = await (0, report_service_1.getCashReportService)();
+            return response_1.default.success({ data });
+        }
+        catch (error) {
+            return error;
+        }
     }
-    getSupplierReport(month) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const monthParam = month !== null && month !== void 0 ? month : (0, dayjs_1.default)().month();
-                const data = yield (0, report_service_1.getVendorReportService)(monthParam);
-                return response_1.default.success({ data });
-            }
-            catch (error) {
-                return error;
-            }
-        });
+    async getSupplierReport(month) {
+        try {
+            const monthParam = month ?? (0, dayjs_1.default)().month();
+            const data = await (0, report_service_1.getVendorReportService)(monthParam);
+            return response_1.default.success({ data });
+        }
+        catch (error) {
+            return error;
+        }
     }
 };
 __decorate([

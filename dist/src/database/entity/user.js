@@ -15,6 +15,19 @@ const role_1 = require("./role");
 const transaction_1 = require("./transaction");
 const opname_1 = require("./opname");
 let User = class User extends typeorm_1.BaseEntity {
+    id;
+    email;
+    noInduk;
+    name;
+    birth_date;
+    phone_number;
+    password;
+    transactions;
+    role;
+    role_id;
+    opnames;
+    created_at;
+    updated_at;
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),

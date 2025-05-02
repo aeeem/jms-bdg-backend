@@ -14,6 +14,17 @@ const typeorm_1 = require("typeorm");
 const stock_1 = require("./stock");
 const transaction_1 = require("./transaction");
 let TransactionDetail = class TransactionDetail extends typeorm_1.BaseEntity {
+    id;
+    amount;
+    sub_total;
+    transaction;
+    stock;
+    stock_id;
+    is_box;
+    transaction_id;
+    created_at;
+    updated_at;
+    deleted_at;
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
