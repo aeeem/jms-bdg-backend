@@ -11,9 +11,13 @@ import {
 } from './customer.interface'
 import makeResponse, { OffsetFromPage } from 'src/helper/response'
 
+
 interface QueryParams {
   page: number
   limit: number
+  orderByColumn?: string
+  Order?: string
+  search?: string
 }
 @Tags( 'Customer' )
 @Route( '/api/customer' )
@@ -25,7 +29,13 @@ export class CustomerController extends Controller {
   @Queries() queries: QueryParams
   ) {
     try {
-      const {customers, count_data } = await getAllCustomerService( OffsetFromPage( queries.page, queries.limit ), queries.limit )
+      if ( queries.orderByColumn !== 'last_transaction_date' && queries.orderByColumn !== undefined ) {
+        queries.orderByColumn = `customer.${String( queries.orderByColumn )}`
+      }
+      if ( queries.orderByColumn === undefined ) {
+        queries.orderByColumn = 'customer.id'
+      }
+      const {customers, count_data } = await getAllCustomerService( OffsetFromPage( queries.page, queries.limit ), queries.limit, queries.orderByColumn, queries.Order, queries.search )
       const total_page = Math.ceil( count_data / queries.limit )
       return makeResponse.successWithPagination( {
         data     : customers,

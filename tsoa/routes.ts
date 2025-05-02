@@ -77,6 +77,9 @@ const models: TsoaRoute.Models = {
         "properties": {
             "page": {"dataType":"double","required":true},
             "limit": {"dataType":"double","required":true},
+            "orderByColumn": {"dataType":"string"},
+            "Order": {"dataType":"string"},
+            "search": {"dataType":"string"},
         },
         "additionalProperties": false,
     },

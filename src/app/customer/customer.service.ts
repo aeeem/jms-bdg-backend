@@ -15,12 +15,22 @@ import {
   E_CashFlowCode, E_CashFlowType, E_CashType
 } from 'src/database/enum/cashFlow'
 
-export const getAllCustomerService = async ( offset: number, limit: number ) => {
+export const getAllCustomerService = async ( offset: number, limit: number, orderByColumn: string, Order?: string, search?: string ) => {
   try {
-    const customers = await Customer.find( {
-      skip: offset,
-      take: limit
-    } )
+    let queryBuilder = await Customer.getRepository().createQueryBuilder( 'customer' )
+      .select( ['customer.*'] )
+      .leftJoin( 'customer_monetary', 'c1', 'c1.customer_id = customer.id' )
+      .leftJoin( 'customer_monetary', 'c2',
+        'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))' )
+      .where( 'c2.id IS NULL' )
+      .addSelect( 'c1.created_at', 'last_transaction_date' )
+      .orderBy( orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC' )
+      .offset( offset )
+      .limit( limit )
+    if ( search ) {
+      queryBuilder = queryBuilder.andWhere( 'customer.name ILIKE :search', { search: `%${search}%` } )
+    }
+    const customers = await queryBuilder.getRawMany()
     const count_data = await Customer.count()
 
     return {
