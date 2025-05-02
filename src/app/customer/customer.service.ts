@@ -66,7 +66,7 @@ export const getCustomerByIdService = async ( id: number ) => {
   try {
     const queryBuilder = await Customer.getRepository()
       .createQueryBuilder( 'customer' )
-      .select( ['customer.*,coalasce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
+      .select( ['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
       .leftJoin(
         selecQueryBuilder =>
           selecQueryBuilder
