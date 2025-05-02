@@ -71,7 +71,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"QueryParams": {
+			"QueryListParams": {
 				"properties": {
 					"page": {
 						"type": "number",
@@ -961,7 +961,31 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"data": [
+												{
+													"last_transaction_date": "2025-01-09T21:45:03.679Z",
+													"id": 136,
+													"name": "Tes",
+													"contact_number": "",
+													"created_at": "2024-09-20T08:03:39.137Z",
+													"updated_at": "2024-09-20T08:03:39.137Z",
+													"debt": "18287450",
+													"deposit": "0"
+												}
+											],
+											"page": 1,
+											"totalData": 216,
+											"limit": 1,
+											"totalPage": 216,
+											"stat_code": 200,
+											"stat_msg": "SUCCESS"
+										}
+									}
+								}
 							}
 						}
 					}
@@ -1241,7 +1265,35 @@
 						"description": "Ok",
 						"content": {
 							"application/json": {
-								"schema": {}
+								"schema": {},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"data": {
+												"debt": [
+													{
+														"id": 606,
+														"type": "DEBT",
+														"amount": 120000,
+														"source": "DEBT_ADD_INSUFFICIENT_FUND",
+														"transaction_id": null,
+														"customer_id": 136,
+														"created_at": "2024-10-07T07:02:07.594Z",
+														"updated_at": "2024-10-07T07:02:07.594Z",
+														"description": null
+													}
+												],
+												"total_debt": "18287450"
+											},
+											"page": 1,
+											"totalData": 13,
+											"limit": 10,
+											"totalPage": 2,
+											"stat_code": 200,
+											"stat_msg": "SUCCESS"
+										}
+									}
+								}
 							}
 						}
 					}
@@ -1261,6 +1313,48 @@
 						"in": "path",
 						"name": "id",
 						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "orderByColumn",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "Order",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "search",
+						"required": false,
 						"schema": {
 							"type": "string"
 						}

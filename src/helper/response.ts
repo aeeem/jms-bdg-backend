@@ -22,7 +22,6 @@ export interface ErrorResponseType<T> extends ResponseStatus {
   // pagination: Pagination;
 }
 
-
 export const successWithPagination = <T = null> ( {
   data, page, totalData, limit, totalPage, stat_code = 200, stat_msg = ''
 }: ResponseTypePagination<T> ): ResponseTypePagination<T> => {
@@ -59,9 +58,13 @@ export const error = <T = null> ( {
 }
 
 export const OffsetFromPage = ( page: number, limit: number ) => {
+  console.log( page )
   return ( page - 1 ) * limit
 }
 
+export const TotalPage = ( count_data: number, limit: number ) => {
+  return Math.ceil( count_data / limit )
+}
 const makeResponse = {
   success,
   successWithPagination,

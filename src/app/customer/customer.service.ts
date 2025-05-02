@@ -26,15 +26,17 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     let queryBuilder = await Customer.getRepository().createQueryBuilder( 'customer' )
       .select( ['customer.*,cm.debt AS debt,cm.deposit AS deposit'] )
       .leftJoin( selecQueryBuilder => selecQueryBuilder
-        .select( [`sum( case
+        .select( [
+`sum( case
      when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
      else 0
      end) as "debt"`,
-        'customer_monetary.customer_id as customer_id',
+'customer_monetary.customer_id as customer_id',
      `sum( case
      when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
      else 0
-     end) as "deposit"`] ).from( 'customer_monetary', 'customer_monetary' )
+     end) as "deposit"`
+        ] ).from( 'customer_monetary', 'customer_monetary' )
         .groupBy( 'customer_monetary.customer_id' ), 'cm', 'cm.customer_id = customer.id' )
      
       .leftJoin( 'customer_monetary', 'c1', 'c1.customer_id = customer.id' )
@@ -44,14 +46,14 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
       .addSelect( 'c1.created_at', 'last_transaction_date' )
       .orderBy( orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC' )
       .offset( offset )
-      .limit( limit )
     if ( search ) {
       queryBuilder = queryBuilder.andWhere( 'customer.name ILIKE :search', { search: `%${search}%` } )
     }
-    const query = queryBuilder.getQuery()
-    console.log( query )
-    const customers = await queryBuilder.getRawMany()
+    // const query = queryBuilder.getQuery()
+    // console.log( query )
     const count_data = await Customer.count()
+    queryBuilder = queryBuilder.limit( limit )
+    const customers = await queryBuilder.getRawMany()
 
     return {
       count_data,
@@ -64,11 +66,39 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
 
 export const getCustomerByIdService = async ( id: number ) => {
   try {
-    const customer = await Customer.findOne( {
-      where    : { id },
-      relations: ['transactions', 'monetary']
+    const queryBuilder = await Customer.getRepository()
+      .createQueryBuilder( 'customer' )
+      .select( ['customer.*,cm.debt AS debt,cm.deposit AS deposit'] )
+      .leftJoin(
+        selecQueryBuilder =>
+          selecQueryBuilder
+            .select( [
+              `sum( case
+        when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+        else 0
+        end) as "debt"`,
+              'customer_monetary.customer_id as customer_id',
+              `sum( case
+        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+        else 0
+        end) as "deposit"`
+            ] )
+            .from( 'customer_monetary', 'customer_monetary' )
+            .groupBy( 'customer_monetary.customer_id' ),
+        'cm',
+        'cm.customer_id = customer.id'
+      )
 
-    } )
+      .leftJoin( 'customer_monetary', 'c1', 'c1.customer_id = customer.id' )
+      .leftJoin(
+        'customer_monetary',
+        'c2',
+        'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))'
+      )
+      .where( 'c2.id IS NULL' )
+      .addSelect( 'c1.created_at', 'last_transaction_date' )
+      .where( 'customer.id=:id', { id } )
+    const customer = await queryBuilder.getRawOne()
     if ( customer == null ) throw E_ERROR.CUSTOMER_NOT_FOUND
     return customer
   } catch ( error: any ) {
@@ -83,19 +113,47 @@ export const getCustomerDepositService = async ( id: number ) => {
     return {
       total_deposit,
       deposits: customer_deposit
+
     }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
 }
 
-export const getCustomerDebtService = async ( id: number ) => {
+export const getCustomerDebtService = async (
+  id: number,
+  offset?: number,
+  limit?: number
+) => {
   try {
-    const customer_debt = await CustomerMonetary.find( { where: { customer_id: id, type: E_Recievables.DEBT } } )
-    const total_debt = CalculateTotalBalance( customer_debt )
+    console.log( 'queries' )
+    let queryBuilder = await CustomerMonetary.createQueryBuilder( 'customer_monetary' )
+      .select( ['customer_monetary.*'] )
+      .where( 'customer_monetary.customer_id=:id', { id } )
+      .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEBT } )
+
+    const total_debt_obj = await CustomerMonetary.createQueryBuilder(
+      'customer_monetary'
+    )
+      .select( ['sum(customer_monetary.amount) as total_debt'] )
+      .where( 'customer_monetary.customer_id=:id', { id } )
+      .getRawOne()
+
+    const count_data = await queryBuilder.getCount()
+    // If a limit is provided, set the maximum number of records to retrieve
+    if ( limit ) {
+      queryBuilder = queryBuilder.limit( limit )
+    }
+    // If a offset is provided, set the maximum number of records to retrieve
+    if ( offset ) {
+      queryBuilder = queryBuilder.offset( offset )
+    }
+    const total_debt: number = total_debt_obj.total_debt
+    const customer_debt_list = await queryBuilder.getRawMany()
     return {
+      count_data,
       total_debt,
-      debts: customer_debt
+      customer_debt_list
     }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
