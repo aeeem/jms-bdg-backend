@@ -170,8 +170,7 @@ export class CustomerController extends Controller {
           OffsetFromPage( queries.page, queries.limit ),
           queries.limit
         )
-      console.log( 'debts' )
-      console.log( total_debt )
+   
 
       return makeResponse.successWithPagination( {
         data: {

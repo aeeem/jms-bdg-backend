@@ -49,8 +49,7 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     if ( search ) {
       queryBuilder = queryBuilder.andWhere( 'customer.name ILIKE :search', { search: `%${search}%` } )
     }
-    // const query = queryBuilder.getQuery()
-    // console.log( query )
+
     const count_data = await Customer.count()
     queryBuilder = queryBuilder.limit( limit )
     const customers = await queryBuilder.getRawMany()
@@ -126,7 +125,6 @@ export const getCustomerDebtService = async (
   limit?: number
 ) => {
   try {
-    console.log( 'queries' )
     let queryBuilder = await CustomerMonetary.createQueryBuilder( 'customer_monetary' )
       .select( ['customer_monetary.*'] )
       .where( 'customer_monetary.customer_id=:id', { id } )
