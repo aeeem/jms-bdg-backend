@@ -115,7 +115,7 @@ export class CustomerController extends Controller {
         )
       return makeResponse.successWithPagination( {
         data: {
-          debt         : customer_deposit_list,
+          history      : customer_deposit_list,
           total_deposit: + total_deposit
         },
         page     : queries.page,
@@ -193,7 +193,7 @@ export class CustomerController extends Controller {
 
       return makeResponse.successWithPagination( {
         data: {
-          debt      : customer_debt_list,
+          history   : customer_debt_list,
           total_debt: + total_debt
         },
         page     : queries.page,
