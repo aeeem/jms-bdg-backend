@@ -43,12 +43,12 @@ let ProductsController = class ProductsController extends tsoa_1.Controller {
     async getAllProducts(queries) {
         if (queries.orderByColumn !== 'last_transaction_date' &&
             queries.orderByColumn !== undefined) {
-            queries.orderByColumn = `customer.${String(queries.orderByColumn)}`;
+            queries.orderByColumn = `${String(queries.orderByColumn)}`;
         }
         if (queries.orderByColumn === undefined) {
-            queries.orderByColumn = 'customer.id';
+            queries.orderByColumn = 'id';
         }
-        const { product, count } = await (0, product_service_1.getAllProductsService)((0, response_1.OffsetFromPage)(queries.page, queries.limit), queries.limit, queries.orderByColumn, queries.Order, queries.search);
+        const { product, count } = await (0, product_service_1.getAllProductsService)((0, response_1.OffsetFromPage)(queries.page, queries.limit), queries.limit, queries.orderByColumn, queries.Order, queries.search, queries.vendor, queries.startDate, queries.endDate);
         return response_1.default.successWithPagination({
             data: product,
             totalData: count,

@@ -13,6 +13,7 @@ exports.Stock = void 0;
 const typeorm_1 = require("typeorm");
 const product_1 = require("./product");
 const transactionDetail_1 = require("./transactionDetail");
+const vendor_1 = require("./vendor");
 let Stock = class Stock extends typeorm_1.BaseEntity {
     id;
     stock_toko;
@@ -20,6 +21,7 @@ let Stock = class Stock extends typeorm_1.BaseEntity {
     buy_price;
     sell_price;
     weight;
+    vendor;
     product;
     productId;
     transactionDetails;
@@ -33,7 +35,9 @@ __decorate([
 ], Stock.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', {
-        nullable: true, precision: 6, scale: 2
+        nullable: true,
+        precision: 6,
+        scale: 2
     }),
     __metadata("design:type", Number)
 ], Stock.prototype, "stock_toko", void 0);
@@ -51,10 +55,17 @@ __decorate([
 ], Stock.prototype, "sell_price", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', {
-        precision: 6, scale: 2, nullable: true
+        precision: 6,
+        scale: 2,
+        nullable: true
     }),
     __metadata("design:type", Number)
 ], Stock.prototype, "weight", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => vendor_1.Vendor, vendor => vendor.products, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)({ name: 'vendorId' }),
+    __metadata("design:type", vendor_1.Vendor)
+], Stock.prototype, "vendor", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => product_1.Product, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)({ name: 'productId' }),

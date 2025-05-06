@@ -17,24 +17,47 @@ export const getAllProductsService = async (
   limit: number,
   orderByColumn: string,
   Order?: string,
-  search?: string
+  search?: string,
+  vendor?: number,
+  dateTo?: string,
+  dateFrom?: string
 ) => {
   try {
     console.log( 'offset limit orderbycolumn:', offset, limit, orderByColumn )
-    const [product, count] = await Product.findAndCount( {
-      where    : search ? { name: search } : {},
-      relations: ['stocks', 'vendor'],
-      take     : limit,
-      skip     : offset,
-      order    : { [orderByColumn]: Order === 'DESC' ? 'DESC' : 'ASC' }
-      // select   : [
-      //   'product.*',
-      //   'stocks',
-      //   'vendor',
-      //   'sum(stock.stock_gudang) as total_stock_gudang',
-      //   'sum(stock.stock_toko) as total_stock_gudang'
-      // ]
-    } )
+    const qbProduct = Product.createQueryBuilder( 'product' ).leftJoinAndSelect( 'product.stocks', 'stocks' )
+      .leftJoinAndSelect( 'product.vendor', 'vendor' )
+
+    if ( vendor ) {
+      qbProduct.andWhere( 'product.vendorId = :vendor', { vendor } )
+    }
+    if ( search ) {
+      qbProduct.andWhere( 'LOWER(product.name) LIKE :query OR LOWER(product.sku) LIKE :query', { query: `%${search}%` } )
+    }
+    if ( dateFrom ) {
+      qbProduct.andWhere( 'product.arrival_date::date <= :dateFrom', { dateFrom } )
+    }
+    if ( dateTo ) {
+      qbProduct.andWhere( 'product.arrival_date::date >= :dateTo', { dateTo } )
+    }
+    const product = await qbProduct
+      .orderBy( `product.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' ).limit( limit )
+      .offset( offset )
+      .getMany()
+    const count = await qbProduct.getCount()
+    // const [product, count] = await Product.findAndCount( {
+    //   where    : search ? { name: search } : {},
+    //   relations: ['stocks', 'vendor'],
+    //   take     : limit,
+    //   skip     : offset,
+    //   order    : { [orderByColumn]: Order === 'DESC' ? 'DESC' : 'ASC' }
+    //   // select   : [
+    //   //   'product.*',
+    //   //   'stocks',
+    //   //   'vendor',
+    //   //   'sum(stock.stock_gudang) as total_stock_gudang',
+    //   //   'sum(stock.stock_toko) as total_stock_gudang'
+    //   // ]
+    // } )
     return { product, count }
   } catch ( e: any ) {
     throw new Errors( e )

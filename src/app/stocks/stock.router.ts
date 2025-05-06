@@ -2,7 +2,7 @@ import makeResponse from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
-import { AddStockBulkParameter, UpdateStockParameter } from './stock.interfaces'
+import { AddStockBulkParameter } from './stock.interfaces'
 import {
   addStockBulkService,
   findStockService, getAllStocksService, getStockTokoService, updateStockService

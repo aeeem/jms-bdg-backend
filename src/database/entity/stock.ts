@@ -3,6 +3,7 @@ import {
 } from 'typeorm'
 import { Product } from './product'
 import { TransactionDetail } from './transactionDetail'
+import { Vendor } from './vendor'
 
 @Entity( { name: 'stock' } )
 export class Stock extends BaseEntity {
@@ -10,7 +11,9 @@ export class Stock extends BaseEntity {
     id: number
 
   @Column( 'decimal', {
-    nullable: true, precision: 6, scale: 2
+    nullable : true,
+    precision: 6,
+    scale    : 2
   } )
     stock_toko!: number
 
@@ -24,9 +27,15 @@ export class Stock extends BaseEntity {
     sell_price: number
 
   @Column( 'decimal', {
-    precision: 6, scale: 2, nullable: true
+    precision: 6,
+    scale    : 2,
+    nullable : true
   } )
     weight: number
+
+  @ManyToOne( () => Vendor, vendor => vendor.products, { onDelete: 'CASCADE' } )
+  @JoinColumn( { name: 'vendorId' } )
+    vendor: Vendor
 
   @ManyToOne( () => Product, { onDelete: 'CASCADE' } )
   @JoinColumn( { name: 'productId' } )
@@ -35,7 +44,10 @@ export class Stock extends BaseEntity {
   @Column( { nullable: true } )
     productId: number
 
-  @OneToMany( () => TransactionDetail, transactionDetail => transactionDetail.stock )
+  @OneToMany(
+    () => TransactionDetail,
+    transactionDetail => transactionDetail.stock
+  )
     transactionDetails: TransactionDetail[]
 
   @CreateDateColumn()

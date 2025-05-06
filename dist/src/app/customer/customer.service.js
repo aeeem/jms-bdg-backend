@@ -90,12 +90,20 @@ const getCustomerByIdService = async (id) => {
     }
 };
 exports.getCustomerByIdService = getCustomerByIdService;
-const getCustomerDepositService = async (id, offset, limit) => {
+const getCustomerDepositService = async (id, orderByColumn, Order, offset, limit) => {
     try {
+        if (orderByColumn !== 'last_transaction_date' &&
+            orderByColumn !== undefined) {
+            orderByColumn = `customer_monetary.${String(orderByColumn)}`;
+        }
+        if (orderByColumn === undefined) {
+            orderByColumn = 'customer_monetary.id';
+        }
         let queryBuilder = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
             .select(['customer_monetary.*'])
             .where('customer_monetary.customer_id=:id', { id })
-            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT });
+            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT })
+            .orderBy(orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC');
         const qb_deposit = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
             .select(['coalesce(sum(customer_monetary.amount),0) as total_deposit'])
             .where('customer_monetary.customer_id=:id', { id })
@@ -123,11 +131,19 @@ const getCustomerDepositService = async (id, offset, limit) => {
     }
 };
 exports.getCustomerDepositService = getCustomerDepositService;
-const getCustomerDebtService = async (id, offset, limit) => {
+const getCustomerDebtService = async (id, orderByColumn, Order, offset, limit) => {
     try {
+        if (orderByColumn !== 'last_transaction_date' &&
+            orderByColumn !== undefined) {
+            orderByColumn = `customer_monetary.${String(orderByColumn)}`;
+        }
+        if (orderByColumn === undefined) {
+            orderByColumn = 'customer_monetary.id';
+        }
         let queryBuilder = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
             .select(['customer_monetary.*'])
             .where('customer_monetary.customer_id=:id', { id })
+            .orderBy(orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC')
             .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEBT });
         const total_debt_obj = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
             .select(['coalesce(sum(customer_monetary.amount)) as total_debt'])

@@ -1,51 +1,58 @@
 import makeResponse, { OffsetFromPage, TotalPage } from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Post, Put, Queries, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import {
-  MixedProductRequestParameter, ProductRequestParameter, UpdateProductParameter
+  MixedProductRequestParameter,
+  ProductRequestParameter,
+  UpdateProductParameter
 } from './product.interfaces'
 import {
   addMixedProductService,
   createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService
 } from './product.service'
 
-interface QueryListParams {
-  page: number
-  limit: number
-  orderByColumn?: string
-  Order?: string
-  search?: string
-}
 @Tags( 'Products' )
 @Route( '/api/products' )
 export class ProductsController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:product'] )
-  public async getAllProducts ( @Queries() queries: QueryListParams ) {
+  public async getAllProducts (
+  @Query() page: number,
+    @Query() limit: number,
+    @Query() orderByColumn?: string,
+    @Query() Order?: string,
+    @Query() search?: string,
+    @Query() startDate?: string,
+    @Query()endDate?: string,
+    @Query() vendor?: number
+  ) {
     if (
-      queries.orderByColumn !== 'last_transaction_date' &&
-          queries.orderByColumn !== undefined
+      orderByColumn !== 'last_transaction_date' &&
+          orderByColumn !== undefined
     ) {
-      queries.orderByColumn = `${String( queries.orderByColumn )}`
+      orderByColumn = `${String( orderByColumn )}`
     }
-    if ( queries.orderByColumn === undefined ) {
-      queries.orderByColumn = 'id'
+    if ( orderByColumn === undefined ) {
+      orderByColumn = 'id'
     }
     const { product, count } = await getAllProductsService(
-      OffsetFromPage( queries.page, queries.limit ),
-      queries.limit,
-      queries.orderByColumn,
-      queries.Order,
-      queries.search
+      OffsetFromPage( page, limit ),
+      limit,
+      orderByColumn,
+      Order,
+      search,
+      vendor,
+      startDate,
+      endDate
     )
 
     return makeResponse.successWithPagination( {
       data     : product,
       totalData: count,
-      page     : queries.page,
-      limit    : queries.limit,
-      totalPage: TotalPage( count, queries.limit ),
+      page     : page,
+      limit    : limit,
+      totalPage: TotalPage( count, limit ),
       stat_msg : 'SUCCESS'
     } )
   }
