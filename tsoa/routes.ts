@@ -1035,6 +1035,7 @@ export function RegisterRoutes(app: Router) {
 
             function ProductsController_getAllProducts(request: any, response: any, next: any) {
             const args = {
+                    queries: {"in":"queries","name":"queries","required":true,"ref":"QueryListParams"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

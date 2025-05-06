@@ -1,6 +1,6 @@
-import makeResponse from 'src/helper/response'
+import makeResponse, { OffsetFromPage, TotalPage } from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Post, Put, Queries, Query, Route, Security, Tags
 } from 'tsoa'
 import {
   MixedProductRequestParameter, ProductRequestParameter, UpdateProductParameter
@@ -10,14 +10,44 @@ import {
   createProductService, deleteProductService, getAllProductsService, searchProductService, updateProductService
 } from './product.service'
 
+interface QueryListParams {
+  page: number
+  limit: number
+  orderByColumn?: string
+  Order?: string
+  search?: string
+}
 @Tags( 'Products' )
 @Route( '/api/products' )
-
 export class ProductsController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:product'] )
-  public async getAllProducts () {
-    return await getAllProductsService()
+  public async getAllProducts ( @Queries() queries: QueryListParams ) {
+    if (
+      queries.orderByColumn !== 'last_transaction_date' &&
+          queries.orderByColumn !== undefined
+    ) {
+      queries.orderByColumn = `customer.${String( queries.orderByColumn )}`
+    }
+    if ( queries.orderByColumn === undefined ) {
+      queries.orderByColumn = 'customer.id'
+    }
+    const { product, count } = await getAllProductsService(
+      OffsetFromPage( queries.page, queries.limit ),
+      queries.limit,
+      queries.orderByColumn,
+      queries.Order,
+      queries.search
+    )
+
+    return makeResponse.successWithPagination( { 
+      data     : product,
+      totalData: count,
+      page     : queries.page,
+      limit    : queries.limit,
+      totalPage: TotalPage( count, queries.limit ),
+      stat_msg : 'SUCCESS'
+    } )
   }
 
   @Post( '/' )

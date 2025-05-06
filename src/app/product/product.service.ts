@@ -12,13 +12,30 @@ import {
   MixedProductRequestParameter, ProductRequestParameter, UpdateProductParameter
 } from './product.interfaces'
 
-export const getAllProductsService = async () => {
+export const getAllProductsService = async (
+  offset: number,
+  limit: number,
+  orderByColumn: string,
+  Order?: string,
+  search?: string
+) => {
   try {
-    const products = await Product.find( {
+    const [product, count] = await Product.findAndCount( {
+      where    : search ? { name: search } : {},
       relations: ['stocks', 'vendor'],
-      order    : { created_at: 'DESC' }
+      take     : limit,
+      skip     : offset,
+      order    : { [orderByColumn]: Order === 'DESC' ? 'DESC' : 'ASC' }
+      // select   : [
+      //   'product.*',
+      //   'stocks',
+      //   'vendor',
+      //   'sum(stock.stock_gudang) as total_stock_gudang',
+      //   'sum(stock.stock_toko) as total_stock_gudang'
+      // ]
     } )
-    return makeResponse.success<Product[]>( { data: products, stat_msg: 'SUCCESS' } )
+    
+    return { product, count }
   } catch ( e: any ) {
     throw new Errors( e )
   }
