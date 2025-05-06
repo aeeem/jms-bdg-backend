@@ -106,20 +106,37 @@ export const getCustomerByIdService = async ( id: number ) => {
   }
 }
 
-export const getCustomerDepositService = async ( id: number, offset?: number, limit?: number ) => {
+export const getCustomerDepositService = async (
+  id: number,
+  orderByColumn?: string,
+  Order?: string,
+  offset?: number,
+  limit?: number
+) => {
   try {
-    let queryBuilder = await CustomerMonetary.createQueryBuilder( 'customer_monetary' )
+    if (
+      orderByColumn !== 'last_transaction_date' &&
+          orderByColumn !== undefined
+    ) {
+      orderByColumn = `customer_monetary.${String( orderByColumn )}`
+    }
+    if ( orderByColumn === undefined ) {
+      orderByColumn = 'customer_monetary.id'
+    }
+    let queryBuilder = await CustomerMonetary.createQueryBuilder(
+      'customer_monetary'
+    )
       .select( ['customer_monetary.*'] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
+      .orderBy( orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC' )
     const qb_deposit = await CustomerMonetary.createQueryBuilder(
       'customer_monetary'
     )
       .select( ['coalesce(sum(customer_monetary.amount),0) as total_deposit'] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
-      
-    
+
     const total_deposit_obj = await qb_deposit.getRawOne()
     const count_data = await queryBuilder.getCount()
     // If a limit is provided, set the maximum number of records to retrieve
@@ -144,13 +161,27 @@ export const getCustomerDepositService = async ( id: number, offset?: number, li
 
 export const getCustomerDebtService = async (
   id: number,
+  orderByColumn?: string,
+  Order?: string,
   offset?: number,
   limit?: number
 ) => {
   try {
-    let queryBuilder = await CustomerMonetary.createQueryBuilder( 'customer_monetary' )
+    if (
+      orderByColumn !== 'last_transaction_date' &&
+            orderByColumn !== undefined
+    ) {
+      orderByColumn = `customer_monetary.${String( orderByColumn )}`
+    }
+    if ( orderByColumn === undefined ) {
+      orderByColumn = 'customer_monetary.id'
+    }
+    let queryBuilder = await CustomerMonetary.createQueryBuilder(
+      'customer_monetary'
+    )
       .select( ['customer_monetary.*'] )
       .where( 'customer_monetary.customer_id=:id', { id } )
+      .orderBy( orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC' )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEBT } )
 
     const total_debt_obj = await CustomerMonetary.createQueryBuilder(

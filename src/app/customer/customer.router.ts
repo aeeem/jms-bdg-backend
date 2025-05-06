@@ -110,6 +110,8 @@ export class CustomerController extends Controller {
       } =
         await getCustomerDepositService(
           + id,
+          queries.orderByColumn,
+          queries.Order,
           OffsetFromPage( queries.page, queries.limit ),
           queries.limit
         )
@@ -187,6 +189,8 @@ export class CustomerController extends Controller {
       } =
         await getCustomerDebtService(
           + id,
+          queries.orderByColumn,
+          queries.Order,
           OffsetFromPage( queries.page, queries.limit ),
           queries.limit
         )
