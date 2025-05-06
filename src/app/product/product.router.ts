@@ -27,10 +27,10 @@ export class ProductsController extends Controller {
       queries.orderByColumn !== 'last_transaction_date' &&
           queries.orderByColumn !== undefined
     ) {
-      queries.orderByColumn = `product.${String( queries.orderByColumn )}`
+      queries.orderByColumn = `${String( queries.orderByColumn )}`
     }
     if ( queries.orderByColumn === undefined ) {
-      queries.orderByColumn = 'product.id'
+      queries.orderByColumn = 'id'
     }
     const { product, count } = await getAllProductsService(
       OffsetFromPage( queries.page, queries.limit ),

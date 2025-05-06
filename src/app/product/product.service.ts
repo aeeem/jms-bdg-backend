@@ -22,7 +22,7 @@ export const getAllProductsService = async (
   try {
     console.log( 'offset limit orderbycolumn:', offset, limit, orderByColumn )
     const [product, count] = await Product.findAndCount( {
-      // where    : search ? { name: search } : {},
+      where    : search ? { name: search } : {},
       relations: ['stocks', 'vendor'],
       take     : limit,
       skip     : offset,
