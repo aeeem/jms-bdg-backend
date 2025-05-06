@@ -14,13 +14,23 @@ const errorTypes_1 = require("src/constants/errorTypes");
 const response_1 = __importDefault(require("src/helper/response"));
 const StocksCode_1 = require("src/interface/StocksCode");
 const errorHandler_1 = require("../../errorHandler");
-const getAllProductsService = async () => {
+const getAllProductsService = async (offset, limit, orderByColumn, Order, search) => {
     try {
-        const products = await product_1.Product.find({
+        const [product, count] = await product_1.Product.findAndCount({
+            where: search ? { name: search } : {},
             relations: ['stocks', 'vendor'],
-            order: { created_at: 'DESC' }
+            take: limit,
+            skip: offset,
+            order: { [orderByColumn]: Order === 'DESC' ? 'DESC' : 'ASC' }
+            // select   : [
+            //   'product.*',
+            //   'stocks',
+            //   'vendor',
+            //   'sum(stock.stock_gudang) as total_stock_gudang',
+            //   'sum(stock.stock_toko) as total_stock_gudang'
+            // ]
         });
-        return response_1.default.success({ data: products, stat_msg: 'SUCCESS' });
+        return { product, count };
     }
     catch (e) {
         throw new errorHandler_1.Errors(e);

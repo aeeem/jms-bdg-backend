@@ -20,8 +20,9 @@ export const getAllProductsService = async (
   search?: string
 ) => {
   try {
+    console.log( 'offset limit orderbycolumn:', offset, limit, orderByColumn )
     const [product, count] = await Product.findAndCount( {
-      where    : search ? { name: search } : {},
+      // where    : search ? { name: search } : {},
       relations: ['stocks', 'vendor'],
       take     : limit,
       skip     : offset,
@@ -34,7 +35,6 @@ export const getAllProductsService = async (
       //   'sum(stock.stock_toko) as total_stock_gudang'
       // ]
     } )
-    
     return { product, count }
   } catch ( e: any ) {
     throw new Errors( e )

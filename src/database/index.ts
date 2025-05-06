@@ -21,7 +21,7 @@ export default class Database {
       password   : process.env.DEV_DATABASE_PASSWORD,
       database   : process.env.DEV_DATABASE_NAME,
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
-      logging    : false,
+      logging    : true,
       synchronize: true,
       logger     : 'advanced-console',
       extra      : {
@@ -53,7 +53,7 @@ export default class Database {
       entities   : [__dirname + '/entity/*.ts', __dirname + '/entity/*.js'],
       dropSchema : true,
       synchronize: true,
-      logging    : false
+      logging    : true
       // subscribers: [
       //   StockGudangSubscriber,
       //   StockTokoSubscriber,

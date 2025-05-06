@@ -27,10 +27,10 @@ export class ProductsController extends Controller {
       queries.orderByColumn !== 'last_transaction_date' &&
           queries.orderByColumn !== undefined
     ) {
-      queries.orderByColumn = `customer.${String( queries.orderByColumn )}`
+      queries.orderByColumn = `product.${String( queries.orderByColumn )}`
     }
     if ( queries.orderByColumn === undefined ) {
-      queries.orderByColumn = 'customer.id'
+      queries.orderByColumn = 'product.id'
     }
     const { product, count } = await getAllProductsService(
       OffsetFromPage( queries.page, queries.limit ),
@@ -40,7 +40,7 @@ export class ProductsController extends Controller {
       queries.search
     )
 
-    return makeResponse.successWithPagination( { 
+    return makeResponse.successWithPagination( {
       data     : product,
       totalData: count,
       page     : queries.page,

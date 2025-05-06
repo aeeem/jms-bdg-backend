@@ -17,7 +17,7 @@ const restoreStocks = async (items) => {
     const queryRunner = app_1.db.queryRunner();
     try {
         await queryRunner.startTransaction();
-        let restoredStock = [];
+        const restoredStock = [];
         const stocks = await Promise.all(items.map(async (item) => {
             const stock = await stock_1.Stock.findOneOrFail(item.stock_id);
             if (item.is_box) {

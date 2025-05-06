@@ -7,7 +7,6 @@ const app_1 = require("src/app");
 const errorTypes_1 = require("src/constants/errorTypes");
 const hutangPiutang_1 = require("src/database/enum/hutangPiutang");
 const errorHandler_1 = require("src/errorHandler");
-const monetaryHelper_1 = require("src/helper/monetaryHelper");
 const AccountCode_1 = require("src/interface/AccountCode");
 const cashFlow_1 = require("@entity/cashFlow");
 const cashFlow_2 = require("src/database/enum/cashFlow");
@@ -20,25 +19,32 @@ const getAllCustomerService = async (offset, limit, orderByColumn, Order, search
         // end) as "debt",customer_monetary.customer_id from "customer_monetary" group by customer_monetary.customer_id
         // )
         let queryBuilder = await customer_1.Customer.getRepository().createQueryBuilder('customer')
-            .select(['customer.*,cm.debt AS debt'])
-            .leftJoin('customer_monetary', 'c1', 'c1.customer_id = customer.id')
+            .select(['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'])
             .leftJoin(selecQueryBuilder => selecQueryBuilder
-            .select([`select  sum( case
+            .select([
+            `sum( case
      when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
      else 0
-     end) as "debt"`, 'customer_monetary.customer_id']).from('customer_monetary', 'customer_monetary')
+     end) as "debt"`,
+            'customer_monetary.customer_id as customer_id',
+            `sum( case
+     when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+     else 0
+     end) as "deposit"`
+        ]).from('customer_monetary', 'customer_monetary')
             .groupBy('customer_monetary.customer_id'), 'cm', 'cm.customer_id = customer.id')
+            .leftJoin('customer_monetary', 'c1', 'c1.customer_id = customer.id')
             .leftJoin('customer_monetary', 'c2', 'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))')
             .where('c2.id IS NULL')
             .addSelect('c1.created_at', 'last_transaction_date')
             .orderBy(orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC')
-            .offset(offset)
-            .limit(limit);
+            .offset(offset);
         if (search) {
             queryBuilder = queryBuilder.andWhere('customer.name ILIKE :search', { search: `%${search}%` });
         }
-        const customers = await queryBuilder.getRawMany();
         const count_data = await customer_1.Customer.count();
+        queryBuilder = queryBuilder.limit(limit);
+        const customers = await queryBuilder.getRawMany();
         return {
             count_data,
             customers
@@ -51,10 +57,30 @@ const getAllCustomerService = async (offset, limit, orderByColumn, Order, search
 exports.getAllCustomerService = getAllCustomerService;
 const getCustomerByIdService = async (id) => {
     try {
-        const customer = await customer_1.Customer.findOne({
-            where: { id },
-            relations: ['transactions', 'monetary']
-        });
+        const queryBuilder = await customer_1.Customer.getRepository()
+            .createQueryBuilder('customer')
+            .select(['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'])
+            .leftJoin(selecQueryBuilder => selecQueryBuilder
+            .select([
+            `sum( case
+        when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+        else 0
+        end) as "debt"`,
+            'customer_monetary.customer_id as customer_id',
+            `sum( case
+        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+        else 0
+        end) as "deposit"`
+        ])
+            .from('customer_monetary', 'customer_monetary')
+            .groupBy('customer_monetary.customer_id'), 'cm', 'cm.customer_id = customer.id')
+            .leftJoin('customer_monetary', 'c1', 'c1.customer_id = customer.id')
+            .leftJoin('customer_monetary', 'c2', 'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))')
+            .where('c2.id IS NULL')
+            .addSelect('c1.created_at', 'last_transaction_date')
+            .where('customer.id=:id', { id });
+        console.log(queryBuilder.getSql());
+        const customer = await queryBuilder.getRawOne();
         if (customer == null)
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;
         return customer;
@@ -64,13 +90,32 @@ const getCustomerByIdService = async (id) => {
     }
 };
 exports.getCustomerByIdService = getCustomerByIdService;
-const getCustomerDepositService = async (id) => {
+const getCustomerDepositService = async (id, offset, limit) => {
     try {
-        const customer_deposit = await customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEPOSIT } });
-        const total_deposit = (0, monetaryHelper_1.CalculateTotalBalance)(customer_deposit);
+        let queryBuilder = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
+            .select(['customer_monetary.*'])
+            .where('customer_monetary.customer_id=:id', { id })
+            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT });
+        const qb_deposit = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
+            .select(['coalesce(sum(customer_monetary.amount),0) as total_deposit'])
+            .where('customer_monetary.customer_id=:id', { id })
+            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT });
+        const total_deposit_obj = await qb_deposit.getRawOne();
+        const count_data = await queryBuilder.getCount();
+        // If a limit is provided, set the maximum number of records to retrieve
+        if (limit) {
+            queryBuilder = queryBuilder.limit(limit);
+        }
+        // If a offset is provided, set the maximum number of records to retrieve
+        if (offset) {
+            queryBuilder = queryBuilder.offset(offset);
+        }
+        const total_deposit = total_deposit_obj.total_deposit;
+        const customer_deposit_list = await queryBuilder.getRawMany();
         return {
+            count_data,
             total_deposit,
-            deposits: customer_deposit
+            customer_deposit_list
         };
     }
     catch (error) {
@@ -78,13 +123,32 @@ const getCustomerDepositService = async (id) => {
     }
 };
 exports.getCustomerDepositService = getCustomerDepositService;
-const getCustomerDebtService = async (id) => {
+const getCustomerDebtService = async (id, offset, limit) => {
     try {
-        const customer_debt = await customerMonetary_1.CustomerMonetary.find({ where: { customer_id: id, type: hutangPiutang_1.E_Recievables.DEBT } });
-        const total_debt = (0, monetaryHelper_1.CalculateTotalBalance)(customer_debt);
+        let queryBuilder = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
+            .select(['customer_monetary.*'])
+            .where('customer_monetary.customer_id=:id', { id })
+            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEBT });
+        const total_debt_obj = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
+            .select(['coalesce(sum(customer_monetary.amount)) as total_debt'])
+            .where('customer_monetary.customer_id=:id', { id })
+            .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEBT })
+            .getRawOne();
+        const count_data = await queryBuilder.getCount();
+        // If a limit is provided, set the maximum number of records to retrieve
+        if (limit) {
+            queryBuilder = queryBuilder.limit(limit);
+        }
+        // If a offset is provided, set the maximum number of records to retrieve
+        if (offset) {
+            queryBuilder = queryBuilder.offset(offset);
+        }
+        const total_debt = total_debt_obj.total_debt;
+        const customer_debt_list = await queryBuilder.getRawMany();
         return {
+            count_data,
             total_debt,
-            debts: customer_debt
+            customer_debt_list
         };
     }
     catch (error) {
