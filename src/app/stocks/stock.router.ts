@@ -20,7 +20,16 @@ export class StockController extends Controller {
 
   @Get( '/toko' )
   @Security( 'api_key', ['read:stock'] )
-  public async getStockToko () {
+  public async getStockToko (
+  @Query() page: number,
+    @Query() limit: number,
+    @Query() orderByColumn?: string,
+    @Query() Order?: string,
+    @Query() search?: string,
+    @Query() startDate?: string,
+    @Query() endDate?: string,
+    @Query() vendor?: number
+  ) {
     try {
       const stocks = await getStockTokoService()
       return makeResponse.success( { data: stocks } )
@@ -31,18 +40,21 @@ export class StockController extends Controller {
 
   @Put( '/{id}' )
   @Security( 'api_key', ['update:stock'] )
-  public async updateStock ( @Path() id: string, @Body() body: {
-    is_gudang: boolean
-    amountBox: number
-    weight: number
-  } ) {
+  public async updateStock (
+  @Path() id: string,
+    @Body()
+    body: {
+      is_gudang: boolean
+      amountBox: number
+      weight: number
+    }
+  ) {
     return await updateStockService( body, id )
   }
 
   @Delete( '/{id}/' )
   @Security( 'api_key', ['delete:stock'] )
-  public async deleteStock ( @Query( 'id' ) id: string ) {
-  }
+  public async deleteStock ( @Query( 'id' ) id: string ) {}
 
   // @Patch( '/{id}/' )
   // @Security( 'api_key', ['update:stock'] )
@@ -58,7 +70,10 @@ export class StockController extends Controller {
 
   @Post( '/bulk/{id}' )
   @Security( 'api_key' )
-  public async addStockBulk ( @Path() id: number, @Body() body: AddStockBulkParameter ) {
+  public async addStockBulk (
+  @Path() id: number,
+    @Body() body: AddStockBulkParameter
+  ) {
     return await addStockBulkService( id, body )
   }
 }

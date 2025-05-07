@@ -87,7 +87,7 @@ export const updateExistingStockService = async ( { id, body }: {id: string, bod
     stock.buy_price = body.buy_price ? body.buy_price : stock.buy_price
     stock.stock_gudang = body.total_stock ? body.total_stock : stock.stock_gudang
     await stock.save()
-    
+
     return await Stock.findOne( { where: { id } } )
   } catch ( error: any ) {
     return new Errors( error )
@@ -146,7 +146,8 @@ export const getStockTokoService = async () => {
       } )
 
     const mergeStock = [...filteredStockToko, ...filteredStockGudang]
-    
+
+
     return mergeStock
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )

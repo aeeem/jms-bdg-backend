@@ -24,8 +24,15 @@ export const getAllProductsService = async (
 ) => {
   try {
     console.log( 'offset limit orderbycolumn:', offset, limit, orderByColumn )
-    const qbProduct = Product.createQueryBuilder( 'product' ).leftJoinAndSelect( 'product.stocks', 'stocks' )
-      .leftJoinAndSelect( 'product.vendor', 'vendor' )
+    const qbProduct = Product.createQueryBuilder( 'product' )
+      .select( [
+        'product.*',
+        'json_agg(row_to_json(stock.*)) as stocks',
+        'row_to_json(vendor.*) as vendor'
+      ] )
+      .leftJoin( 'stock', 'stock', 'product.id = stock.productId' )
+      .leftJoin( 'vendor', 'vendor', 'product.vendorId = vendor.id' )
+      .groupBy( 'product.id,vendor.id' )
 
     if ( vendor ) {
       qbProduct.andWhere( 'product.vendorId = :vendor', { vendor } )
@@ -42,7 +49,7 @@ export const getAllProductsService = async (
     const product = await qbProduct
       .orderBy( `product.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' ).limit( limit )
       .offset( offset )
-      .getMany()
+      .getRawMany()
     const count = await qbProduct.getCount()
     // const [product, count] = await Product.findAndCount( {
     //   where    : search ? { name: search } : {},
