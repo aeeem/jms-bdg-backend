@@ -22,25 +22,49 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
     // else 0
     // end) as "debt",customer_monetary.customer_id from "customer_monetary" group by customer_monetary.customer_id
     // )
-    let queryBuilder = await Customer.getRepository().createQueryBuilder( 'customer' )
+    let queryBuilder = await Customer.getRepository()
+      .createQueryBuilder( 'customer' )
       .select( ['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
-      .leftJoin( selecQueryBuilder => selecQueryBuilder
-        .select( [
-`sum( case
-     when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
-     else 0
-     end) as "debt"`,
-'customer_monetary.customer_id as customer_id',
-     `sum( case
-     when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
-     else 0
-     end) as "deposit"`
-        ] ).from( 'customer_monetary', 'customer_monetary' )
-        .groupBy( 'customer_monetary.customer_id' ), 'cm', 'cm.customer_id = customer.id' )
-     
+      .leftJoin(
+        selecQueryBuilder =>
+          selecQueryBuilder
+            .select( [
+              `"sum( case
+        when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
+        then "customer_monetary"."amount"
+        when (
+        "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
+        OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
+        OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
+        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
+        OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+            ) then ("customer_monetary"."amount" * -1)
+        else 0
+        end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
+        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+        else 0
+        end) as "deposit"`,
+              'customer_monetary.customer_id as customer_id',
+              `sum( case
+        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+        else 0
+        end) as "deposit"`
+            ] )
+            .from( 'customer_monetary', 'customer_monetary' )
+            .groupBy( 'customer_monetary.customer_id' ),
+        'cm',
+        'cm.customer_id = customer.id'
+      )
+
       .leftJoin( 'customer_monetary', 'c1', 'c1.customer_id = customer.id' )
-      .leftJoin( 'customer_monetary', 'c2',
-        'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))' )
+      .leftJoin(
+        'customer_monetary',
+        'c2',
+        'c2.customer_id = customer.id AND (c1.created_at < c2.created_at OR (c1.created_at = c2.created_at AND c1.id < c2.id))'
+      )
       .where( 'c2.id IS NULL' )
       .addSelect( 'c1.created_at', 'last_transaction_date' )
       .orderBy( orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC' )
@@ -71,10 +95,27 @@ export const getCustomerByIdService = async ( id: number ) => {
         selecQueryBuilder =>
           selecQueryBuilder
             .select( [
-              `sum( case
-        when "customer_monetary"."type"='DEBT' then "customer_monetary"."amount"
+              //  sum of debt where debt source is DEBT_ADD_INSUFFICIENT_FUND and type is DEBT
+              //  if type debt and source was other than DEBT_ADD_INSUFFICIENT_FUND it will give negative amount
+              `"sum( case
+        when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
+        then "customer_monetary"."amount"
+        when (
+        "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
+        OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
+        OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
+        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
+        OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+            ) then ("customer_monetary"."amount" * -1)
         else 0
-        end) as "debt"`,
+        end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
+        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
+        else 0
+        end) as "deposit"`,
+
               'customer_monetary.customer_id as customer_id',
               `sum( case
         when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
@@ -187,9 +228,26 @@ export const getCustomerDebtService = async (
     const total_debt_obj = await CustomerMonetary.createQueryBuilder(
       'customer_monetary'
     )
-      .select( ['coalesce(sum(customer_monetary.amount)) as total_debt'] )
+      .select( [
+        `coalesce(sum(customer_monetary.amount) - 
+      sum(case 
+        when ("customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
+        OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
+        OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
+        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
+        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
+        OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+      )
+        
+        then "customer_monetary"."amount" 
+      
+        else 0 end)) as total_debt`
+      ] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEBT } )
+      .andWhere( 'customer_monetary.source=:source', { source: E_MONET_SOURCE.DEBT_ADD_INSUFFICIENT_FUND } )
       .getRawOne()
 
     const count_data = await queryBuilder.getCount()
