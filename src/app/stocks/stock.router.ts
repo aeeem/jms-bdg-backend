@@ -1,4 +1,4 @@
-import makeResponse from 'src/helper/response'
+import makeResponse, { OffsetFromPage, TotalPage } from 'src/helper/response'
 import {
   Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
@@ -14,8 +14,34 @@ import {
 export class StockController extends Controller {
   @Get( '/' )
   @Security( 'api_key', ['read:stock'] )
-  public async getAllStock () {
-    return await getAllStocksService()
+  public async getAllStock (
+  @Query() page: number,
+    @Query() limit: number,
+    @Query() orderByColumn?: string,
+    @Query() Order?: string,
+    @Query() search?: string,
+    @Query() startDate?: string,
+    @Query() endDate?: string,
+    @Query() vendor?: number
+  ) {
+    if (
+      orderByColumn !== 'last_transaction_date' &&
+          orderByColumn !== undefined
+    ) {
+      orderByColumn = `${String( orderByColumn )}`
+    }
+    if ( orderByColumn === undefined ) {
+      orderByColumn = 'id'
+    }
+    const { stock, count } = await getAllStocksService( OffsetFromPage( page, limit ), limit, orderByColumn, Order, search, vendor, startDate, endDate )
+    return makeResponse.successWithPagination( {
+      data     : stock,
+      totalData: count,
+      page,
+      limit,
+      totalPage: TotalPage( count, limit ),
+      stat_msg : 'SUCCESS'
+    } )
   }
 
   @Get( '/toko' )
@@ -31,8 +57,33 @@ export class StockController extends Controller {
     @Query() vendor?: number
   ) {
     try {
-      const stocks = await getStockTokoService()
-      return makeResponse.success( { data: stocks } )
+      if (
+        orderByColumn !== 'last_transaction_date' &&
+         orderByColumn !== undefined
+      ) {
+        orderByColumn = `${String( orderByColumn )}`
+      }
+      if ( orderByColumn === undefined ) {
+        orderByColumn = 'id'
+      }
+      const {stock, count} = await getStockTokoService(
+        OffsetFromPage( page, limit ),
+        limit,
+        orderByColumn,
+        Order,
+        search,
+        vendor,
+        startDate,
+        endDate
+      )
+      return makeResponse.successWithPagination( {
+        data     : stock,
+        totalData: count,
+        page,
+        limit,
+        totalPage: TotalPage( count, limit ),
+        stat_msg : 'SUCCESS'
+      } )
     } catch ( error ) {
       return error
     }

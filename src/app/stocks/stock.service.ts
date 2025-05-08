@@ -9,11 +9,56 @@ import { Product } from '@entity/product'
 import { StockGudang } from '@entity/stockGudang'
 import { E_GUDANG_CODE_KEY } from 'src/interface/StocksCode'
 
-export const getAllStocksService = async () => {
+export const getAllStocksService = async (
+  offset: number,
+  limit: number,
+  orderByColumn: string,
+  Order?: string,
+  search?: string,
+  vendor?: number,
+  dateTo?: string,
+  dateFrom?: string
+) => {
   try {
-    return await Stock.find( { relations: ['vendor', 'product'] } )
-  } catch ( error: any ) {
-    return new Errors( error )
+    // ROW(u.*, ROW(ur.*, d AS duty) AS user_role)
+    const qbStock = Stock.createQueryBuilder( 'stock' )
+      .select( ['stock.*', 'json_agg(row_to_json(product.*))::json->0 as product'] )
+      .leftJoin(
+        selectqueryBuilder =>
+          selectqueryBuilder
+            .select( ['product.*', 'row_to_json(vendor.*) as vendor'] )
+            .leftJoin( 'vendor', 'vendor', 'product.vendorId = vendor.id' )
+            .from( 'product', 'product' )
+            .groupBy( 'product.id,vendor.id' ),
+        'product',
+        'stock.productId = product.id'
+      )
+      .groupBy( 'stock.id,product.id' )
+
+    if ( vendor ) {
+      qbStock.andWhere( 'stock.vendorId = :vendor', { vendor } )
+    }
+    if ( search ) {
+      qbStock.andWhere(
+        'LOWER(stock.name) LIKE :query OR LOWER(stock.sku) LIKE :query',
+        { query: `%${search}%` }
+      )
+    }
+    if ( dateFrom ) {
+      qbStock.andWhere( 'stock.created_at::date <= :dateFrom', { dateFrom } )
+    }
+    if ( dateTo ) {
+      qbStock.andWhere( 'stock.created_at::date >= :dateTo', { dateTo } )
+    }
+    const stock = await qbStock
+      .orderBy( `stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
+      .limit( limit )
+      .offset( offset )
+      .getRawMany()
+    const count = await qbStock.getCount()
+    return { stock, count }
+  } catch ( e: any ) {
+    throw new Errors( e )
   }
 }
 
@@ -127,28 +172,79 @@ export const updateStockService = async ( body: {
   }
 }
 
-export const getStockTokoService = async () => {
+export const getStockTokoService = async (
+  offset: number,
+  limit: number,
+  orderByColumn: string,
+  Order?: string,
+  search?: string,
+  vendor?: number,
+  dateTo?: string,
+  dateFrom?: string
+) => {
   try {
-    const stocks = await Stock.find( { relations: ['product', 'product.vendor'] } )
+    const qbStockGudang = Stock.createQueryBuilder()
+      .from( 'stock', 'stock' )
+      .leftJoin(
+        selectqueryBuilder =>
+          selectqueryBuilder
+            .select( ['product.*', 'row_to_json(vendor.*) as vendor'] )
+            .leftJoin( 'vendor', 'vendor', 'product.vendorId = vendor.id' )
+            .from( 'product', 'product' )
+            .groupBy( 'product.id,vendor.id' ),
+        'product',
+        'stock.productId = product.id'
+      )
+      .groupBy( 'stock.id,product.id' )
 
-    const filteredStockToko = stocks.filter( stock => stock.stock_toko > 0 ).map( item => {
-      return {
-        ...item,
-        gudang: false
-      }
-    } )
-    const filteredStockGudang = stocks.filter( stock => stock.stock_gudang > 0 )
-      .map( item => {
-        return {
-          ...item,
-          gudang: true
-        }
-      } )
+    if ( vendor ) {
+      qbStockGudang.andWhere( 'stock.vendorId = :vendor', { vendor } )
+    }
+    if ( search ) {
+      qbStockGudang.andWhere(
+        'LOWER(stock.name) LIKE :query OR LOWER(stock.sku) LIKE :query',
+        { query: `%${search}%` }
+      )
+    }
+    if ( dateFrom ) {
+      qbStockGudang.andWhere( 'stock.created_at::date <= :dateFrom', { dateFrom } )
+    }
+    if ( dateTo ) {
+      qbStockGudang.andWhere( 'stock.created_at::date >= :dateTo', { dateTo } )
+    }
 
-    const mergeStock = [...filteredStockToko, ...filteredStockGudang]
+    const qbStockGudangTrue = qbStockGudang
+      .select( [
+        'stock.*',
+        'true as gudang',
+        'json_agg(row_to_json(product.*))::json->0 as product'
+      ] )
+      .where( 'stock.stock_gudang > 0' )
+      .getQuery()
+    const qbStockGudangFalse = qbStockGudang
+      .select( [
+        'stock.*',
+        'false as gudang',
+        'json_agg(row_to_json(product.*))::json->0 as product'
+      ] )
+      .where( 'stock.stock_toko > 0' )
+      .getQuery()
+    
+    const stock = await Stock.query(
+      `(${qbStockGudangTrue}) UNION ALL (${qbStockGudangFalse}) order by ${orderByColumn} ${
+        Order === 'DESC' ? 'DESC' : 'ASC'
+      } limit ${limit} offset ${offset} `
+    )
 
-
-    return mergeStock
+    // const stock = await qbStockGudang
+    //   .orderBy( `stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
+    //   .limit( limit )
+    //   .offset( offset )
+    //   .getRawMany()
+    const count = await Stock.query(
+      `select count(*) as count from ((${qbStockGudangTrue}) UNION ALL (${qbStockGudangFalse}))`
+    )
+    return { stock, count: + count[0].count }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
