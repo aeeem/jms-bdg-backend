@@ -29,7 +29,7 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
         selecQueryBuilder =>
           selecQueryBuilder
             .select( [
-              `"sum( case
+              `sum( case
         when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
         then "customer_monetary"."amount"
         when (
@@ -97,7 +97,7 @@ export const getCustomerByIdService = async ( id: number ) => {
             .select( [
               //  sum of debt where debt source is DEBT_ADD_INSUFFICIENT_FUND and type is DEBT
               //  if type debt and source was other than DEBT_ADD_INSUFFICIENT_FUND it will give negative amount
-              `"sum( case
+              `sum( case
         when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
         then "customer_monetary"."amount"
         when (
