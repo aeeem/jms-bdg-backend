@@ -46,11 +46,6 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
         end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
         when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
         else 0
-        end) as "deposit"`,
-              'customer_monetary.customer_id as customer_id',
-              `sum( case
-        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
-        else 0
         end) as "deposit"`
             ] )
             .from( 'customer_monetary', 'customer_monetary' )
@@ -112,12 +107,6 @@ export const getCustomerByIdService = async ( id: number ) => {
             ) then ("customer_monetary"."amount" * -1)
         else 0
         end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
-        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
-        else 0
-        end) as "deposit"`,
-
-              'customer_monetary.customer_id as customer_id',
-              `sum( case
         when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
         else 0
         end) as "deposit"`
