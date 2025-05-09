@@ -2597,7 +2597,11 @@
 						"name": "Order",
 						"required": false,
 						"schema": {
-							"type": "string"
+							"type": "string",
+							"enum": [
+								"ASC",
+								"DESC"
+							]
 						}
 					},
 					{
@@ -2606,6 +2610,30 @@
 						"required": false,
 						"schema": {
 							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "searchBy",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"sku",
+								"product"
+							]
+						}
+					},
+					{
+						"in": "query",
+						"name": "stockType",
+						"required": false,
+						"schema": {
+							"type": "string",
+							"enum": [
+								"toko",
+								"gudang"
+							]
 						}
 					},
 					{
