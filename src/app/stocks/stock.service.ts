@@ -216,56 +216,56 @@ export const getStockTokoService = async (
       .where( 'stock.stock_toko > 0' )
     
     if ( vendor ) {
-      qbStockGudangTrue = qbStockGudangTrue.where(
-        'product.vendorId = ' + String( vendor ) )
-      qbStockGudangFalse = qbStockGudangFalse.where(
-        'product.vendorId = ' + String( vendor ) )
+      qbStockGudangTrue = qbStockGudangTrue.andWhere(
+        '"product"."vendorId" = ' + String( vendor ) )
+      qbStockGudangFalse = qbStockGudangFalse.andWhere(
+        '"product"."vendorId" = ' + String( vendor ) )
     }
 
     if ( search ) {
       if ( searchBy === 'sku' ) {
-        qbStockGudangFalse = qbStockGudangFalse.where(
-          'LOWER(product.sku) LIKE ' + `'%${search}%'`
+        qbStockGudangFalse = qbStockGudangFalse.andWhere(
+          'LOWER("product"."sku") LIKE ' + `'%${search}%'`
         )
-        qbStockGudangTrue = qbStockGudangFalse.where(
-          'LOWER(product.sku) LIKE ' + `'%${search}%'`
+        qbStockGudangTrue = qbStockGudangFalse.andWhere(
+          'LOWER("product"."sku") LIKE ' + `'%${search}%'`
         )
       } else {
-        qbStockGudangTrue = qbStockGudangTrue.where(
-          'LOWER(product.sku) LIKE ' +
+        qbStockGudangTrue = qbStockGudangTrue.andWhere(
+          'LOWER("product"."sku") LIKE ' +
             `'%${search}%'` +
-            'OR LOWER(product.name) LIKE ' +
+            'OR LOWER("product"."name") LIKE ' +
             `'%${search}%'`
         )
-        qbStockGudangFalse = qbStockGudangFalse.where(
-          'LOWER(product.sku) LIKE ' +
+        qbStockGudangFalse = qbStockGudangFalse.andWhere(
+          'LOWER("product"."sku") LIKE ' +
             `'%${search}%'` +
-            'OR LOWER(product.name) LIKE ' +
+            'OR LOWER("product"."name") LIKE ' +
             `'%${search}%'`
         )
       }
     }
 
     if ( stockType === 'toko' ) {
-      qbStockGudangFalse = qbStockGudangFalse.where( 'stock.stock_toko > 0' )
-      qbStockGudangTrue = qbStockGudangTrue.where( 'stock.stock_toko > 0' )
+      qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_toko > 0' ).andWhere( 'stock.stock_gudang <= 0' )
+      qbStockGudangTrue = qbStockGudangTrue.andWhere( 'stock.stock_toko > 0' ).andWhere( 'stock.stock_gudang > 0' )
     } else if ( stockType === 'gudang' ) {
-      qbStockGudangFalse = qbStockGudangFalse.where( 'stock.stock_gudang > 0' )
-      qbStockGudangTrue = qbStockGudangTrue.where( 'stock.stock_gudang > 0' )
+      // qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_gudang > 0' )
+      qbStockGudangTrue = qbStockGudangTrue.andWhere( 'stock.stock_gudang > 0' )
     }
     if ( dateFrom ) {
-      qbStockGudangFalse = qbStockGudangFalse.where(
+      qbStockGudangFalse = qbStockGudangFalse.andWhere(
         'stock.created_at::date <= :dateFrom',
         { dateFrom }
       )
-      qbStockGudangTrue = qbStockGudangTrue.where(
+      qbStockGudangTrue = qbStockGudangTrue.andWhere(
         'stock.created_at::date <= :dateFrom',
         { dateFrom }
       )
     }
     if ( dateTo ) {
-      qbStockGudangFalse = qbStockGudangFalse.where( 'stock.created_at::date >= :dateTo', { dateTo } )
-      qbStockGudangTrue = qbStockGudangTrue.where(
+      qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.created_at::date >= :dateTo', { dateTo } )
+      qbStockGudangTrue = qbStockGudangTrue.andWhere(
         'stock.created_at::date >= :dateTo',
         { dateTo }
       )
@@ -282,7 +282,8 @@ export const getStockTokoService = async (
     const stock = await stockQb.getRawMany()
     const count = await stockQb.addSelect( 'COUNT(*)' ).groupBy( 's1.id' )
       .getRawMany()
-    return { stock, count: count[0].count }
+    console.log( count )
+    return { stock, count: count.length > 0 ? count[0].count : 0 }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }

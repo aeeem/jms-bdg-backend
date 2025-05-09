@@ -82,10 +82,10 @@ export class StockController extends Controller {
       )
       return makeResponse.successWithPagination( {
         data     : stock,
-        totalData: count,
+        totalData: + count | 0,
         page,
         limit,
-        totalPage: TotalPage( count, limit ),
+        totalPage: TotalPage( + count | 0, limit ),
         stat_msg : 'SUCCESS'
       } )
     } catch ( error ) {
