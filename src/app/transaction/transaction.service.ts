@@ -91,7 +91,7 @@ export const getAllTransactionService = async (
       newTrx.andWhere( 'transaction.created_at::date <= :dateTo', { dateTo } )
     }
     const trx = await newTrx.getMany()
-    const count = 0
+    const count = await newTrx.getCount()
     return { transactions: formatTransaction( trx ), count }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
