@@ -8,7 +8,6 @@ import { db } from 'src/app'
 import { Product } from '@entity/product'
 import { StockGudang } from '@entity/stockGudang'
 import { E_GUDANG_CODE_KEY } from 'src/interface/StocksCode'
-import { getManager } from 'typeorm'
 
 export const getAllStocksService = async (
   offset: number,
@@ -107,7 +106,6 @@ export const addStockBulkService = async ( productID: number, payload: AddStockB
       data: stocks, stat_code: 200, stat_msg: 'Stock added successfully!'
     } )
   } catch ( error: any ) {
-    console.log( error )
     return new Errors( error )
   }
 }
@@ -153,7 +151,6 @@ export const updateStockService = async ( body: {
         existingStock.weight = body.weight
       } else {
         existingStock.stock_toko = body.weight
-        console.log( 'here' )
       }
      
       await existingStock.save()
@@ -168,7 +165,6 @@ export const updateStockService = async ( body: {
 
     throw E_ERROR.PRODUCT_OR_VENDOR_NOT_FOUND
   } catch ( error: any ) {
-    console.log( error )
     return new Errors( error )
   }
 }
@@ -186,7 +182,7 @@ export const getStockTokoService = async (
   dateFrom?: string
 ) => {
   try {
-    const qbStockGudang = Stock.createQueryBuilder()
+    let qbStockToko = Product.createQueryBuilder()
       .from( 'stock', 'stock' )
       .leftJoin(
         selectqueryBuilder =>
@@ -199,45 +195,26 @@ export const getStockTokoService = async (
         'stock.productId = product.id'
       )
       .groupBy( 'stock.id,product.id' )
-
-    let qbStockGudangTrue = qbStockGudang
+    
+    qbStockToko = qbStockToko
       .select( [
         'stock.*',
         'true as gudang',
         'json_agg(row_to_json(product.*))::json->0 as product'
       ] )
-      .where( 'stock.stock_gudang > 0' )
-    let qbStockGudangFalse = qbStockGudang
-      .select( [
-        'stock.*',
-        'false as gudang',
-        'json_agg(row_to_json(product.*))::json->0 as product'
-      ] )
-      .where( 'stock.stock_toko > 0' )
     
     if ( vendor ) {
-      qbStockGudangTrue = qbStockGudangTrue.andWhere(
-        '"product"."vendorId" = ' + String( vendor ) )
-      qbStockGudangFalse = qbStockGudangFalse.andWhere(
+      qbStockToko = qbStockToko.andWhere(
         '"product"."vendorId" = ' + String( vendor ) )
     }
 
     if ( search ) {
       if ( searchBy === 'sku' ) {
-        qbStockGudangFalse = qbStockGudangFalse.andWhere(
-          'LOWER("product"."sku") LIKE ' + `'%${search}%'`
-        )
-        qbStockGudangTrue = qbStockGudangFalse.andWhere(
+        qbStockToko = qbStockToko.andWhere(
           'LOWER("product"."sku") LIKE ' + `'%${search}%'`
         )
       } else {
-        qbStockGudangTrue = qbStockGudangTrue.andWhere(
-          'LOWER("product"."sku") LIKE ' +
-            `'%${search}%'` +
-            'OR LOWER("product"."name") LIKE ' +
-            `'%${search}%'`
-        )
-        qbStockGudangFalse = qbStockGudangFalse.andWhere(
+        qbStockToko = qbStockToko.andWhere(
           'LOWER("product"."sku") LIKE ' +
             `'%${search}%'` +
             'OR LOWER("product"."name") LIKE ' +
@@ -245,50 +222,36 @@ export const getStockTokoService = async (
         )
       }
     }
-
     if ( stockType === 'toko' ) {
-      qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_toko > 0' ).andWhere( 'stock.stock_gudang <= 0' )
-      qbStockGudangTrue = qbStockGudangTrue.andWhere( 'stock.stock_toko > 0' ).andWhere( 'stock.stock_gudang > 0' )
+      qbStockToko = qbStockToko.andWhere( 'stock.stock_toko > 0' )
     } else if ( stockType === 'gudang' ) {
       // qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_gudang > 0' )
-      qbStockGudangTrue = qbStockGudangTrue.andWhere( 'stock.stock_gudang > 0' )
+      qbStockToko = qbStockToko.andWhere( 'stock.stock_gudang > 0' )
     }
     if ( dateFrom ) {
-      qbStockGudangFalse = qbStockGudangFalse.andWhere(
-        'stock.created_at::date <= :dateFrom',
-        { dateFrom }
-      )
-      qbStockGudangTrue = qbStockGudangTrue.andWhere(
+      qbStockToko = qbStockToko.andWhere(
         'stock.created_at::date <= :dateFrom',
         { dateFrom }
       )
     }
     if ( dateTo ) {
-      qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.created_at::date >= :dateTo', { dateTo } )
-      qbStockGudangTrue = qbStockGudangTrue.andWhere(
+      qbStockToko = qbStockToko.andWhere(
         'stock.created_at::date >= :dateTo',
         { dateTo }
       )
     }
-
-    const stockQb = getManager()
-      .createQueryBuilder()
-      .addFrom( `((${qbStockGudangTrue.getQuery()}) UNION ALL (${qbStockGudangFalse.getQuery()}))`, 's1' )
+    const stockQb = qbStockToko
       .offset( offset )
-      .orderBy( `s1.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
+      .orderBy( `stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
       .limit( limit )
-      .setParameters( qbStockGudangTrue.getParameters() )
 
     const stock = await stockQb.getRawMany()
-    const count = await stockQb.addSelect( 'COUNT(*)' ).groupBy( 's1.id' )
-      .getRawMany()
-    console.log( count )
-    return { stock, count: count.length > 0 ? count[0].count : 0 }
+    const count = await stockQb.getCount()
+    return { stock, count }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
 }
-
 export const removeStockService = async ( { id }: {id: string} ) => {
   try {
     const _deletedStock = await Stock.findOne( { where: { id } } )

@@ -68,7 +68,7 @@ export class StockController extends Controller {
       if ( orderByColumn === undefined ) {
         orderByColumn = 'id'
       }
-      const {stock, count} = await getStockTokoService(
+      const { stock, count } = await getStockTokoService(
         OffsetFromPage( page, limit ),
         limit,
         orderByColumn,
