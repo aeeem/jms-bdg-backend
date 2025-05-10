@@ -223,6 +223,8 @@ export const getStockTokoService = async (
     } else if ( stockType === 'gudang' ) {
       // qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_gudang > 0' )
       qbStockToko = qbStockToko.andWhere( 'stock.stock_gudang > 0' )
+    } else {
+      qbStockToko = qbStockToko.andWhere( 'stock.stock_toko > 0' ).orWhere( 'stock.stock_gudang > 0' )
     }
     if ( dateFrom ) {
       qbStockToko = qbStockToko.andWhere(
