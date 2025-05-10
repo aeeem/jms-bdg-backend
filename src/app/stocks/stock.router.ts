@@ -25,7 +25,7 @@ export class StockController extends Controller {
     @Query() vendor?: number
   ) {
     if (
-      orderByColumn !== 'last_transaction_date' &&
+      orderByColumn !== 'created_at' &&
           orderByColumn !== undefined
     ) {
       orderByColumn = `${String( orderByColumn )}`

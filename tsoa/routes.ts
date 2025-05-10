@@ -1605,7 +1605,13 @@ export function RegisterRoutes(app: Router) {
 
             function TransactionController_getAllTransaction(request: any, response: any, next: any) {
             const args = {
-                    sort: {"in":"query","name":"sort","dataType":"string"},
+                    page: {"in":"query","name":"page","required":true,"dataType":"double"},
+                    limit: {"in":"query","name":"limit","required":true,"dataType":"double"},
+                    orderByColumn: {"in":"query","name":"orderByColumn","dataType":"string"},
+                    Order: {"in":"query","name":"Order","dataType":"string"},
+                    search: {"in":"query","name":"search","dataType":"string"},
+                    startDate: {"in":"query","name":"startDate","dataType":"string"},
+                    endDate: {"in":"query","name":"endDate","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
