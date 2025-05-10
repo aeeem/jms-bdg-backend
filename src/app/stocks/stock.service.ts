@@ -197,11 +197,7 @@ export const getStockTokoService = async (
       .groupBy( 'stock.id,product.id' )
     
     qbStockToko = qbStockToko
-      .select( [
-        'stock.*',
-        'true as gudang',
-        'json_agg(row_to_json(product.*))::json->0 as product'
-      ] )
+      .select( ['stock.*', 'json_agg(row_to_json(product.*))::json->0 as product'] )
     
     if ( vendor ) {
       qbStockToko = qbStockToko.andWhere(
