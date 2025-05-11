@@ -211,10 +211,10 @@ export const getStockTokoService = async (
         )
       } else {
         qbStockToko = qbStockToko.andWhere(
-          'LOWER("product"."sku") LIKE ' +
+          '(LOWER("product"."sku") LIKE ' +
             `'%${search}%'` +
             'OR LOWER("product"."name") LIKE ' +
-            `'%${search}%'`
+            `'%${search}%')`
         )
       }
     }
@@ -224,7 +224,8 @@ export const getStockTokoService = async (
       // qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_gudang > 0' )
       qbStockToko = qbStockToko.andWhere( 'stock.stock_gudang > 0' )
     } else {
-      qbStockToko = qbStockToko.andWhere( 'stock.stock_toko > 0' ).orWhere( 'stock.stock_gudang > 0' )
+      qbStockToko = qbStockToko
+        .andWhere( '(stock.stock_toko > 0 OR stock.stock_gudang > 0)' )
     }
     if ( dateFrom ) {
       qbStockToko = qbStockToko.andWhere(
