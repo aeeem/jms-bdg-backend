@@ -38,7 +38,10 @@ import {
   TransactionUpdateRequestParameter
 } from './transaction.interface'
 import { StockGudang } from '@entity/stockGudang'
-import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
+import {
+  Between,
+  LessThanOrEqual, Like, MoreThanOrEqual
+} from 'typeorm'
 
 export type T_Sort = 'DESC' | 'ASC' | 1 | -1 | undefined
 
@@ -48,10 +51,11 @@ export const getAllTransactionService = async (
   orderByColumn: string,
   Order?: string,
   search?: string,
-  dateTo?: string,
-  dateFrom?: string
+  dateFrom?: string,
+  dateTo?: string
 ) => {
   try {
+    console.log( dateFrom, dateTo )
     const order = Order as T_Sort
     const [transactions, count] = await Transaction.findAndCount( {
       take       : limit,
@@ -60,9 +64,10 @@ export const getAllTransactionService = async (
       order      : { [`${orderByColumn}`]: order },
       where      : {
         status: E_TransactionStatus.FINISHED,
-        ...( search && { transaction_id: search } ),
-        ...( dateFrom && { created_at: MoreThanOrEqual( dateFrom ) } ),
-        ...( dateTo && { created_at: LessThanOrEqual( dateTo ) } )
+        ...( search && { transaction_id: Like( `%${search}%` ) } ),
+        ...( dateTo && dateFrom && { created_at: Between( dateFrom, dateTo ) } ),
+        ...( dateFrom && !dateTo && { created_at: MoreThanOrEqual( dateFrom ) } ),
+        ...( dateTo && !dateFrom && { created_at: LessThanOrEqual( dateFrom ) } )  
       },
       relations: [
         'customer',
