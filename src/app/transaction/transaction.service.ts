@@ -38,6 +38,7 @@ import {
   TransactionUpdateRequestParameter
 } from './transaction.interface'
 import { StockGudang } from '@entity/stockGudang'
+import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm'
 
 export type T_Sort = 'DESC' | 'ASC' | 1 | -1 | undefined
 
@@ -51,48 +52,55 @@ export const getAllTransactionService = async (
   dateFrom?: string
 ) => {
   try {
-    // const order = Order as T_Sort
-    // const transactions = await Transaction.find( {
-    //   take       : offset,
-    //   skip       : limit,
-    //   withDeleted: true,
-    //   order      : { [orderByColumn]: order },
-    //   where      : { status: E_TransactionStatus.FINISHED },
-    //   relations  : [
-    //     'customer',
-    //     'cashier',
-    //     'transactionDetails',
-    //     'transactionDetails.stock',
-    //     'transactionDetails.stock.product',
-    //     'transactionDetails.stock.product.vendor'
-    //   ]
-    // } )
-    const newTrx = await Transaction.createQueryBuilder( 'transaction' )
-      .leftJoinAndSelect( 'transaction.customer', 'customer' )
-      .leftJoinAndSelect( 'transaction.cashier', 'cashier' )
-      .leftJoinAndSelect( 'transaction.transactionDetails', 'transactionDetails' )
-      .leftJoinAndSelect( 'transactionDetails.stock', 'stock' )
-      .leftJoinAndSelect( 'stock.product', 'product' )
-      .leftJoinAndSelect( 'product.vendor', 'vendor' )
-      .where( 'transaction.status = :status', { status: E_TransactionStatus.FINISHED } )
-      .orderBy( `stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
-      .skip( offset )
-      .take( limit )
-    if ( search ) {
-      newTrx.where(
-        'LOWER(transaction.transaction_id) LIKE :query',
-        { query: `%${search}%` }
-      )
-    }
-    if ( dateFrom ) {
-      newTrx.andWhere( 'transaction.created_at::date >= :dateFrom', { dateFrom } )
-    }
-    if ( dateTo ) {
-      newTrx.andWhere( 'transaction.created_at::date <= :dateTo', { dateTo } )
-    }
-    const trx = await newTrx.getMany()
-    const count = await newTrx.getCount()
-    return { transactions: formatTransaction( trx ), count }
+    const order = Order as T_Sort
+    const [transactions, count] = await Transaction.findAndCount( {
+      take       : limit,
+      skip       : offset,
+      withDeleted: true,
+      order      : { [`${orderByColumn}`]: order },
+      where      : {
+        status: E_TransactionStatus.FINISHED,
+        ...( search && { transaction_id: search } ),
+        ...( dateFrom && { created_at: MoreThanOrEqual( dateFrom ) } ),
+        ...( dateTo && { created_at: LessThanOrEqual( dateTo ) } )
+      },
+      relations: [
+        'customer',
+        'cashier',
+        'transactionDetails',
+        'transactionDetails.stock',
+        'transactionDetails.stock.product',
+        'transactionDetails.stock.product.vendor'
+      ]
+    } )
+    // const newTrx = await Transaction.createQueryBuilder( 'transaction' )
+    //   .leftJoinAndSelect( 'transaction.customer', 'customer' )
+    //   .leftJoinAndSelect( 'transaction.cashier', 'cashier' )
+    //   .leftJoinAndSelect( 'transaction.transactionDetails', 'transactionDetails' )
+    //   .leftJoinAndSelect( 'transactionDetails.stock', 'stock' )
+    //   .leftJoinAndSelect( 'stock.product', 'product' )
+    //   .leftJoinAndSelect( 'product.vendor', 'vendor' )
+
+    //   .where( 'transaction.status = :status', { status: E_TransactionStatus.FINISHED } )
+    //   .orderBy( `stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC' )
+    //   .skip( offset )
+    //   .take( limit )
+    // if ( search ) {
+    //   newTrx.where(
+    //     'LOWER(transaction.transaction_id) LIKE :query',
+    //     { query: `%${search}%` }
+    //   )
+    // }
+    // if ( dateFrom ) {
+    //   newTrx.andWhere( 'transaction.created_at::date >= :dateFrom', { dateFrom } )
+    // }
+    // if ( dateTo ) {
+    //   newTrx.andWhere( 'transaction.created_at::date <= :dateTo', { dateTo } )
+    // }
+    // console.log( formatr(transactions) )
+    // const trx = await newTrx.getMany()
+    // const count = await newTrx.getCount()
+    return { transactions: formatTransaction( transactions ), count }
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )
   }
