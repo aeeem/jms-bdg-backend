@@ -64,7 +64,7 @@ export const getAllTransactionService = async (
       order      : { [`${orderByColumn}`]: order },
       where      : {
         status: E_TransactionStatus.FINISHED,
-        ...( search && { transaction_id: Like( `%${search}%` ) } ),
+        ...( search && { transaction_id: Like( `%${search}%` ), name: Like( `%${search}%` ) } ),
         ...( dateTo && dateFrom && { created_at: Between( dateFrom, dateTo ) } ),
         ...( dateFrom && !dateTo && { created_at: MoreThanOrEqual( dateFrom ) } ),
         ...( dateTo && !dateFrom && { created_at: LessThanOrEqual( dateFrom ) } )  
