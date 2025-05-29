@@ -229,7 +229,7 @@ export const getCustomerDebtService = async (
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
       )
         
-        then "customer_monetary"."amount" 
+        then ("customer_monetary"."amount" * -1)
       
         else 0 end),0) as total_debt`
       ] )
