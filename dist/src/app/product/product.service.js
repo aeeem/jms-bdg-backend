@@ -17,24 +17,31 @@ const errorHandler_1 = require("../../errorHandler");
 const getAllProductsService = async (offset, limit, orderByColumn, Order, search, vendor, dateTo, dateFrom) => {
     try {
         console.log('offset limit orderbycolumn:', offset, limit, orderByColumn);
-        const qbProduct = product_1.Product.createQueryBuilder('product').leftJoinAndSelect('product.stocks', 'stocks')
-            .leftJoinAndSelect('product.vendor', 'vendor');
+        const qbProduct = product_1.Product.createQueryBuilder('product')
+            .select([
+            'product.*',
+            'json_agg(row_to_json(stock.*)) as stocks',
+            'row_to_json(vendor.*) as vendor'
+        ])
+            .leftJoin('stock', 'stock', 'product.id = stock.productId')
+            .leftJoin('vendor', 'vendor', 'product.vendorId = vendor.id')
+            .groupBy('product.id,vendor.id');
         if (vendor) {
-            qbProduct.andWhere('product.vendor_id = :vendor', { vendor });
+            qbProduct.andWhere('product.vendorId = :vendor', { vendor });
         }
         if (search) {
             qbProduct.andWhere('LOWER(product.name) LIKE :query OR LOWER(product.sku) LIKE :query', { query: `%${search}%` });
         }
         if (dateFrom) {
-            qbProduct.andWhere('product.arrival_date >= :dateFrom', { dateFrom });
+            qbProduct.andWhere('product.arrival_date::date <= :dateFrom', { dateFrom });
         }
         if (dateTo) {
-            qbProduct.andWhere('product.arrival_date <= :dateTo', { dateTo });
+            qbProduct.andWhere('product.arrival_date::date >= :dateTo', { dateTo });
         }
         const product = await qbProduct
             .orderBy(`product.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC').limit(limit)
             .offset(offset)
-            .getMany();
+            .getRawMany();
         const count = await qbProduct.getCount();
         // const [product, count] = await Product.findAndCount( {
         //   where    : search ? { name: search } : {},

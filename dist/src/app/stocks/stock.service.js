@@ -13,12 +13,39 @@ const app_1 = require("src/app");
 const product_1 = require("@entity/product");
 const stockGudang_1 = require("@entity/stockGudang");
 const StocksCode_1 = require("src/interface/StocksCode");
-const getAllStocksService = async () => {
+const getAllStocksService = async (offset, limit, orderByColumn, Order, search, vendor, dateTo, dateFrom) => {
     try {
-        return await stock_1.Stock.find({ relations: ['vendor', 'product'] });
+        // ROW(u.*, ROW(ur.*, d AS duty) AS user_role)
+        const qbStock = stock_1.Stock.createQueryBuilder('stock')
+            .select(['stock.*', 'json_agg(row_to_json(product.*))::json->0 as product'])
+            .leftJoin(selectqueryBuilder => selectqueryBuilder
+            .select(['product.*', 'row_to_json(vendor.*) as vendor'])
+            .leftJoin('vendor', 'vendor', 'product.vendorId = vendor.id')
+            .from('product', 'product')
+            .groupBy('product.id,vendor.id'), 'product', 'stock.productId = product.id')
+            .groupBy('stock.id,product.id');
+        if (vendor) {
+            qbStock.where('stock.vendorId = :vendor', { vendor });
+        }
+        if (search) {
+            qbStock.where('LOWER(stock.name) LIKE :query OR LOWER(stock.sku) LIKE :query', { query: `%${search}%` });
+        }
+        if (dateFrom) {
+            qbStock.where('stock.created_at::date <= :dateFrom', { dateFrom });
+        }
+        if (dateTo) {
+            qbStock.where('stock.created_at::date >= :dateTo', { dateTo });
+        }
+        const stock = await qbStock
+            .orderBy(`stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC')
+            .limit(limit)
+            .offset(offset)
+            .getRawMany();
+        const count = await qbStock.getCount();
+        return { stock, count };
     }
-    catch (error) {
-        return new errorHandler_1.Errors(error);
+    catch (e) {
+        throw new errorHandler_1.Errors(e);
     }
 };
 exports.getAllStocksService = getAllStocksService;
@@ -62,7 +89,6 @@ const addStockBulkService = async (productID, payload) => {
         });
     }
     catch (error) {
-        console.log(error);
         return new errorHandler_1.Errors(error);
     }
 };
@@ -106,7 +132,6 @@ const updateStockService = async (body, id) => {
             }
             else {
                 existingStock.stock_toko = body.weight;
-                console.log('here');
             }
             await existingStock.save();
             const stock = await stock_1.Stock.findOne({ where: { id: existingStock.id } });
@@ -119,29 +144,60 @@ const updateStockService = async (body, id) => {
         throw errorTypes_1.E_ERROR.PRODUCT_OR_VENDOR_NOT_FOUND;
     }
     catch (error) {
-        console.log(error);
         return new errorHandler_1.Errors(error);
     }
 };
 exports.updateStockService = updateStockService;
-const getStockTokoService = async () => {
+const getStockTokoService = async (offset, limit, orderByColumn, searchBy, stockType, Order, search, vendor, dateTo, dateFrom) => {
     try {
-        const stocks = await stock_1.Stock.find({ relations: ['product', 'product.vendor'] });
-        const filteredStockToko = stocks.filter(stock => stock.stock_toko > 0).map(item => {
-            return {
-                ...item,
-                gudang: false
-            };
-        });
-        const filteredStockGudang = stocks.filter(stock => stock.stock_gudang > 0)
-            .map(item => {
-            return {
-                ...item,
-                gudang: true
-            };
-        });
-        const mergeStock = [...filteredStockToko, ...filteredStockGudang];
-        return mergeStock;
+        let qbStockToko = product_1.Product.createQueryBuilder()
+            .from('stock', 'stock')
+            .leftJoin(selectqueryBuilder => selectqueryBuilder
+            .select(['product.*', 'row_to_json(vendor.*) as vendor'])
+            .leftJoin('vendor', 'vendor', 'product.vendorId = vendor.id')
+            .from('product', 'product')
+            .groupBy('product.id,vendor.id'), 'product', 'stock.productId = product.id')
+            .groupBy('stock.id,product.id');
+        qbStockToko = qbStockToko
+            .select(['stock.*', 'json_agg(row_to_json(product.*))::json->0 as product']);
+        if (vendor) {
+            qbStockToko = qbStockToko.andWhere('"product"."vendorId" = ' + String(vendor));
+        }
+        if (search) {
+            if (searchBy === 'sku') {
+                qbStockToko = qbStockToko.andWhere('(LOWER("product"."sku") LIKE ' + `'%${search}%')`);
+            }
+            else {
+                qbStockToko = qbStockToko.andWhere('(LOWER("product"."sku") LIKE ' +
+                    `'%${search}%'` +
+                    'OR LOWER("product"."name") LIKE ' +
+                    `'%${search}%')`);
+            }
+        }
+        if (stockType === 'toko') {
+            qbStockToko = qbStockToko.andWhere('stock.stock_toko > 0');
+        }
+        else if (stockType === 'gudang') {
+            // qbStockGudangFalse = qbStockGudangFalse.andWhere( 'stock.stock_gudang > 0' )
+            qbStockToko = qbStockToko.andWhere('stock.stock_gudang > 0');
+        }
+        else {
+            qbStockToko = qbStockToko
+                .andWhere('(stock.stock_toko > 0 OR stock.stock_gudang > 0)');
+        }
+        if (dateFrom) {
+            qbStockToko = qbStockToko.andWhere('stock.created_at::date <= :dateFrom', { dateFrom });
+        }
+        if (dateTo) {
+            qbStockToko = qbStockToko.andWhere('stock.created_at::date >= :dateTo', { dateTo });
+        }
+        const stockQb = qbStockToko
+            .offset(offset)
+            .orderBy(`stock.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC')
+            .limit(limit);
+        const stock = await stockQb.getRawMany();
+        const count = await stockQb.getCount();
+        return { stock, count };
     }
     catch (error) {
         return await Promise.reject(new errorHandler_1.Errors(error));

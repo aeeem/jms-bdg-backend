@@ -85,7 +85,7 @@ export const getCustomerByIdService = async ( id: number ) => {
   try {
     const queryBuilder = await Customer.getRepository()
       .createQueryBuilder( 'customer' )
-      .select( ['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'] )
+      .select( ['customer.*,coalesce(0,cm.debt) AS debt,coalesce(0,cm.deposit) AS deposit'] )
       .leftJoin(
         selecQueryBuilder =>
           selecQueryBuilder
@@ -102,7 +102,6 @@ export const getCustomerByIdService = async ( id: number ) => {
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
         OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
-        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
             ) then ("customer_monetary"."amount" * -1)
         else 0

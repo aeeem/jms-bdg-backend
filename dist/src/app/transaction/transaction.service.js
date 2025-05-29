@@ -48,23 +48,100 @@ const StocksCode_1 = require("src/interface/StocksCode");
 const customer_service_1 = require("../customer/customer.service");
 const transaction_helper_1 = require("./transaction.helper");
 const stockGudang_1 = require("@entity/stockGudang");
-const getAllTransactionService = async (sort = 'DESC') => {
+const getAllTransactionService = async (offset, limit, orderByColumn, Order, search, dateFrom, dateTo) => {
     try {
-        const order = sort;
-        const transactions = await transaction_1.Transaction.find({
-            withDeleted: true,
-            order: { updated_at: order },
-            where: { status: transaction_2.E_TransactionStatus.FINISHED },
-            relations: [
-                'customer',
-                'cashier',
-                'transactionDetails',
-                'transactionDetails.stock',
-                'transactionDetails.stock.product',
-                'transactionDetails.stock.product.vendor'
-            ]
-        });
-        return (0, transaction_helper_1.formatTransaction)(transactions);
+        // console.log( dateFrom, dateTo )
+        // const order = Order as T_Sort
+        // const [transactions, count] = await Transaction.findAndCount( {
+        //   take       : limit,
+        //   skip       : offset,
+        //   withDeleted: true,
+        //   order      : { [`${orderByColumn}`]: order },
+        //   where      :
+        //     {
+        //       status: E_TransactionStatus.FINISHED,
+        //       ...( dateTo && dateFrom && { created_at: Between( dateFrom, dateTo ) } ),
+        //       ...( dateFrom && !dateTo && { created_at: MoreThanOrEqual( dateFrom ) } ),
+        //       ...( dateTo && !dateFrom && { created_at: LessThanOrEqual( dateFrom ) } )
+        //     },
+        //   relations: [
+        //     'customer',
+        //     'cashier',
+        //     'transactionDetails',
+        //     'transactionDetails.stock',
+        //     'transactionDetails.stock.product',
+        //     'transactionDetails.stock.product.vendor'
+        //   ]
+        // } )
+        /*
+        QUERIES
+        select transaction.*, json_agg(row_to_json(item.*)) as items from transaction left join
+        (select transaction_detail.*, row_to_json(stock_product) as product from transaction_detail
+        left join
+        (select product.*,
+        stock.id as stock_id,
+        stock.stock_gudang as stock_gudang,
+        stock.stock_toko as stock_toko,
+        stock.sell_price as sell_price,
+        stock.buy_price as buy_price,
+        stock.weight as weight,
+        vendor.name as vendorName
+        from product
+        left join vendor on "product"."vendorId"=vendor.id
+        left join stock on "stock"."productId" = product.id
+        )
+        stock_product on stockId = transaction_detail.stock_id) item on transaction.id=item.transaction_id
+        group by transaction.id
+    limit 10
+      */
+        const newTrx = await transaction_1.Transaction.createQueryBuilder('transaction').select([
+            'transaction.*',
+            'json_agg(row_to_json(item.*)) as items',
+            'row_to_json(customer.*) as customer',
+            'json_build_object(\'id\', cashier.id,\'name\', cashier.name,\'noInduk\', cashier.noInduk)as cashier'
+        ])
+            .leftJoin(selectqueryBuilder => selectqueryBuilder
+            .select(['transaction_detail.*', 'row_to_json(stock_product.*) as product'])
+            .from('transaction_detail', 'transaction_detail')
+            .leftJoin(selectqueryBuilder2 => selectqueryBuilder2
+            .select([
+            'product.*',
+            'stock.id as stock_id',
+            'stock.stock_gudang as stock_gudang',
+            'stock.stock_toko as stock_toko',
+            'stock.sell_price as sell_price',
+            'stock.buy_price as buy_price',
+            'stock.weight as weight',
+            'vendor.name as vendorName'
+        ])
+            .from('product', 'product')
+            .withDeleted()
+            .leftJoin('vendor', 'vendor', 'product.vendorId=vendor.id')
+            .withDeleted()
+            .leftJoin('stock', 'stock', 'stock.productId = product.id')
+            .withDeleted(), 'stock_product', 'stock_product.stock_id = transaction_detail.stock_id')
+            .withDeleted(), 'item', 'item.transaction_id = transaction.id')
+            .leftJoin('customer', 'customer', 'transaction.customer_id = customer.id')
+            .leftJoin('user', 'cashier', 'transaction.cashierId = cashier.id')
+            .withDeleted()
+            .groupBy('transaction.id,customer.id,cashier.id')
+            .where('transaction.status = :status', { status: transaction_2.E_TransactionStatus.FINISHED })
+            .orderBy(`transaction.${orderByColumn}`, Order === 'DESC' ? 'DESC' : 'ASC')
+            .offset(offset)
+            .limit(limit);
+        if (search) {
+            newTrx.where('LOWER(transaction.transaction_id) ILIKE :query OR LOWER(customer.name) ILIKE :query', { query: `%${search}%` });
+        }
+        if (dateFrom) {
+            newTrx.andWhere('transaction.created_at::date >= :dateFrom', { dateFrom });
+        }
+        if (dateTo) {
+            newTrx.andWhere('transaction.created_at::date <= :dateTo', { dateTo });
+        }
+        console.log(newTrx.getQuery);
+        const trx = await newTrx.getRawMany();
+        const count = await newTrx.getCount();
+        return { transactions: trx, count };
     }
     catch (error) {
         return await Promise.reject(new errorHandler_1.Errors(error));

@@ -53,8 +53,10 @@ app.on( 'ready', async () => {
 if ( process.env.NODE_ENV === 'production' ) {
   app.use( helmet() )
   app.use( cors( { origin: 'https://jmsbdg.com' } ) )
+  console.log( 'production' )
+  console.log( process.env.DEV_DATABASE_NAME )
 } else {
-  app.use( cors( {origin: '*' } ) )
+  app.use( cors( { origin: '*' } ) )
 }
 
 app.set( 'json spaces', 2 )

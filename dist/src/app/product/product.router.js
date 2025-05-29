@@ -40,21 +40,21 @@ const response_1 = __importStar(require("src/helper/response"));
 const tsoa_1 = require("tsoa");
 const product_service_1 = require("./product.service");
 let ProductsController = class ProductsController extends tsoa_1.Controller {
-    async getAllProducts(queries) {
-        if (queries.orderByColumn !== 'last_transaction_date' &&
-            queries.orderByColumn !== undefined) {
-            queries.orderByColumn = `${String(queries.orderByColumn)}`;
+    async getAllProducts(page, limit, orderByColumn, Order, search, startDate, endDate, vendor) {
+        if (orderByColumn !== 'last_transaction_date' &&
+            orderByColumn !== undefined) {
+            orderByColumn = `${String(orderByColumn)}`;
         }
-        if (queries.orderByColumn === undefined) {
-            queries.orderByColumn = 'id';
+        if (orderByColumn === undefined) {
+            orderByColumn = 'id';
         }
-        const { product, count } = await (0, product_service_1.getAllProductsService)((0, response_1.OffsetFromPage)(queries.page, queries.limit), queries.limit, queries.orderByColumn, queries.Order, queries.search, queries.vendor, queries.startDate, queries.endDate);
+        const { product, count } = await (0, product_service_1.getAllProductsService)((0, response_1.OffsetFromPage)(page, limit), limit, orderByColumn, Order, search, vendor, startDate, endDate);
         return response_1.default.successWithPagination({
             data: product,
             totalData: count,
-            page: queries.page,
-            limit: queries.limit,
-            totalPage: (0, response_1.TotalPage)(count, queries.limit),
+            page: page,
+            limit: limit,
+            totalPage: (0, response_1.TotalPage)(count, limit),
             stat_msg: 'SUCCESS'
         });
     }
@@ -88,9 +88,16 @@ let ProductsController = class ProductsController extends tsoa_1.Controller {
 __decorate([
     (0, tsoa_1.Get)('/'),
     (0, tsoa_1.Security)('api_key', ['read:product']),
-    __param(0, (0, tsoa_1.Queries)()),
+    __param(0, (0, tsoa_1.Query)()),
+    __param(1, (0, tsoa_1.Query)()),
+    __param(2, (0, tsoa_1.Query)()),
+    __param(3, (0, tsoa_1.Query)()),
+    __param(4, (0, tsoa_1.Query)()),
+    __param(5, (0, tsoa_1.Query)()),
+    __param(6, (0, tsoa_1.Query)()),
+    __param(7, (0, tsoa_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Number, Number, String, String, String, String, String, Number]),
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "getAllProducts", null);
 __decorate([
