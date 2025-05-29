@@ -231,7 +231,7 @@ export const getCustomerDebtService = async (
         
         then "customer_monetary"."amount" 
       
-        else 0 end)) as total_debt`
+        else 0 end),0) as total_debt`
       ] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEBT } )

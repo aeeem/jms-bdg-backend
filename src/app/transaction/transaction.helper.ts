@@ -174,6 +174,7 @@ export class TransactionProcessor {
 
   calculateTotalPrice = () => {
     let totalPrice = this.payload.actual_total_price
+
     // check if there is discount
     if ( this.payload.optional_discount ) {
       totalPrice -= this.payload.optional_discount
@@ -382,6 +383,8 @@ export class TransactionProcessor {
         const customerMonet = new CustomerMonetary()
         const { total_debt } = await getCustomerDebtService( this.customer.id )
         const pay_debt = ( total_debt - this.change ) < 0 ? total_debt : this.change
+        console.log( 'pay_debt', pay_debt )
+        console.log( 'total_debt', total_debt )
         customerMonet.customer = this.customer
         customerMonet.amount = pay_debt
         customerMonet.type = E_Recievables.DEBT
