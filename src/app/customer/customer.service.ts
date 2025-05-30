@@ -30,17 +30,6 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
           selecQueryBuilder
             .select( [
               `sum( case
-        when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
-        then "customer_monetary"."amount"
-        when (
-        "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
-        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
-        OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
-        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
-        OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
-            ) then ("customer_monetary"."amount" * -1)
-        else 0
-        end)   as "debt", "customer_monetary"."customer_id" as customer_id, SELECT  sum( case
    when ("customer_monetary"."type"='DEPOSIT')
    then "customer_monetary"."amount"
    when (
