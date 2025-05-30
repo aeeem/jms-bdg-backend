@@ -169,7 +169,7 @@ export const getCustomerDepositService = async (
       'customer_monetary'
     )
       .select( [
-        `coalesce(0,sum( case
+        `coalesce(sum( case
    when (
   ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_WITH_DEPOSIT')
   AND ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_DEBT_WITH_DEPOSIT')
@@ -181,7 +181,7 @@ export const getCustomerDepositService = async (
    OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
        ) then ("customer_monetary"."amount" * -1)
    else 0
-   end) )  as "total_deposit"`
+   end),0)  as "total_deposit"`
       ] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
