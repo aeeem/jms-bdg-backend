@@ -40,10 +40,15 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
             ) then ("customer_monetary"."amount" * -1)
         else 0
-        end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
-        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
-        else 0
-        end) as "deposit"`
+        end)   as "debt", "customer_monetary"."customer_id" as customer_id, SELECT  sum( case
+   when ("customer_monetary"."type"='DEPOSIT')
+   then "customer_monetary"."amount"
+   when (
+   "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
+   OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+       ) then ("customer_monetary"."amount" * -1)
+   else 0
+   end)   as "total_deposit"`
             ] )
             .from( 'customer_monetary', 'customer_monetary' )
             .groupBy( 'customer_monetary.customer_id' ),
@@ -159,7 +164,15 @@ export const getCustomerDepositService = async (
     const qb_deposit = await CustomerMonetary.createQueryBuilder(
       'customer_monetary'
     )
-      .select( ['coalesce(sum(customer_monetary.amount),0) as total_deposit'] )
+      .select( [`coalesce(SELECT  sum( case
+   when ("customer_monetary"."type"='DEPOSIT')
+   then "customer_monetary"."amount"
+   when (
+   "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
+   OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+       ) then ("customer_monetary"."amount" * -1)
+   else 0
+   end)   as "total_deposit" FROM "customer_monetary" "customer_monetary" WHERE "customer_monetary"."customer_id"=136 AND "customer_monetary"."type"='DEPOSIT'`] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
 
