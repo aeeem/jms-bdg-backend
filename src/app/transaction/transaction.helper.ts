@@ -268,6 +268,7 @@ export class TransactionProcessor {
 
       if ( currentPaid > this.calculated_price && !this.payload.deposit ) {
         this.change = currentPaid - this.calculated_price
+        console.log( this.change )
       }
       
       return await this.subDeposit( this.total_deposit )
