@@ -40,15 +40,19 @@ export const getAllCustomerService = async ( offset: number, limit: number, orde
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
             ) then ("customer_monetary"."amount" * -1)
         else 0
-        end)   as "debt", "customer_monetary"."customer_id" as customer_id,  sum( case
-   when ("customer_monetary"."type"='DEPOSIT')
+        end)   as "debt", "customer_monetary"."customer_id" as customer_id, coalesce(sum( case
+   when (
+  ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_WITH_DEPOSIT')
+  AND ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_DEBT_WITH_DEPOSIT')
+
+   )
    then "customer_monetary"."amount"
    when (
    "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
    OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
        ) then ("customer_monetary"."amount" * -1)
    else 0
-   end)   as "deposit"`
+   end) ,0)    as "deposit"`
             ] )
             .from( 'customer_monetary', 'customer_monetary' )
             .groupBy( 'customer_monetary.customer_id' ),
@@ -164,15 +168,21 @@ export const getCustomerDepositService = async (
     const qb_deposit = await CustomerMonetary.createQueryBuilder(
       'customer_monetary'
     )
-      .select( [`coalesce(sum( case
-   when ("customer_monetary"."type"='DEPOSIT')
+      .select( [
+        `coalesce(0,sum( case
+   when (
+  ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_WITH_DEPOSIT')
+  AND ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_DEBT_WITH_DEPOSIT')
+
+   )
    then "customer_monetary"."amount"
    when (
    "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
    OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
        ) then ("customer_monetary"."amount" * -1)
    else 0
-   end) ,0)  as "total_deposit"`] )
+   end) )  as "total_deposit"`
+      ] )
       .where( 'customer_monetary.customer_id=:id', { id } )
       .andWhere( 'customer_monetary.type=:type', { type: E_Recievables.DEPOSIT } )
 
