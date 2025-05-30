@@ -256,7 +256,7 @@ export class TransactionProcessor {
       console.log( 'pay with deposit AND CASh' )
       console.log( this.payload.amount_paid + this.total_deposit )
 
-      const currentPaid = this.payload.amount_paid + this.total_deposit
+      const currentPaid = Number( this.payload.amount_paid ) + Number( this.total_deposit )
       // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
       // jika ya check apakah customer ingin menjadikan deposit atau kembalian
       if ( currentPaid > this.calculated_price && this.payload.deposit ) {
