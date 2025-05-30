@@ -254,6 +254,7 @@ export class TransactionProcessor {
   payWithDepositAndCash = async ( ): Promise<void> => {
     try {
       console.log( 'pay with deposit AND CASh' )
+      console.log( this.payload.amount_paid, this.total_deposit )
 
       const currentPaid = this.payload.amount_paid + this.total_deposit
       // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
@@ -270,8 +271,8 @@ export class TransactionProcessor {
       }
 
       if ( currentPaid > this.calculated_price && !this.payload.deposit ) {
+        console.log( currentPaid, this.calculated_price, 'Change' )
         this.change = currentPaid - this.calculated_price
-        console.log( 'change', this.change )
       }
       
       return await this.subDeposit( this.total_deposit )
