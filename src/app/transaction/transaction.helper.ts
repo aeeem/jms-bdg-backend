@@ -24,33 +24,37 @@ export const restoreStocks = async ( items: TransactionDetail[] ) => {
 
     const restoredStock: any = []
 
-    const stocks = await Promise.all( items.map( async item => {
-      const stock = await Stock.findOneOrFail( item.stock_id )
-      if ( item.is_box ) {
-        stock.stock_gudang = Number( stock.stock_gudang ) + Number( item.amount )
-        const stockGudang = new StockGudang()
-        stockGudang.amount = Number( item.amount )
-        stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
-        stockGudang.stock_id = item.stock_id
-        restoredStock.push( stockGudang )
-      } else {
-        stock.stock_toko = Number( stock.stock_toko ) + Number( item.amount )
-        const stockToko = new StockToko()
-        stockToko.amount = Number( item.amount )
-        stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
-        stockToko.stock_id = item.stock_id
-        restoredStock.push( stockToko )
-      }
-      await queryRunner.manager.softRemove( item )
-      return stock
-    } ) )
+    const stocks = await Promise.all(
+      items.map( async item => {
+        const stock = await Stock.findOneOrFail( item.stock_id )
+        if ( item.is_box ) {
+          stock.stock_gudang = Number( stock.stock_gudang ) + Number( item.amount )
+          const stockGudang = new StockGudang()
+          stockGudang.amount = Number( item.amount )
+          stockGudang.code = E_GUDANG_CODE_KEY.GUD_ADD_BRG_PENDING_TRANSAKSI
+          stockGudang.stock_id = item.stock_id
+          restoredStock.push( stockGudang )
+        } else {
+          stock.stock_toko = Number( stock.stock_toko ) + Number( item.amount )
+          const stockToko = new StockToko()
+          stockToko.amount = Number( item.amount )
+          stockToko.code = E_TOKO_CODE_KEY.TOK_ADD_BRG_PENDING_TRANSAKSI
+          stockToko.stock_id = item.stock_id
+          restoredStock.push( stockToko )
+        }
+        await queryRunner.manager.softRemove( item )
+        return stock
+      } )
+    )
     await queryRunner.manager.save( stocks )
     await queryRunner.manager.save( restoredStock )
-    
-    await Promise.all( stocks.map( async stock => {
-      await queryRunner.manager.save( stock )
-      return stock
-    } ) )
+
+    await Promise.all(
+      stocks.map( async stock => {
+        await queryRunner.manager.save( stock )
+        return stock
+      } )
+    )
 
     await queryRunner.commitTransaction()
   } catch ( error ) {
@@ -205,19 +209,31 @@ export class TransactionProcessor {
     try {
       // process transaction
       const hasChange = this.payload.amount_paid > this.calculated_price
-      const change = hasChange ? this.payload.amount_paid - this.calculated_price : 0
+      const change = hasChange
+        ? this.payload.amount_paid - this.calculated_price
+        : 0
       this.change = change
-      
+
       // [7] customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit
       if ( hasChange && this.payload.deposit ) {
+        console.log(
+          ' customer bayar dengan cash dan ada kembalian dan kembalian dijadikan deposit'
+        )
         return await this.makeDeposit( change )
       }
       // [9] customer bayar hutang dengan kembalian tanpa menjadikan deposit
+
       if ( hasChange && this.pay_debt ) {
+        console.log(
+          'customer bayar hutang dengan kembalian tanpa menjadikan deposit'
+        )
+
         return await this.subDebt()
       }
       // [8] customer bayar dengan cash namun dana tidak cukup
       if ( this.payload.amount_paid < this.calculated_price ) {
+        console.log( 'customer bayar dengan cash namun dana tidak cukup' )
+        console.log( this.payload.amount_paid, this.calculated_price, 'Data Calc price-amount_paid' )
         return await this.makeDebt(
           this.calculated_price - this.payload.amount_paid
         )
@@ -233,29 +249,28 @@ export class TransactionProcessor {
       if ( this.payload.amount_paid ) {
         return await this.payWithDepositAndCash()
       }
-    
+
       // [2] customer bayar dengan deposit dan deposit cukup untuk membayar
       if ( this.total_deposit >= this.calculated_price ) {
         return await this.subDeposit( this.calculated_price )
       }
-    
+
       // [5] customer bayar dengan deposit namun dana tidak cukup dan sisa bayar jadi hutang
       if ( this.total_deposit <= this.calculated_price ) {
         await this.subDeposit( this.total_deposit )
-        return await this.makeDebt(
-          this.calculated_price - this.total_deposit
-        )
+        return await this.makeDebt( this.calculated_price - this.total_deposit )
       }
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  payWithDepositAndCash = async ( ): Promise<void> => {
+  payWithDepositAndCash = async (): Promise<void> => {
     try {
       console.log( 'pay with deposit AND CASh' )
 
-      const currentPaid = Number( this.payload.amount_paid ) + Number( this.total_deposit )
+      const currentPaid =
+        Number( this.payload.amount_paid ) + Number( this.total_deposit )
       console.log( currentPaid )
 
       // [3] check apakah deposit cukup untuk membayar jika iya, check apakah ada kembalian,
@@ -266,7 +281,7 @@ export class TransactionProcessor {
       }
       // [4] amount_paid + total_deposit < actual_price ==> customer bayar dengan deposit dan uang tunai namun dana tidak cukup
       if ( currentPaid < this.calculated_price ) {
-        const debtAmt = this.calculated_price - ( currentPaid )
+        const debtAmt = this.calculated_price - currentPaid
         await this.makeDebt( debtAmt )
         return await this.subDeposit( this.total_deposit )
       }
@@ -275,14 +290,14 @@ export class TransactionProcessor {
         this.change = currentPaid - this.calculated_price
         console.log( this.change )
       }
-      
+
       return await this.subDeposit( this.total_deposit )
     } catch ( error ) {
       return await Promise.reject( error )
     }
   }
 
-  public processTransaction = async ( ): Promise<void> => {
+  public processTransaction = async (): Promise<void> => {
     try {
       this.transaction.customer = this.customer
       this.transaction.transactionDetails = this.transaction_details
@@ -290,7 +305,9 @@ export class TransactionProcessor {
       this.transaction.actual_total_price = this.calculated_price
       this.transaction.transaction_date = this.payload.transaction_date
       this.transaction.amount_paid = this.payload.amount_paid
-      this.transaction.status = this.isPending ? E_TransactionStatus.PENDING : E_TransactionStatus.FINISHED
+      this.transaction.status = this.isPending
+        ? E_TransactionStatus.PENDING
+        : E_TransactionStatus.FINISHED
       this.transaction.change = this.change || 0
       this.transaction.description = this.payload.description
       this.transaction.optional_discount = this.payload.optional_discount
@@ -300,14 +317,23 @@ export class TransactionProcessor {
       this.transaction.is_transfer = this.payload.is_transfer
       this.transaction.sub_total = await this.calcSubtotal()
       if ( this.payload.amount_paid < this.calculated_price ) {
-        this.transaction.outstanding_amount = this.calculated_price - this.payload.amount_paid
+        this.transaction.outstanding_amount =
+          this.calculated_price - this.payload.amount_paid
       }
       if ( this.payload.use_deposit ) {
-        this.transaction.usage_deposit = this.total_deposit <= this.transaction.actual_total_price ? this.total_deposit : this.transaction.actual_total_price
-        this.transaction.remaining_deposit = Number( this.payload.deposit ) + Number( this.remainingDeposit )
+        this.transaction.usage_deposit =
+          this.total_deposit <= this.transaction.actual_total_price
+            ? this.total_deposit
+            : this.transaction.actual_total_price
+        this.transaction.remaining_deposit =
+          Number( this.payload.deposit ) + Number( this.remainingDeposit )
         // TODO temporary, needed proper code
-        const is_debt = this.payload.amount_paid + this.total_deposit < this.calculated_price
-        this.transaction.outstanding_amount = is_debt ? this.calculated_price - ( this.payload.amount_paid + this.total_deposit ) : 0
+        const is_debt =
+          this.payload.amount_paid + this.total_deposit < this.calculated_price
+        this.transaction.outstanding_amount = is_debt
+          ? this.calculated_price -
+            ( this.payload.amount_paid + this.total_deposit )
+          : 0
       }
       if ( this.pay_debt ) {
         this.transaction.pay_debt_amount = this.pay_debt_amount
@@ -321,14 +347,16 @@ export class TransactionProcessor {
   }
 
   calcSubtotal = async () => {
-    const stock_details = await Promise.all( this.payload.detail.map( async item => {
-      const stock = await Stock.findOneOrFail( item.stock_id )
-      if ( item.box ) {
-        return ( stock.weight * item.amount ) * item.sub_total
-      } else {
-        return item.sub_total * item.amount
-      }
-    } ) )
+    const stock_details = await Promise.all(
+      this.payload.detail.map( async item => {
+        const stock = await Stock.findOneOrFail( item.stock_id )
+        if ( item.box ) {
+          return stock.weight * item.amount * item.sub_total
+        } else {
+          return item.sub_total * item.amount
+        }
+      } )
+    )
 
     const sum = stock_details.reduce( ( prev, current ) => prev + current, 0 )
 
@@ -337,10 +365,13 @@ export class TransactionProcessor {
 
   makeDebt = async ( amount: number ): Promise<void> => {
     try {
-      if ( !this.customer ) throw E_ERROR.CANT_MAKE_DEBT_FOR_UNREGISTERED_CUSTOMER
+      if ( !this.customer ) { throw E_ERROR.CANT_MAKE_DEBT_FOR_UNREGISTERED_CUSTOMER }
       const customerMonet = new CustomerMonetary()
       customerMonet.customer = this.customer
-      customerMonet.amount = this.payload.optional_discount ? amount - this.payload.optional_discount : amount
+      // customerMonet.amount = this.payload.optional_discount
+      //   ? amount - this.payload.optional_discount
+      //   : amount // already calculated with total amount at line 175 func calculate total_price so amount just be amount
+      customerMonet.amount = amount 
       customerMonet.type = E_Recievables.DEBT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEBT_ADD_INSUFFICIENT_FUND
@@ -356,10 +387,10 @@ export class TransactionProcessor {
       const customerMonet = new CustomerMonetary()
       let remainingMoney = 0
       if ( this.pay_debt ) {
-        if ( !this.customer ) throw E_ERROR.CANT_PAY_DEBT_FOR_UNREGISERED_CUSTOMER
+        if ( !this.customer ) { throw E_ERROR.CANT_PAY_DEBT_FOR_UNREGISERED_CUSTOMER }
         const { total_debt } = await getCustomerDebtService( this.customer.id )
         // tidak bisa melakukan bayar hutang + deposit jika dia masih memiliki hutang setelah bayar dengan kembalian
-        if ( total_debt - this.change > 0 ) throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT
+        if ( total_debt - this.change > 0 ) { throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT }
         const payDebtMonet = new CustomerMonetary()
         remainingMoney = this.change - total_debt
         payDebtMonet.customer = this.customer
@@ -370,7 +401,9 @@ export class TransactionProcessor {
         await this.queryRunner.manager.save( payDebtMonet )
       }
       customerMonet.customer = this.customer
-      customerMonet.amount = this.pay_debt ? remainingMoney : Number( this.payload.deposit ?? 0 )
+      customerMonet.amount = this.pay_debt
+        ? remainingMoney
+        : Number( this.payload.deposit ?? 0 )
       customerMonet.type = E_Recievables.DEPOSIT
       customerMonet.transaction_id = this.transaction.id
       customerMonet.source = E_CODE_KEY.DEP_ADD_TRANSACTION_CHANGE
@@ -384,11 +417,12 @@ export class TransactionProcessor {
 
   subDebt = async (): Promise<void> => {
     try {
-      if ( this.change < 1 ) throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT
+      if ( this.change < 1 ) { throw E_ERROR.CHANGE_INSUFFICIENT_TO_PAY_DEBT_AND_MAKE_DEPOSIT }
       if ( this.customer ) {
         const customerMonet = new CustomerMonetary()
         const { total_debt } = await getCustomerDebtService( this.customer.id )
-        const pay_debt = ( total_debt - this.change ) < 0 ? total_debt : this.change
+        const pay_debt =
+          total_debt - this.change < 0 ? total_debt : this.change
         console.log( 'pay_debt', pay_debt )
         console.log( 'total_debt', total_debt )
         customerMonet.customer = this.customer
