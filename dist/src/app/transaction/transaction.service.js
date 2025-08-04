@@ -166,7 +166,7 @@ const createTransactionService = async (payload, isPending = false, user) => {
                 throw errorTypes_1.E_ERROR.PRODUCT_NOT_FOUND;
             const detail = new transactionDetail_1.TransactionDetail();
             detail.amount = transactionDetail.amount;
-            detail.sub_total = transactionDetail.sub_total;
+            detail.sub_total = Math.floor(transactionDetail.sub_total);
             detail.stock_id = transactionDetail.stock_id;
             detail.stock = stock;
             detail.is_box = transactionDetail.box;

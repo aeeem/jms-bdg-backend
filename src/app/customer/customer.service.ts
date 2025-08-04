@@ -399,7 +399,7 @@ export const deleteCustomerService = async ( id: string ) => {
   try {
     const customer = await Customer.findOne( { where: { id } } )
     if ( customer != null ) {
-      await customer.remove()
+      await customer.softRemove()
     } else throw E_ERROR.CUSTOMER_NOT_FOUND
   } catch ( error: any ) {
     return await Promise.reject( new Errors( error ) )

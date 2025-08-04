@@ -28,19 +28,25 @@ const getAllCustomerService = async (offset, limit, orderByColumn, Order, search
         then "customer_monetary"."amount"
         when (
         "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
-        OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
-        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH'
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
         OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
-        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
             ) then ("customer_monetary"."amount" * -1)
         else 0
-        end)   as "debt", "customer_monetary"."customer_id" as customer_id, sum( case
-        when "customer_monetary"."type"='DEPOSIT' then "customer_monetary"."amount"
-        else 0
-        end) as "deposit"`
+        end)   as "debt", "customer_monetary"."customer_id" as customer_id, coalesce(sum( case
+   when (
+  ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_WITH_DEPOSIT')
+  AND ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_DEBT_WITH_DEPOSIT')
+
+   )
+   then "customer_monetary"."amount"
+   when (
+   "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
+   OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+       ) then ("customer_monetary"."amount" * -1)
+   else 0
+   end) ,0)    as "deposit"`
         ])
             .from('customer_monetary', 'customer_monetary')
             .groupBy('customer_monetary.customer_id'), 'cm', 'cm.customer_id = customer.id')
@@ -70,7 +76,7 @@ const getCustomerByIdService = async (id) => {
     try {
         const queryBuilder = await customer_1.Customer.getRepository()
             .createQueryBuilder('customer')
-            .select(['customer.*,coalesce(cm.debt,0) AS debt,coalesce(cm.deposit,0) AS deposit'])
+            .select(['customer.*,coalesce(0,cm.debt) AS debt,coalesce(0,cm.deposit) AS deposit'])
             .leftJoin(selecQueryBuilder => selecQueryBuilder
             .select([
             //  sum of debt where debt source is DEBT_ADD_INSUFFICIENT_FUND and type is DEBT
@@ -85,7 +91,6 @@ const getCustomerByIdService = async (id) => {
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
         OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
-        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
             ) then ("customer_monetary"."amount" * -1)
         else 0
@@ -127,7 +132,21 @@ const getCustomerDepositService = async (id, orderByColumn, Order, offset, limit
             .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT })
             .orderBy(orderByColumn, Order === 'DESC' ? 'DESC' : 'ASC');
         const qb_deposit = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
-            .select(['coalesce(sum(customer_monetary.amount),0) as total_deposit'])
+            .select([
+            `coalesce(sum( case
+   when (
+  ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_WITH_DEPOSIT')
+  AND ("customer_monetary"."type" = 'DEPOSIT' AND  "customer_monetary"."source" != 'DEP_SUB_PAID_DEBT_WITH_DEPOSIT')
+
+   )
+   then "customer_monetary"."amount"
+   when (
+   "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT' 
+   OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
+       ) then ("customer_monetary"."amount" * -1)
+   else 0
+   end),0)  as "total_deposit"`
+        ])
             .where('customer_monetary.customer_id=:id', { id })
             .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEPOSIT });
         const total_deposit_obj = await qb_deposit.getRawOne();
@@ -169,25 +188,21 @@ const getCustomerDebtService = async (id, orderByColumn, Order, offset, limit) =
             .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEBT });
         const total_debt_obj = await customerMonetary_1.CustomerMonetary.createQueryBuilder('customer_monetary')
             .select([
-            `coalesce(sum(customer_monetary.amount) - 
-      sum(case 
-        when ("customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
-        OR "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
-        OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH'
+            ` sum( case
+        when ("customer_monetary"."type"='DEBT' AND "customer_monetary"."source"='DEBT_ADD_INSUFFICIENT_FUND')
+        then "customer_monetary"."amount"
+        when (
+        "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CASH' 
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_TRANSFER'
         OR "customer_monetary"."source"='DEBT_SUB_RETURN_GOODS'
         OR "customer_monetary"."source"='DEBT_SUB_PAY_WITH_CHANGE'
-        OR "customer_monetary"."source"='DEP_SUB_PAID_WITH_DEPOSIT'
         OR  "customer_monetary"."source"='DEP_SUB_PAID_DEBT_WITH_DEPOSIT'
-      )
-        
-        then "customer_monetary"."amount" 
-      
-        else 0 end)) as total_debt`
+            ) then ("customer_monetary"."amount" * -1)
+        else 0
+        end)   as "total_debt"`
         ])
             .where('customer_monetary.customer_id=:id', { id })
             .andWhere('customer_monetary.type=:type', { type: hutangPiutang_1.E_Recievables.DEBT })
-            .andWhere('customer_monetary.source=:source', { source: AccountCode_1.E_CODE_KEY.DEBT_ADD_INSUFFICIENT_FUND })
             .getRawOne();
         const count_data = await queryBuilder.getCount();
         // If a limit is provided, set the maximum number of records to retrieve
@@ -336,7 +351,7 @@ const deleteCustomerService = async (id) => {
     try {
         const customer = await customer_1.Customer.findOne({ where: { id } });
         if (customer != null) {
-            await customer.remove();
+            await customer.softRemove();
         }
         else
             throw errorTypes_1.E_ERROR.CUSTOMER_NOT_FOUND;

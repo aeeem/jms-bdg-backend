@@ -1,5 +1,5 @@
 import {
-  BaseEntity, Column, CreateDateColumn, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
+  BaseEntity, Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn
 } from 'typeorm'
 import { CustomerMonetary } from './customerMonetary'
 import { Transaction } from './transaction'
@@ -32,4 +32,6 @@ export class Customer extends BaseEntity {
 
   @UpdateDateColumn()
     updated_at: Date
+  @DeleteDateColumn()
+    deleted_at?: Date
 }

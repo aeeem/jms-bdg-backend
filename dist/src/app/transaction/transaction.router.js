@@ -95,7 +95,7 @@ let TransactionController = class TransactionController extends tsoa_1.Controlle
     async createPendingTransaction(payload) {
         try {
             const createdTransaction = await (0, transaction_service_1.createTransactionService)(payload, true);
-            return response_1.default.success({ data: createdTransaction });
+            return response_1.default.success({ data: createdTransaction }); // its never throw another response
         }
         catch (error) {
             return error;
