@@ -194,7 +194,7 @@ export const createTransactionService = async (
 
       const detail = new TransactionDetail()
       detail.amount = transactionDetail.amount
-      detail.sub_total = transactionDetail.sub_total
+      detail.sub_total = Math.floor(transactionDetail.sub_total)
       detail.stock_id = transactionDetail.stock_id
       detail.stock = stock
       detail.is_box = transactionDetail.box

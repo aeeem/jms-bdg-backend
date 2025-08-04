@@ -109,7 +109,7 @@ export class TransactionController extends Controller {
   ) {
     try {
       const createdTransaction = await createTransactionService( payload, true )
-      return makeResponse.success( { data: createdTransaction } )
+      return makeResponse.success( { data: createdTransaction } ) // its never throw another response
     } catch ( error: any ) {
       return error
     }

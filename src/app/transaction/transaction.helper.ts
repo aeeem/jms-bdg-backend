@@ -351,9 +351,9 @@ export class TransactionProcessor {
       this.payload.detail.map( async item => {
         const stock = await Stock.findOneOrFail( item.stock_id )
         if ( item.box ) {
-          return stock.weight * item.amount * item.sub_total
+          return Math.floor(stock.weight * item.amount * item.sub_total) //flooring is important
         } else {
-          return item.sub_total * item.amount
+          return Math.floor(item.sub_total * item.amount) //flooring is important
         }
       } )
     )
