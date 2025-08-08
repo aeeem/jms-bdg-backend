@@ -207,13 +207,13 @@ export const getStockTokoService = async (
     if ( search ) {
       if ( searchBy === 'sku' ) {
         qbStockToko = qbStockToko.andWhere(
-          '(LOWER("product"."sku") LIKE ' + `'%${search}%')`
+          '(LOWER("product"."sku") ILIKE ' + `'%${search}%')`
         )
       } else {
         qbStockToko = qbStockToko.andWhere(
-          '(LOWER("product"."sku") LIKE ' +
+          '(LOWER("product"."sku") ILIKE ' +
             `'%${search}%'` +
-            'OR LOWER("product"."name") LIKE ' +
+            'OR LOWER("product"."name") ILIKE ' +
             `'%${search}%')`
         )
       }
