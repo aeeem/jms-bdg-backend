@@ -29,7 +29,7 @@ export const getAllProductsService = async (
         'product.*',
         'json_agg(row_to_json(stock.*)) as stocks',
         'row_to_json(vendor.*) as vendor'
-      ] )
+      ] ).where( 'product.deleted_at IS NULL' )
       .leftJoin( 'stock', 'stock', 'product.id = stock.productId' )
       .leftJoin( 'vendor', 'vendor', 'product.vendorId = vendor.id' )
       .groupBy( 'product.id,vendor.id' )
