@@ -40,7 +40,7 @@ export const getAllStocksService = async (
     }
     if ( search ) {
       qbStock.where(
-        'LOWER(stock.name) LIKE :query OR LOWER(stock.sku) LIKE :query',
+        'LOWER(stock.name) ILIKE :query OR LOWER(stock.sku) ILIKE :query',
         { query: `%${search}%` }
       )
     }
