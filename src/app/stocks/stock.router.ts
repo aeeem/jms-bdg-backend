@@ -52,7 +52,7 @@ export class StockController extends Controller {
     @Query() orderByColumn?: string,
     @Query() Order?: 'ASC' | 'DESC',
     @Query() search?: string,
-    @Query() searchBy?: 'sku' | 'product',
+    @Query() searchBy?: 'sku' | 'product' | 'id',
     @Query() stockType?: 'toko' | 'gudang',
     @Query() startDate?: string,
     @Query() endDate?: string,

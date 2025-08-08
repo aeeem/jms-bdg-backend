@@ -1,6 +1,6 @@
 import { Stock } from '@entity/stock'
 import { AddStockBulkParameter, StockRequestParameter } from './stock.interfaces'
-import _ from 'lodash'
+import _, { toInteger } from 'lodash'
 import makeResponse from 'src/helper/response'
 import { E_ERROR } from 'src/constants/errorTypes'
 import { Errors } from 'src/errorHandler'
@@ -208,6 +208,11 @@ export const getStockTokoService = async (
       if ( searchBy === 'sku' ) {
         qbStockToko = qbStockToko.andWhere(
           '(LOWER("product"."sku") ILIKE ' + `'%${search}%')`
+        )
+      }
+      else if ( searchBy === 'id' ) {
+        qbStockToko = qbStockToko.andWhere(
+          'customer_monetary.customer_id=:id', { toInteger:(search) } 
         )
       } else {
         qbStockToko = qbStockToko.andWhere(
