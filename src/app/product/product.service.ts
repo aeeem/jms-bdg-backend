@@ -131,7 +131,7 @@ export const createProductService = async ( payload: ProductRequestParameter[] )
 export const searchProductService = async ( { query }: { query: string } ) => {
   try {
     const products = await Product.createQueryBuilder( 'product' )
-      .where( 'LOWER(product.sku) LIKE :query OR LOWER(product.name) LIKE :name', { query: `%${query}%`, name: `%${query}%` } )
+      .where( 'LOWER(product.sku) ILIKE :query OR LOWER(product.name) ILIKE :name', { query: `%${query}%`, name: `%${query}%` } )
       .leftJoinAndSelect( 'product.stocks', 'stocks' )
       .leftJoinAndSelect( 'product.vendor', 'vendor' )
       .orderBy( 'product.id', 'ASC' )
@@ -170,7 +170,7 @@ export const updateProductService = async ( id: number, payload: UpdateProductPa
 export const deleteProductService = async ( { id }: { id: number } ) => {
   try {
     const _deletedProduct = await Product.findOne( {
-      where: { id }, withDeleted: true, relations: ['stocks']
+      where: { id }, withDeleted: false, relations: ['stocks']
     } )
     if ( _deletedProduct == null ) throw E_ERROR.PRODUCT_NOT_FOUND
 
