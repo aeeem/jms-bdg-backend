@@ -1469,7 +1469,7 @@ export function RegisterRoutes(app: Router) {
                     orderByColumn: {"in":"query","name":"orderByColumn","dataType":"string"},
                     Order: {"in":"query","name":"Order","dataType":"union","subSchemas":[{"dataType":"enum","enums":["ASC"]},{"dataType":"enum","enums":["DESC"]}]},
                     search: {"in":"query","name":"search","dataType":"string"},
-                    searchBy: {"in":"query","name":"searchBy","dataType":"union","subSchemas":[{"dataType":"enum","enums":["sku"]},{"dataType":"enum","enums":["product"]}]},
+                    searchBy: {"in":"query","name":"searchBy","dataType":"union","subSchemas":[{"dataType":"enum","enums":["sku"]},{"dataType":"enum","enums":["product"]},{"dataType":"enum","enums":["id"]}]},
                     stockType: {"in":"query","name":"stockType","dataType":"union","subSchemas":[{"dataType":"enum","enums":["toko"]},{"dataType":"enum","enums":["gudang"]}]},
                     startDate: {"in":"query","name":"startDate","dataType":"string"},
                     endDate: {"in":"query","name":"endDate","dataType":"string"},

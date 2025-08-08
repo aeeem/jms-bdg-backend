@@ -212,7 +212,7 @@ export const getStockTokoService = async (
       }
       else if ( searchBy === 'id' ) {
         qbStockToko = qbStockToko.andWhere(
-          'customer_monetary.customer_id=:id', { toInteger:(search) } 
+          'stock.id=:id', { id:toInteger(search) } 
         )
       } else {
         qbStockToko = qbStockToko.andWhere(
