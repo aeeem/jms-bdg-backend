@@ -1,6 +1,6 @@
 import makeResponse, { OffsetFromPage, TotalPage } from 'src/helper/response'
 import {
-  Body, Controller, Delete, Get, Post, Put, Query, Route, Security, Tags
+  Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Security, Tags
 } from 'tsoa'
 import {
   MixedProductRequestParameter,
@@ -69,7 +69,7 @@ export class ProductsController extends Controller {
 
   @Put( '/' )
   @Security( 'api_key', ['update:product'] )
-  public async updateProduct ( @Query( 'id' ) id: string, @Body() payload: UpdateProductParameter ) {
+  public async updateProduct ( @Path( 'id' ) id: string, @Body() payload: UpdateProductParameter ) {
     return await updateProductService( Number( id ), payload )
   }
 
