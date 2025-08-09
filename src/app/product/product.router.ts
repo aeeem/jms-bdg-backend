@@ -67,7 +67,7 @@ export class ProductsController extends Controller {
     }
   }
 
-  @Put( '/' )
+  @Put( '/{id}' )
   @Security( 'api_key', ['update:product'] )
   public async updateProduct ( @Path() id: string, @Body() payload: UpdateProductParameter ) {
     return await updateProductService( Number( id ), payload )
